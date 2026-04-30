@@ -1,0 +1,298 @@
+/* ---------- RESET & GLOBAL ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f0f2f8;
+    font-family: 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', Arial, Helvetica, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #2d3e50;
+    padding: 20px;
+}
+
+/* ---------- FLUID CONTAINER ---------- */
+.erp-container {
+    max-width: 1600px;
+    width: 96%;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+/* ---------- HEADER (fluid, modern) ---------- */
+.header-main {
+    background: linear-gradient(105deg, #1e3a5f 0%, #2c5282 100%);
+    padding: 18px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255,255,255,0.12);
+    padding: 8px 18px;
+    border-radius: 60px;
+    backdrop-filter: blur(2px);
+}
+
+.logo-img {
+    width: 58px;
+    height: 58px;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #1e3a5f;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.institute-info {
+    color: white;
+}
+
+.inst-name {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+}
+
+.inst-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 4px 0;
+}
+
+.inst-address {
+    font-size: 0.7rem;
+    opacity: 0.85;
+}
+
+.erp-badge {
+    background: #f9c74f;
+    color: #1e3a5f;
+    padding: 8px 20px;
+    border-radius: 40px;
+    text-align: center;
+    font-weight: 800;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.erp-badge span {
+    font-size: 0.8rem;
+    display: block;
+    font-weight: normal;
+}
+
+/* ---------- SUPPORT BAR (fluid) ---------- */
+.support-bar {
+    background: #1f2c3e;
+    margin: 0 20px 20px 20px;
+    border-radius: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    gap: 12px;
+}
+
+.marquee-area {
+    flex: 2;
+    min-width: 200px;
+    color: white;
+    font-weight: 500;
+}
+
+.help-btn {
+    background: #e67e22;
+    padding: 6px 18px;
+    border-radius: 40px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.help-btn:hover {
+    background: #d35400;
+    transform: scale(0.97);
+}
+
+/* ---------- SECTION HEADINGS ---------- */
+.section-title {
+    background: #eef2fa;
+    padding: 12px 16px;
+    border-radius: 50px;
+    text-align: center;
+    margin: 25px 0 15px 0;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #1e3a5f;
+    letter-spacing: -0.2px;
+}
+
+/* ---------- MODULE GRID (fluid responsive) ---------- */
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.module-card {
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+    text-align: center;
+    padding: 22px 12px 24px;
+    border: 1px solid #e9edf2;
+}
+
+.module-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 30px -12px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e0;
+}
+
+.card-icon {
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.card-icon img {
+    max-width: 100px;
+    max-height: 90px;
+    object-fit: contain;
+    transition: 0.2s;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1f2b48;
+    margin: 12px 0 6px;
+}
+
+.card-desc {
+    font-size: 0.75rem;
+    color: #5a6e8a;
+    margin-bottom: 18px;
+    padding: 0 8px;
+}
+
+.module-btn {
+    background: #1e3a5f;
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    width: 85%;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+.module-btn:hover {
+    background: #0f2b4f;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* custom button variants */
+.btn-accent1 { background-color: #4FA61A; }
+.btn-accent2 { background-color: #019AAC; }
+.btn-dark { background-color: #18171C; }
+.btn-navy { background-color: #113766; }
+.btn-charcoal { background-color: #211B17; }
+.btn-teal { background-color: #10434B; }
+.btn-stone { background-color: #7C7E76; }
+.btn-slate { background-color: #0B1E25; }
+.btn-maroon { background-color: #660033; }
+.btn-gold { background-color: #CC9900; }
+
+/* empty card hidden */
+.empty-card {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* connect footer */
+.connect-footer {
+    background: #eef2f5;
+    border-radius: 40px;
+    padding: 14px 24px;
+    margin: 20px 0 25px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.social-icon {
+    width: 34px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 50%;
+    background: white;
+    padding: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+.copyright {
+    text-align: center;
+    padding: 18px;
+    font-size: 0.7rem;
+    border-top: 1px solid #e2e8f0;
+    background: #fafbfe;
+    color: #5a6e8a;
+}
+
+/* responsive touches */
+@media (max-width: 780px) {
+    body { padding: 12px; }
+    .erp-container { width: 100%; }
+    .header-main { flex-direction: column; align-items: stretch; text-align: center; }
+    .logo-area { justify-content: center; }
+    .support-bar { margin: 0 12px 18px 12px; border-radius: 30px; }
+    .module-card { padding: 18px 8px; }
+}
+
+@media (max-width: 550px) {
+    .modules-grid { grid-template-columns: 1fr; }
+    .connect-footer { flex-direction: column; text-align: center; }
+}

@@ -1,0 +1,547 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Smart School MIS - Central ERP System (Fluid Layout)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style type="text/css">
+    /* DEFAULTS
+    ----------------------------------------------------------*/
+    body {
+        background: #f0f2f5;
+        font-size: .80em;
+        margin: 0px;
+        padding: 0px;
+        color: #696969;
+        font-family: "Helvetica Neue", "Lucida Grande", "Segoe UI", Arial, Helvetica, Verdana, sans-serif;
+    }
+
+    a:link, a:visited {
+        color: #009900;
+        font-size: small;
+        font-family: "Helvetica Neue", "Lucida Grande", "Segoe UI", Arial, Helvetica, Verdana, sans-serif;
+        text-align: left;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #009900;
+        text-decoration: none;
+    }
+
+    a:active {
+        color: #034af3;
+    }
+
+    p {
+        margin-bottom: 10px;
+        line-height: 1.6em;
+    }
+
+    /* HEADINGS   
+    ----------------------------------------------------------*/
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.5em;
+        color: #666666;
+        font-variant: small-caps;
+        text-transform: none;
+        font-weight: 200;
+        margin-bottom: 0px;
+    }
+
+    h1 {
+        font-size: 1.6em;
+        padding-bottom: 0px;
+        margin-bottom: 0px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+        font-weight: 600;
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+
+    h4 {
+        font-size: 1.1em;
+    }
+
+    h5, h6 {
+        font-size: 1em;
+    }
+
+    /* PRIMARY LAYOUT ELEMENTS - FLUID CONTAINER */
+    .page {
+        width: 96%;
+        max-width: 1600px;
+        background-color: #fff;
+        margin: 20px auto 0px auto;
+        border: 1px solid #cccccc;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .header {
+        position: relative;
+        margin: 0px;
+        padding: 0px;
+        background: #4b6c9e;
+        width: 100%;
+    }
+
+    .header h1 {
+        font-weight: 700;
+        margin: 0px;
+        padding: 0px 0px 0px 20px;
+        color: #f9f9f9;
+        border: none;
+        line-height: 2em;
+        font-size: 2em;
+    }
+
+    .main {
+        padding: 0px 20px;
+        margin: 0px;
+        min-height: 420px;
+    }
+
+    .footer {
+        color: #4e5766;
+        padding: 8px 0px 0px 0px;
+        margin: 0px auto;
+        text-align: center;
+        line-height: normal;
+    }
+
+    /* FORM ELEMENTS   
+    ----------------------------------------------------------*/
+    fieldset {
+        margin: 1em 0px;
+        padding: 1em;
+        border: 1px solid #ccc;
+    }
+
+    fieldset p {
+        margin: 2px 12px 10px 10px;
+    }
+
+    input.textEntry {
+        width: 320px;
+        border: 1px solid #ccc;
+    }
+
+    input.passwordEntry {
+        width: 320px;
+        border: 1px solid #ccc;
+    }
+
+    /* MISC  
+    ----------------------------------------------------------*/
+    .clear {
+        clear: both;
+    }
+
+    .title {
+        display: block;
+        float: left;
+        text-align: left;
+        width: auto;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .center {
+        margin: auto;
+        width: 95%;
+        padding: 0px;
+        height: 176px;
+    }
+
+    /* Custom Styles for Dashboard */
+    .style15 {
+        font-size: 16pt;
+    }
+
+    .style17 {
+        font-family: "Helvetica Neue", "Lucida Grande", "Segoe UI", Arial, Helvetica, Verdana, sans-serif;
+    }
+
+    .style18 {
+        text-align: center;
+    }
+
+    .style27 {
+        text-align: center;
+        padding: 12px 8px;
+    }
+
+    .style28 {
+        font-size: small;
+    }
+
+    .style29 {
+        width: 13px;
+    }
+
+    #test {
+        color: #000000;
+        text-align: center;
+    }
+
+    .style31 {
+        font-size: medium;
+        color: #333333;
+    }
+
+    .style32 {
+        font-size: medium;
+    }
+
+    .style33 {
+        color: #FFFFFF;
+    }
+
+    /* Button Styles */
+    .butt {
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        transition-duration: 0.4s;
+        font-family: Helvetica Neue, Lucida Grande, Segoe UI, Arial, Helvetica, Verdana, sans-serif;
+        text-align: center;
+        margin: 0;
+        height: 40px;
+        width: 100%;
+        max-width: 224px;
+        cursor: pointer;
+        font-size: small;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .butt1 { background-color: #4FA61A; }
+    .butt1:hover { background-color: #3D7E14; }
+    .butt2 { background-color: #18171C; }
+    .butt2:hover { background-color: #444150; }
+    .butt3 { background-color: #272E64; }
+    .butt3:hover { background-color: #1C2148; }
+    .butt4 { background-color: #990033; }
+    .butt4:hover { background-color: #660021; }
+    .butt5 { background-color: #003300; }
+    .butt5:hover { background-color: #006400; }
+    .butt6 { background-color: #00716D; }
+    .butt6:hover { background-color: #00A9A6; }
+    .butt7 { background-color: #0577AE; }
+    .butt7:hover { background-color: #035176; }
+    .butt8 { background-color: #113766; }
+    .butt8:hover { background-color: #1F64B8; }
+    .butt9 { background-color: #482E01; }
+    .butt9:hover { background-color: #7B4E02; }
+    .butt10 { background-color: #211B17; }
+    .butt10:hover { background-color: #504238; }
+    .butt11 { background-color: #006FAD; }
+    .butt11:hover { background-color: #004F79; }
+    .butt12 { background-color: #16C2D0; }
+    .butt12:hover { background-color: #14B4C0; }
+    .butt13 { background-color: #2059B5; }
+    .butt13:hover { background-color: #163E7E; }
+    .butt14 { background-color: #585858; }
+    .butt14:hover { background-color: #333333; }
+    .butt15 { background-color: #FA5032; }
+    .butt15:hover { background-color: #DA2505; }
+    .butt16 { background-color: #7C7E76; }
+    .butt16:hover { background-color: #64655F; }
+    .butt17 { background-color: #665955; }
+    .butt17:hover { background-color: #37312F; }
+    .butt18 { background-color: #318EA0; }
+    .butt18:hover { background-color: #3CABBF; }
+    .butt19 { background-color: #0D1426; }
+    .butt19:hover { background-color: #1D3251; }
+    .butt20 { background-color: #21293E; }
+    .butt20:hover { background-color: #141A27; }
+    .butt21 { background-color: #0B1E25; }
+    .butt21:hover { background-color: #225C73; }
+    .butt22 { background-color: #88552B; }
+    .butt22:hover { background-color: #604020; }
+    .butt23 { background-color: #333333; }
+    .butt23:hover { background-color: #585858; }
+    .butt24 { background-color: #CC9900; }
+    .butt24:hover { background-color: #B08500; }
+    .butt25 { background-color: #10434B; }
+    .butt25:hover { background-color: #186772; }
+    .butt26 { background-color: #1A0F0D; }
+    .butt26:hover { background-color: #693D34; }
+    .butt27 { background-color: #896D58; }
+    .butt27:hover { background-color: #665142; }
+    .butt28 { background-color: #104B4B; }
+    .butt28:hover { background-color: #1C8282; }
+    .butt29 { background-color: #121F30; }
+    .butt29:hover { background-color: #28446A; }
+    .butt30 { background-color: #AB3602; }
+    .butt30:hover { background-color: #762401; }
+    .butt31 { background-color: #660033; }
+    .butt31:hover { background-color: #A60053; }
+    .butt32 { background-color: #595764; }
+    .butt32:hover { background-color: #323139; }
+    .butt33 { background-color: #727272; }
+    .butt33:hover { background-color: #4E4E4E; }
+
+    /* Table & layout fixes - fluid responsive tables */
+    table {
+        font-family: 'Helvetica Neue', 'Lucida Grande', 'Segoe UI', Arial, Helvetica, Verdana, sans-serif;
+        font-size: small;
+        color: #333333;
+        width: 100%;
+    }
+    
+    /* Responsive table cells for fluid layout */
+    .main table td {
+        vertical-align: top;
+        width: 25%;
+    }
+
+    .marquee-container {
+        padding: 10px 5px 10px 15px;
+        float: left;
+        width: calc(100% - 190px);
+        overflow: hidden;
+    }
+    
+    /* Responsive adjustments */
+    @media screen and (max-width: 900px) {
+        .main table td {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        .marquee-container {
+            width: 100%;
+            float: none;
+            text-align: center;
+        }
+        .butt {
+            max-width: 200px;
+        }
+        .style27 div {
+            margin: 0 auto;
+        }
+    }
+    
+    @media screen and (max-width: 600px) {
+        .main table td {
+            width: 100%;
+        }
+        .page {
+            width: 98%;
+        }
+        .main {
+            padding: 0px 12px;
+        }
+    }
+    
+    .module-card-inner {
+        background: #fafafa;
+        border-radius: 12px;
+        padding: 12px;
+        transition: all 0.2s ease;
+    }
+    
+    .module-card-inner:hover {
+        transform: translateY(-3px);
+    }
+    
+    .header-table, .header-table td {
+        background: transparent;
+    }
+    
+    .inst-name {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    @media screen and (max-width: 700px) {
+        .style29 {
+            display: block;
+            text-align: center;
+            width: auto;
+        }
+        .header-table td {
+            display: block;
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="page">
+        <!-- Header Section with Logo and Institute Details - Fluid -->
+        <table cellpadding="5" cellspacing="5" style="width:100%; font-family: 'Helvetica Neue', 'Lucida Grande', 'Segoe UI', Arial, Helvetica, Verdana, sans-serif; font-size: small; color: #333333; background:#4b6c9e;">
+            <tr>
+                <td class="style29" style="width:100px; background:#fff; border-radius:12px; text-align:center;">
+                    <span class="style15"><em>
+                        <img src="https://via.placeholder.com/70x70?text=LOGO" alt="Logo" style="width:70px; height:70px; border-radius:12px;" />
+                    </em></span>
+                 </td>
+                <td style="text-align: center; color: #ffffff;">
+                    <div style="font-size: 0.9rem; opacity:0.9;">Dr. D. Y. Patil Educational Federation</div>
+                    <div style="font-size: 1.2rem; font-weight: 700; margin: 4px 0;">Dr. D. Y. Patil School of Business Management (PGDM), Varale, Pune</div>
+                    <div style="font-size: 0.75rem;">Near Talegaon Railway Station, Varale, Talegaon, Pune - 410507</div>
+                 </td>
+                <td class="style29" style="width:180px; background:#ffffffcc; border-radius:16px; text-align:center; padding:6px;">
+                    <div style="font-size: 1rem; font-weight:bold; color:#1e3a5f;">Central <strong>ERP</strong> System</div>
+                    <div style="font-size: 0.7rem;">Powered By SmartSchool</div>
+                 </td>
+             </tr>
+         </table>
+
+        <div class="main">
+            <!-- Live Support Marquee Fluid -->
+            <div style="background:#2c3e50; height:auto; overflow:hidden; border-radius: 10px; margin: 12px 0; display:flex; flex-wrap:wrap; align-items:center;">
+                <div class="marquee-container">
+                    <marquee id="test" behavior="scroll" direction="left" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();" style="color:white;">24*7 Live Support : (+91) 7276-499-399 | (+91) 7721-899-399 | (+91) 8379-899-399 | E-mail : support@smartschoolmis.com</marquee>
+                </div>
+                <div style="padding: 8px 15px; text-align: center; color:white;">
+                    <a href="#" style="color:White;text-decoration:none; background:#e67e22; padding:6px 12px; border-radius:20px; font-size:0.75rem;">Need Help? Click Here</a>
+                </div>
+            </div>
+
+            <div style="height:16px;"></div>
+
+            <!-- ACADEMIC MODULES Section -->
+            <div style="padding: 8px; text-align: center; background-color: #EEEEEE; color: #333333; border-radius: 8px;">
+                <span class="style32"><strong>📚 ACADEMIC MODULES</strong></span>
+            </div>
+
+            <table style="width:100%;" align="center" cellpadding="12">
+                 <tr>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Attendance" alt="AMS" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt1" onclick="alert('Attendance Management Module: Track student/staff attendance, reports, real-time tracking.')">Attendance Management</button></div>
+                        </div>
+                    </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Exam" alt="Exam" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt1" style="background-color:#019AAC;" onclick="alert('Online Examination: Secure online tests, auto-grading, analytics.')">Online Examination</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Feedback" alt="Feedback" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt2" onclick="alert('Feedback Management: Course & faculty feedback, surveys, reports.')">Feedback Management</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Learning" alt="LMS" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt3" onclick="alert('Learning Material Distribution: Share notes, assignments, e-content.')">Learning Material Distribution</button></div>
+                        </div>
+                     </td>
+                 </tr>
+             </table>
+
+            <!-- ADMINISTRATIVE OFFICE MODULES -->
+            <div style="padding: 8px; text-align: center; background-color: #EEEEEE; color: #333333; margin-top:15px; border-radius: 8px;">
+                <span class="style32"><strong>🏛️ ADMINISTRATIVE OFFICE MODULES</strong></span>
+            </div>
+
+            <table style="width:100%;" align="center" cellpadding="12">
+                 <tr>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Office" alt="Admin Office" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt8" onclick="alert('Administrative Office: Workflow approvals, document management, official comms.')">Administrative Office</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Faculty" alt="Faculty Info" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt10" onclick="alert('Faculty Information System: Manage faculty profiles, workload, performance.')">Faculty Information System</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Library" alt="Library" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt25" onclick="alert('Library Management System: Catalogue, issue/return, digital resources.')">Library Management System</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Account" alt="Account" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt16" onclick="alert('Account Management System: Fee collection, expenses, financial reports.')">Account Management System</button></div>
+                        </div>
+                     </td>
+                 </tr>
+             </table>
+
+            <!-- OTHER MODULES (Training & Placement + Student Portal + Fun And Events Management) -->
+            <div style="padding: 8px; text-align: center; background-color: #EEEEEE; color: #333333; margin-top:15px; border-radius: 8px;">
+                <span class="style32"><strong>🎯 OTHER MODULES</strong></span>
+            </div>
+
+            <table style="width:100%;" align="center" cellpadding="12">
+                 <tr>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=Placement" alt="TNP" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt21" onclick="alert('Training And Placement: Manage recruiters, campus drives, student placements.')">Training And Placement</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=StudentPortal" alt="Student Portal" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt31" onclick="alert('Student Portal: Access results, assignments, fee status, notices.')">Student Portal</button></div>
+                        </div>
+                     </td>
+                    <td class="style27">
+                        <div class="module-card-inner">
+                            <div style="height:126px;"><img src="https://via.placeholder.com/120x100?text=FunEvents" alt="Fun And Events" style="border:none; max-width:100%;" /></div>
+                            <div style="height:40px; margin-top:8px;"><button class="butt butt24" onclick="alert('Fun And Events Management: Organize cultural events, fests, sports, celebrations & engagement activities.')">Fun And Events Management</button></div>
+                        </div>
+                     </td>
+                    <!-- Empty cell to maintain responsive grid layout but preserving symmetry -->
+                    <td class="style27">
+                        <div class="module-card-inner" style="opacity:0; visibility:hidden;">
+                            <div style="height:126px;"></div>
+                            <div style="height:40px;"></div>
+                        </div>
+                     </td>
+                 </tr>
+             </table>
+
+            <!-- Connect with us and Footer -->
+            <div style="padding: 12px 15px; background-color: #E5E5E5; border-radius: 50px; margin: 20px 0 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                <div style="font-size: medium; color:#333; font-weight:500;">Connect with us</div>
+                <div style="display: flex; gap: 12px;">
+                    <img src="https://via.placeholder.com/28x28?text=f" alt="fb" style="cursor:pointer; border-radius:50%;" onclick="alert('Facebook Page')"/>
+                    <img src="https://via.placeholder.com/28x28?text=t" alt="tw" style="cursor:pointer; border-radius:50%;" onclick="alert('Twitter Handle')"/>
+                    <img src="https://via.placeholder.com/28x28?text=in" alt="in" style="cursor:pointer; border-radius:50%;" onclick="alert('LinkedIn Company')"/>
+                    <img src="https://via.placeholder.com/28x28?text=ig" alt="ig" style="cursor:pointer; border-radius:50%;" onclick="alert('Instagram')"/>
+                </div>
+                <div>
+                    <a href="#" style="text-decoration:none; color:#2c3e50;" onclick="alert('Organization Home Page')">🏠 Go to organization's home</a>
+                </div>
+            </div>
+
+            <div style="height:12px;"></div>
+        </div>
+
+        <div class="clear">
+            <div style="text-align: center; font-family: 'Helvetica Neue', 'Lucida Grande', 'Segoe UI', Arial, Helvetica, Verdana, sans-serif; padding:16px; background:#f8f9fa; border-top:1px solid #ddd;">
+                All rights reserved. Copyrights Twinkle IT Solutions Pvt Ltd.&nbsp;©2016-2025.<br />
+                <span style="font-size:0.7rem;">Smart School MIS | Central ERP System</span>
+            </div>
+            <div style="height:8px;"></div>
+        </div>
+    </div>
+</body>
+</html>
