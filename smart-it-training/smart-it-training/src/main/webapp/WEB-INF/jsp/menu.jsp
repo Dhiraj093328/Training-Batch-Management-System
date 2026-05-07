@@ -40,6 +40,9 @@
                         <div style="font-size: 2rem; font-weight: 800; margin: 6px 0; text-shadow: 0 0 15px #00ffcc;">
                             Smart IT Training Center</div>
                     </td>
+                    <td style="width:120px; text-align:center;">
+                        <div class="date-time" id="currentDateTime" style="font-size:0.7rem; color:#00ffcc;"></div>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -65,126 +68,126 @@
                 <a href="${pageContext.request.contextPath}/" class="home-link-modern" style="display: inline-block;">🏠 Back to Home</a>
             </div>
 
-            <!-- ACADEMIC MODULES - IMAGE CARDS -->
+            <!-- ACADEMIC EXCELLENCE MODULES -->
             <div style="display: flex; justify-content: center; margin-top: 36px;">
                 <div class="section-header"><span>📚 ACADEMIC EXCELLENCE MODULES</span></div>
             </div>
             <table style="width:100%; margin-top: 20px;" align="center" cellpadding="15">
                 <tr>
                     <td class="style27">
-                        <div class="module-card" data-module="Attendance Management">
+                        <div class="module-card" data-module="Attendance Management" onclick="window.location.href='${pageContext.request.contextPath}/attendance/login'">
                             <img src="${pageContext.request.contextPath}/images/Attendance.png" alt="Attendance" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Attendance+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="📊 Attendance Management">📋 Attendance Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/attendance/login'">📋 Attendance Management</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Online Examination">
+                        <div class="module-card" data-module="Online Examination" onclick="window.location.href='${pageContext.request.contextPath}/exam/login'">
                             <img src="${pageContext.request.contextPath}/images/Result.png" alt="Exam" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Exam+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="📝 Online Examination">📝 Online Exam</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/exam/login'">📝 Online Exam</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Feedback Management">
+                        <div class="module-card" data-module="Feedback Management" onclick="window.location.href='${pageContext.request.contextPath}/feedback'">
                             <img src="${pageContext.request.contextPath}/images/feedback.png" alt="Feedback" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Feedback+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="⭐ Feedback Management">📢 Feedback Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/feedback'">📢 Feedback Management</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="E-Notice Management">
+                        <div class="module-card" data-module="E-Notice Management" onclick="window.location.href='${pageContext.request.contextPath}/notice/view'">
                             <img src="${pageContext.request.contextPath}/images/Notice.png" alt="E-Notice" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Notice+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="📢 E-Notice Management">📢 E-Notice Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/notice/view'">📢 E-Notice Management</button>
                             </div>
                         </div>
                     </td>
                 </tr>
             </table>
 
-            <!-- ADMINISTRATIVE OFFICE MODULES -->
+            <!-- ADMINISTRATIVE & OPERATIONS HUB -->
             <div style="display: flex; justify-content: center; margin-top: 36px;">
                 <div class="section-header"><span>🏛️ ADMINISTRATIVE & OPERATIONS HUB</span></div>
             </div>
             <table style="width:100%; margin-top: 8px;" align="center" cellpadding="15">
                 <tr>
                     <td class="style27">
-                        <div class="module-card" data-module="Administrative Office">
+                        <div class="module-card" data-module="Administrative Office" onclick="window.location.href='${pageContext.request.contextPath}/admin/login'">
                             <img src="${pageContext.request.contextPath}/images/Administrative.png" alt="Admin Office" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Admin+Office'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="🏢 Administrative Office">🏢 Administrative Office</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/admin/login'">🏢 Administrative Office</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Faculty Management">
+                        <div class="module-card" data-module="Faculty Management" onclick="window.location.href='${pageContext.request.contextPath}/faculty/login'">
                             <img src="${pageContext.request.contextPath}/images/Faculty.png" alt="Faculty" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Faculty+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="👩‍🏫 Faculty Management">👩‍🏫 Faculty Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/faculty/login'">👩‍🏫 Faculty Management</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Courses & Brochures">
+                        <div class="module-card" data-module="Courses & Brochures" onclick="window.location.href='${pageContext.request.contextPath}/courses'">
                             <img src="${pageContext.request.contextPath}/images/Browchers.png" alt="Courses" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Course+Brochure'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="📚 Courses and Brochures">📘 Courses & Brochures</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/courses'">📘 Courses & Brochures</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Account Management System">
+                        <div class="module-card" data-module="Account Management System" onclick="window.location.href='${pageContext.request.contextPath}/account/login'">
                             <img src="${pageContext.request.contextPath}/images/Account.png" alt="Account" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Accounts+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="💰 Account Management">💰 Account Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/account/login'">💰 Account Management</button>
                             </div>
                         </div>
                     </td>
                 </tr>
             </table>
 
-            <!-- OTHER MODULES -->
+            <!-- CAREER & STUDENT ENGAGEMENT -->
             <div style="display: flex; justify-content: center; margin-top: 36px;">
                 <div class="section-header"><span>🎯 CAREER & STUDENT ENGAGEMENT</span></div>
             </div>
             <table style="width:100%;" align="center" cellpadding="15">
                 <tr>
                     <td class="style27">
-                        <div class="module-card" data-module="Training And Placement">
+                        <div class="module-card" data-module="Training And Placement" onclick="window.location.href='${pageContext.request.contextPath}/placement/login'">
                             <img src="${pageContext.request.contextPath}/images/Training and placement.png" alt="Placement" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Training+Placement'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="🚀 Training And Placement">🎓 Training & Placement</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/placement/login'">🎓 Training & Placement</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Student Portal">
+                        <div class="module-card" data-module="Student Portal" onclick="window.location.href='${pageContext.request.contextPath}/student/login'">
                             <img src="${pageContext.request.contextPath}/images/Student Portal.png" alt="Student Portal" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Student+Portal'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="👨‍🎓 Student Portal">👨‍🎓 Student Portal</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/student/login'">👨‍🎓 Student Portal</button>
                             </div>
                         </div>
                     </td>
                     <td class="style27">
-                        <div class="module-card" data-module="Fun And Events Management">
+                        <div class="module-card" data-module="Fun And Events Management" onclick="window.location.href='${pageContext.request.contextPath}/events'">
                             <img src="${pageContext.request.contextPath}/images/Fun.png" alt="Fun & Events" class="card-image-cover"
                                 onerror="this.src='https://via.placeholder.com/300x200?text=Events+Module'" />
                             <div class="card-btn-overlay">
-                                <button class="butt-overlay" data-module="🎉 Fun And Events Management">🎉 Events Management</button>
+                                <button class="butt-overlay" onclick="event.stopPropagation(); window.location.href='${pageContext.request.contextPath}/events'">🎉 Events Management</button>
                             </div>
                         </div>
                     </td>
@@ -199,12 +202,12 @@
                     🌟 Connect & Follow Us
                 </div>
                 <div style="display: flex; gap: 22px; align-items: center; flex-wrap: wrap;">
-                    <div class="social-icon-enhanced" data-social="Facebook">📘</div>
-                    <div class="social-icon-enhanced" data-social="Twitter">𝕏</div>
-                    <div class="social-icon-enhanced" data-social="LinkedIn">in</div>
-                    <div class="social-icon-enhanced" data-social="Instagram">📷</div>
-                    <div class="social-icon-enhanced" data-social="YouTube">▶️</div>
-                    <div class="social-icon-enhanced" data-social="WhatsApp">💬</div>
+                    <div class="social-icon-enhanced" data-social="Facebook" onclick="window.open('https://facebook.com/smartittraining', '_blank')">📘</div>
+                    <div class="social-icon-enhanced" data-social="Twitter" onclick="window.open('https://twitter.com/smartittraining', '_blank')">𝕏</div>
+                    <div class="social-icon-enhanced" data-social="LinkedIn" onclick="window.open('https://linkedin.com/company/smartittraining', '_blank')">in</div>
+                    <div class="social-icon-enhanced" data-social="Instagram" onclick="window.open('https://instagram.com/smartittraining', '_blank')">📷</div>
+                    <div class="social-icon-enhanced" data-social="YouTube" onclick="window.open('https://youtube.com/@smartittraining', '_blank')">▶️</div>
+                    <div class="social-icon-enhanced" data-social="WhatsApp" onclick="window.open('https://wa.me/917420070217', '_blank')">💬</div>
                 </div>
                 <div><a href="${pageContext.request.contextPath}/" class="home-link-modern">🏠 Organization Home</a></div>
             </div>
@@ -223,6 +226,50 @@
 
     <!-- External JavaScript -->
     <script src="${pageContext.request.contextPath}/js/menu.js"></script>
+    
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeStr = now.toLocaleString('en-IN', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true 
+            });
+            const dateTimeElement = document.getElementById('currentDateTime');
+            if (dateTimeElement) {
+                dateTimeElement.innerHTML = '📅 ' + dateTimeStr;
+            }
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Set current year
+        document.getElementById('currentYear').innerText = new Date().getFullYear();
+        
+        // Add click animation to all module cards
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+        
+        // Add click animation to buttons
+        document.querySelectorAll('.butt-overlay').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
 </body>
-
 </html>
