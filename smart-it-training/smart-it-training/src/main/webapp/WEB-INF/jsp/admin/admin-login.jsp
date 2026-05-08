@@ -41,6 +41,21 @@
                 </div>
             <% } %>
             
+            <% if(request.getParameter("reset") != null && request.getParameter("reset").equals("success")) { %>
+                <div class="alert alert-success" id="serverSuccessMsg">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Password reset successful! Please login with your new password.</span>
+                </div>
+            <% } %>
+            
+            <!-- Check if user is already logged in and redirect to dashboard -->
+            <%
+                if(session.getAttribute("adminId") != null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                    return;
+                }
+            %>
+            
             <div id="messageContainer"></div>
             
             <!-- Login Form -->
