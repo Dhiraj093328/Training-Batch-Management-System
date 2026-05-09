@@ -7,12 +7,12 @@
     <title>Admin Dashboard | Smart IT Training</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Chart.js for Analytics -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -24,142 +24,12 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: #0a0f1e;
+            background: #f0f2f5;
             overflow-x: hidden;
         }
 
-        /* ========== LIVE IT BACKGROUND ========== */
-        .bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .animated-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(125deg, #0a0f1e 0%, #0d1428 25%, #0f1a30 50%, #0d1428 75%, #0a0f1e 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .tech-orb-1, .tech-orb-2, .tech-orb-3, .tech-orb-4 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            animation: floatOrb 20s infinite alternate ease-in-out;
-        }
-
-        .tech-orb-1 {
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, #667eea, #764ba2);
-            top: -20vh;
-            left: -20vw;
-            animation-duration: 25s;
-        }
-
-        .tech-orb-2 {
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, #00e5ff, #0055cc);
-            bottom: -30vh;
-            right: -25vw;
-            animation-duration: 30s;
-        }
-
-        .tech-orb-3 {
-            width: 40vw;
-            height: 40vw;
-            background: radial-gradient(circle, #f093fb, #f5576c);
-            top: 40%;
-            left: 30%;
-            animation-duration: 28s;
-            opacity: 0.3;
-        }
-
-        .tech-orb-4 {
-            width: 45vw;
-            height: 45vw;
-            background: radial-gradient(circle, #4facfe, #00f2fe);
-            bottom: 20%;
-            left: -15%;
-            animation-duration: 35s;
-        }
-
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(5%, 8%) scale(1.1); }
-        }
-
-        .circuit-lines {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                repeating-linear-gradient(90deg, rgba(0, 255, 200, 0.08) 0px, rgba(0, 255, 200, 0.08) 1px, transparent 1px, transparent 60px),
-                repeating-linear-gradient(0deg, rgba(0, 255, 200, 0.05) 0px, rgba(0, 255, 200, 0.05) 1px, transparent 1px, transparent 60px);
-            animation: circuitMove 20s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes circuitMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 60px 60px; }
-        }
-
-        .matrix-rain {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(0deg,
-                rgba(0, 255, 200, 0.03) 0px,
-                rgba(0, 255, 200, 0.03) 2px,
-                transparent 2px,
-                transparent 15px);
-            animation: matrixFall 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes matrixFall {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 30px; }
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(0, 255, 200, 0.05), transparent);
-            animation: scanMove 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes scanMove {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
         /* ========== DASHBOARD CONTAINER ========== */
-        .dashboard-wrapper {
-            position: relative;
-            z-index: 10;
+        .dashboard-container {
             display: flex;
             min-height: 100vh;
         }
@@ -167,43 +37,34 @@
         /* ========== SIDEBAR ========== */
         .sidebar {
             width: 280px;
-            background: rgba(10, 20, 35, 0.95);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(0, 255, 200, 0.3);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             transition: all 0.3s ease;
+            z-index: 100;
         }
 
         .sidebar-header {
             padding: 25px 20px;
             text-align: center;
-            border-bottom: 1px solid rgba(0, 255, 200, 0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .sidebar-header .logo-icon {
             font-size: 45px;
             margin-bottom: 10px;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .sidebar-header h2 {
-            color: white;
             font-size: 1.2rem;
             margin-bottom: 5px;
         }
 
         .sidebar-header p {
-            color: #00ffcc;
             font-size: 0.7rem;
-            font-family: monospace;
+            opacity: 0.7;
         }
 
         .sidebar-menu {
@@ -217,13 +78,12 @@
             gap: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
+            color: rgba(255,255,255,0.8);
             border-left: 3px solid transparent;
         }
 
         .menu-item:hover, .menu-item.active {
-            background: rgba(0, 255, 200, 0.1);
+            background: rgba(255,255,255,0.1);
             border-left-color: #00ffcc;
             color: #00ffcc;
         }
@@ -242,24 +102,23 @@
 
         /* Top Bar */
         .top-bar {
-            background: rgba(15, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            border: 1px solid rgba(0, 255, 200, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .welcome-text h3 {
-            color: white;
+            color: #333;
             font-size: 1.2rem;
         }
 
         .welcome-text p {
-            color: #00ffcc;
+            color: #666;
             font-size: 0.8rem;
         }
 
@@ -268,15 +127,14 @@
         }
 
         .date-time .date {
-            color: rgba(255, 255, 255, 0.7);
+            color: #666;
             font-size: 0.8rem;
         }
 
         .date-time .time {
-            color: #00ffcc;
+            color: #667eea;
             font-size: 1.3rem;
             font-weight: 600;
-            font-family: monospace;
         }
 
         .logout-btn {
@@ -284,133 +142,69 @@
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .logout-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 65, 108, 0.4);
+            box-shadow: 0 5px 20px rgba(255,65,108,0.4);
         }
 
         /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 25px;
         }
 
         .stat-card {
-            background: rgba(15, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 20px;
-            border: 1px solid rgba(0, 255, 200, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
-            animation: fadeInUp 0.5s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            border-color: #00ffcc;
-            box-shadow: 0 10px 30px rgba(0, 255, 200, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .stat-info .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-info .stat-label {
+            color: #666;
+            font-size: 0.85rem;
         }
 
         .stat-icon {
-            font-size: 35px;
-            color: #00ffcc;
-            margin-bottom: 15px;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .stat-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-
-        /* Charts Section */
-        .charts-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .chart-card {
-            background: rgba(15, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(0, 255, 200, 0.3);
-        }
-
-        .chart-card h4 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1rem;
-        }
-
-        canvas {
-            max-height: 250px;
-        }
-
-        /* Recent Activity */
-        .activity-section {
-            background: rgba(15, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(0, 255, 200, 0.3);
-        }
-
-        .activity-section h4 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .activity-list {
-            list-style: none;
-        }
-
-        .activity-item {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .activity-item i {
-            color: #00ffcc;
-            width: 30px;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
         }
 
         /* Content Sections */
         .content-section {
             display: none;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .content-section.active-section {
@@ -423,18 +217,138 @@
         }
 
         .section-card {
-            background: rgba(15, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 15px;
             padding: 25px;
-            border: 1px solid rgba(0, 255, 200, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .section-card h3 {
-            color: white;
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
             margin-bottom: 20px;
-            border-left: 3px solid #00ffcc;
+            border-left: 4px solid #667eea;
             padding-left: 15px;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Course Cards */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .course-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .course-card .course-info {
+            padding: 15px;
+        }
+
+        .course-card h4 {
+            margin-bottom: 8px;
         }
 
         /* Responsive */
@@ -445,368 +359,393 @@
             .sidebar-header h2, .sidebar-header p, .menu-item span {
                 display: none;
             }
-            .menu-item {
-                justify-content: center;
-                padding: 14px;
-            }
-            .menu-item i {
-                font-size: 1.3rem;
-            }
             .main-content {
                 margin-left: 80px;
             }
-            .charts-section {
-                grid-template-columns: 1fr;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- LIVE IT BACKGROUND -->
-    <div class="bg-container">
-        <div class="animated-bg"></div>
-        <div class="tech-orb-1"></div>
-        <div class="tech-orb-2"></div>
-        <div class="tech-orb-3"></div>
-        <div class="tech-orb-4"></div>
-        <div class="circuit-lines"></div>
-        <div class="matrix-rain"></div>
-        <div class="scan-line"></div>
-    </div>
-
-    <div class="dashboard-wrapper">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-icon">🏛️</div>
-                <h2>Smart IT Training</h2>
-                <p>Admin Portal</p>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">🏛️</div>
+            <h2>Smart IT Training</h2>
+            <p>Admin Portal</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
             </div>
-            <div class="sidebar-menu">
-                <div class="menu-item active" data-section="dashboard">
-                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
-                </div>
-                <div class="menu-item" data-section="faculty">
-                    <i class="fas fa-chalkboard-user"></i> <span>Faculty Requests</span>
-                </div>
-                <div class="menu-item" data-section="student">
-                    <i class="fas fa-user-graduate"></i> <span>Student Requests</span>
-                </div>
-                <div class="menu-item" data-section="attendance">
-                    <i class="fas fa-calendar-check"></i> <span>Attendance Reports</span>
-                </div>
-                <div class="menu-item" data-section="feedback">
-                    <i class="fas fa-star"></i> <span>Feedback</span>
-                </div>
-                <div class="menu-item" data-section="courses">
-                    <i class="fas fa-book"></i> <span>Courses</span>
-                </div>
-                <div class="menu-item" data-section="account">
-                    <i class="fas fa-wallet"></i> <span>Account</span>
-                </div>
-                <div class="menu-item" data-section="placement">
-                    <i class="fas fa-briefcase"></i> <span>Placement</span>
-                </div>
-                <div class="menu-item" data-section="notice">
-                    <i class="fas fa-bullhorn"></i> <span>Notice</span>
-                </div>
-                <div class="menu-item" data-section="event">
-                    <i class="fas fa-calendar-alt"></i> <span>Event</span>
-                </div>
+            <div class="menu-item" data-section="faculty">
+                <i class="fas fa-chalkboard-user"></i> <span>Admin Faculty Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="student">
+                <i class="fas fa-user-graduate"></i> <span>Admin Student Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="attendance">
+                <i class="fas fa-calendar-check"></i> <span>Admin Attendance Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="feedback">
+                <i class="fas fa-star"></i> <span>Admin Feedback Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="courses">
+                <i class="fas fa-book"></i> <span>Admin Courses Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="account">
+                <i class="fas fa-wallet"></i> <span>Admin Account Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="placement">
+                <i class="fas fa-briefcase"></i> <span>Admin Training & Placement</span>
+            </div>
+            <div class="menu-item" data-section="notice">
+                <i class="fas fa-bullhorn"></i> <span>Admin E-Notice Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="event">
+                <i class="fas fa-calendar-alt"></i> <span>Admin Event Dashboard</span>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div class="welcome-text">
-                    <h3>Welcome, ${sessionScope.adminName}!</h3>
-                    <p><i class="fas fa-shield-alt"></i> Administrative Dashboard</p>
-                </div>
-                <div class="date-time">
-                    <div class="date" id="currentDate"></div>
-                    <div class="time" id="currentTime"></div>
-                </div>
-                <a href="${pageContext.request.contextPath}/admin/logout" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="welcome-text">
+                <h3>Welcome, ${sessionScope.adminName}!</h3>
+                <p><i class="fas fa-shield-alt"></i> Administrative Dashboard</p>
             </div>
+            <div class="date-time">
+                <div class="date" id="currentDate"></div>
+                <div class="time" id="currentTime"></div>
+            </div>
+            <a href="${pageContext.request.contextPath}/admin/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
 
-            <!-- Dashboard Section -->
-            <div id="dashboard-section" class="content-section active-section">
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="stat-number">1,248</div>
-                        <div class="stat-label">Total Students</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
-                        <div class="stat-number">48</div>
-                        <div class="stat-label">Total Faculty</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+        <!-- ========== 1. DASHBOARD SECTION ========== -->
+        <div id="dashboard-section" class="content-section active-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
                         <div class="stat-number">12</div>
+                        <div class="stat-label">Pending Faculty</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number">45</div>
+                        <div class="stat-label">Pending Students</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number">8</div>
                         <div class="stat-label">Active Batches</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
                         <div class="stat-number">94%</div>
                         <div class="stat-label">Placement Rate</div>
                     </div>
-                </div>
-
-                <!-- Charts -->
-                <div class="charts-section">
-                    <div class="chart-card">
-                        <h4><i class="fas fa-chart-line"></i> Enrollment Trend</h4>
-                        <canvas id="enrollmentChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h4><i class="fas fa-chart-pie"></i> Course Distribution</h4>
-                        <canvas id="courseChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="activity-section">
-                    <h4><i class="fas fa-clock"></i> Recent Activities</h4>
-                    <ul class="activity-list">
-                        <li class="activity-item"><i class="fas fa-user-plus"></i> New student registration: John Doe (Java Batch)</li>
-                        <li class="activity-item"><i class="fas fa-chalkboard-user"></i> Faculty request: Sarah Smith pending approval</li>
-                        <li class="activity-item"><i class="fas fa-calendar-check"></i> Attendance marked for 15 students</li>
-                        <li class="activity-item"><i class="fas fa-star"></i> New feedback received from 3 students</li>
-                        <li class="activity-item"><i class="fas fa-briefcase"></i> New placement added: Google</li>
-                    </ul>
+                    <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
                 </div>
             </div>
-
-            <!-- Faculty Section -->
-            <div id="faculty-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-chalkboard-user"></i> Faculty Requests</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number">12</div>
-                            <div class="stat-label">Pending Requests</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">36</div>
-                            <div class="stat-label">Approved Faculty</div>
-                        </div>
-                    </div>
-                    <div class="activity-list" id="facultyRequestsList">
-                        <div class="activity-item"><i class="fas fa-user"></i> John Smith - Java Batch <button class="logout-btn" style="margin-left: auto; padding: 5px 15px;">Approve</button></div>
-                        <div class="activity-item"><i class="fas fa-user"></i> Jane Doe - Python Batch <button class="logout-btn" style="margin-left: auto; padding: 5px 15px;">Approve</button></div>
-                        <div class="activity-item"><i class="fas fa-user"></i> Mike Johnson - MERN Batch <button class="logout-btn" style="margin-left: auto; padding: 5px 15px;">Approve</button></div>
-                    </div>
-                </div>
+            <div class="section-card">
+                <div class="section-title">Quick Actions</div>
+                <p>Select any option from the left menu to manage different modules.</p>
+                <ul style="margin-top: 15px; margin-left: 20px;">
+                    <li>Approve Faculty/Student Requests</li>
+                    <li>Manage Courses & Brochures</li>
+                    <li>Generate Fee Receipts</li>
+                    <li>Add Placement Opportunities</li>
+                    <li>Publish Notices & Events</li>
+                    <li>View Feedback & Attendance Reports</li>
+                </ul>
             </div>
+        </div>
 
-            <!-- Student Section -->
-            <div id="student-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-user-graduate"></i> Student Requests</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number">45</div>
-                            <div class="stat-label">Pending Requests</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">1,203</div>
-                            <div class="stat-label">Approved Students</div>
-                        </div>
-                    </div>
-                    <div class="activity-list" id="studentRequestsList">
-                        <div class="activity-item"><i class="fas fa-user"></i> Alice Brown - Java Batch <button class="logout-btn" style="margin-left: auto; padding: 5px 15px;">Approve</button></div>
-                        <div class="activity-item"><i class="fas fa-user"></i> Bob Wilson - Python Batch <button class="logout-btn" style="margin-left: auto; padding: 5px 15px;">Approve</button></div>
-                    </div>
-                </div>
+        <!-- ========== 2. ADMIN FACULTY DASHBOARD ========== -->
+        <div id="faculty-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-chalkboard-user"></i> Faculty Requests</div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="facultyRequestsList">
+                        <tr><td>John Smith</td><td>9876543210</td><td>Java</td><td>john_faculty</td><td>Head Office</td><td><button class="btn-approve" onclick="approveFaculty(1)">Accept</button><button class="btn-reject" onclick="rejectFaculty(1)">Reject</button></td></tr>
+                        <tr><td>Sarah Johnson</td><td>9876543211</td><td>Python</td><td>sarah_faculty</td><td>Head Office</td><td><button class="btn-approve" onclick="approveFaculty(2)">Accept</button><button class="btn-reject" onclick="rejectFaculty(2)">Reject</button></td></tr>
+                        <tr><td>Mike Brown</td><td>9876543212</td><td>MERN</td><td>mike_faculty</td><td>Branch Office</td><td><button class="btn-approve" onclick="approveFaculty(3)">Accept</button><button class="btn-reject" onclick="rejectFaculty(3)">Reject</button></td></tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- Other Sections (Placeholders) -->
-            <div id="attendance-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-calendar-check"></i> Attendance Reports</h3>
-                    <p>Attendance management module - Coming Soon!</p>
-                </div>
+        <!-- ========== 3. ADMIN STUDENT DASHBOARD ========== -->
+        <div id="student-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-user-graduate"></i> Student Requests</div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="studentRequestsList">
+                        <tr><td>Alice Brown</td><td>9876543213</td><td>Java</td><td>alice_student</td><td>Head Office</td><td><button class="btn-approve" onclick="approveStudent(1)">Accept</button><button class="btn-reject" onclick="rejectStudent(1)">Reject</button></td></tr>
+                        <tr><td>Bob Wilson</td><td>9876543214</td><td>Python</td><td>bob_student</td><td>Head Office</td><td><button class="btn-approve" onclick="approveStudent(2)">Accept</button><button class="btn-reject" onclick="rejectStudent(2)">Reject</button></td></tr>
+                        <tr><td>Charlie Davis</td><td>9876543215</td><td>Cloud</td><td>charlie_student</td><td>Branch Office</td><td><button class="btn-approve" onclick="approveStudent(3)">Accept</button><button class="btn-reject" onclick="rejectStudent(3)">Reject</button></td></tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <div id="feedback-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-star"></i> Feedback Management</h3>
-                    <div class="activity-list">
-                        <div class="activity-item"><i class="fas fa-star"></i> "Excellent training program!" - Rahul M.</div>
-                        <div class="activity-item"><i class="fas fa-star"></i> "Great faculty support" - Priya S.</div>
-                        <div class="activity-item"><i class="fas fa-star"></i> "Best IT training center" - Amit K.</div>
-                    </div>
+        <!-- ========== 4. ADMIN ATTENDANCE DASHBOARD ========== -->
+        <div id="attendance-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-calendar-check"></i> Attendance Reports</div>
+                <div style="margin-bottom: 20px;">
+                    <label>Select Batch: </label>
+                    <select id="batchSelect" onchange="loadAttendance()" style="padding: 8px 15px; border-radius: 8px; border: 1px solid #ddd; margin-left: 10px;">
+                        <option value="Java">Java Batch</option>
+                        <option value="Python">Python Batch</option>
+                        <option value="MERN">MERN Batch</option>
+                        <option value="Cloud">Cloud Batch</option>
+                    </select>
                 </div>
+                <table class="data-table">
+                    <thead><tr><th>Student Name</th><th>Attendance %</th><th>Progress</th></tr></thead>
+                    <tbody id="attendanceList"></tbody>
+                </table>
             </div>
+        </div>
 
-            <div id="courses-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-book"></i> Course Management</h3>
-                    <p>Course management module - Coming Soon!</p>
-                </div>
+        <!-- ========== 5. ADMIN FEEDBACK DASHBOARD ========== -->
+        <div id="feedback-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-star"></i> Student Feedback</div>
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Date</th></tr></thead>
+                    <tbody id="feedbackList"></tbody>
+                </table>
             </div>
+        </div>
 
-            <div id="account-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-wallet"></i> Account Management</h3>
-                    <p>Fee receipt generation module - Coming Soon!</p>
-                </div>
+        <!-- ========== 6. ADMIN COURSES DASHBOARD ========== -->
+        <div id="courses-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-book"></i> Course Management</div>
+                <button class="btn-add" onclick="addCourse()"><i class="fas fa-plus"></i> Add New Course</button>
+                <div class="courses-grid" id="coursesList"></div>
             </div>
+        </div>
 
-            <div id="placement-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-briefcase"></i> Placement Management</h3>
-                    <p>Placement module - Coming Soon!</p>
+        <!-- ========== 7. ADMIN ACCOUNT DASHBOARD ========== -->
+        <div id="account-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-wallet"></i> Fee Receipt Generation</div>
+                <button class="btn-add" onclick="showReceiptForm()"><i class="fas fa-file-invoice-dollar"></i> Generate Fee Receipt</button>
+                <div id="receiptForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4>Generate Fee Receipt</h4>
+                    <form id="receiptFormData">
+                        <input type="text" placeholder="Student Name" id="studentName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="text" placeholder="Contact Number" id="contactNo" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="email" placeholder="Email" id="email" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="text" placeholder="Course" id="courseName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="number" placeholder="Amount" id="amount" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="text" placeholder="Executive Name" id="executiveName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <button type="button" class="btn-add" onclick="generateReceipt()">Generate PDF Receipt</button>
+                    </form>
                 </div>
+                <div id="receiptsList" style="margin-top: 20px;"></div>
             </div>
+        </div>
 
-            <div id="notice-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-bullhorn"></i> Notice Management</h3>
-                    <p>Notice module - Coming Soon!</p>
+        <!-- ========== 8. ADMIN PLACEMENT DASHBOARD ========== -->
+        <div id="placement-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-briefcase"></i> Placement Management</div>
+                <button class="btn-add" onclick="showPlacementForm()"><i class="fas fa-plus"></i> Add New Placement</button>
+                <div id="placementForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4>Add New Placement Opportunity</h4>
+                    <form id="placementFormData">
+                        <input type="text" placeholder="Company Name" id="companyName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <textarea placeholder="Job Role Description" id="jobRoleDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
+                        <textarea placeholder="Required Skills" id="skills" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
+                        <textarea placeholder="Interview Round Details" id="interviewDetails" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
+                        <input type="date" placeholder="Last Date to Apply" id="lastDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <button type="button" class="btn-add" onclick="addPlacement()">Add Placement</button>
+                    </form>
                 </div>
+                <div id="placementsList" style="margin-top: 20px;"></div>
             </div>
+        </div>
 
-            <div id="event-section" class="content-section">
-                <div class="section-card">
-                    <h3><i class="fas fa-calendar-alt"></i> Event Management</h3>
-                    <p>Event management module - Coming Soon!</p>
+        <!-- ========== 9. ADMIN NOTICE DASHBOARD ========== -->
+        <div id="notice-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-bullhorn"></i> E-Notice Management</div>
+                <button class="btn-add" onclick="showNoticeForm()"><i class="fas fa-plus"></i> Publish New Notice</button>
+                <div id="noticeForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4>Publish Notice</h4>
+                    <form>
+                        <input type="text" placeholder="Notice Title" id="noticeTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <textarea placeholder="Notice Content" id="noticeContent" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="4"></textarea>
+                        <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
+                    </form>
                 </div>
+                <div id="noticesList" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== 10. ADMIN EVENT DASHBOARD ========== -->
+        <div id="event-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-calendar-alt"></i> Event Management</div>
+                <button class="btn-add" onclick="showEventForm()"><i class="fas fa-plus"></i> Create New Event</button>
+                <div id="eventForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4>Create Event</h4>
+                    <form>
+                        <input type="text" placeholder="Event Title" id="eventTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <textarea placeholder="Event Description" id="eventDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
+                        <input type="date" placeholder="Event Date" id="eventDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="time" placeholder="Event Time" id="eventTime" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <input type="text" placeholder="Location" id="eventLocation" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                        <button type="button" class="btn-add" onclick="createEvent()">Create Event</button>
+                    </form>
+                </div>
+                <div id="eventsList" style="margin-top: 20px;"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // ========== DATE & TIME ==========
-        function updateDateTime() {
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-IN', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            const timeStr = now.toLocaleTimeString('en-IN', { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            });
-            
-            document.getElementById('currentDate').innerHTML = '<i class="far fa-calendar-alt"></i> ' + dateStr;
-            document.getElementById('currentTime').innerHTML = '<i class="far fa-clock"></i> ' + timeStr;
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
+<script>
+    // ========== DATE & TIME ==========
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('currentDate').innerHTML = '<i class="far fa-calendar-alt"></i> ' + now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('currentTime').innerHTML = '<i class="far fa-clock"></i> ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
 
-        // ========== SIDEBAR NAVIGATION ==========
-        const menuItems = document.querySelectorAll('.menu-item');
-        const sections = document.querySelectorAll('.content-section');
+    // ========== SIDEBAR NAVIGATION ==========
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.content-section');
 
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const sectionId = this.getAttribute('data-section');
-                
-                menuItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                
-                sections.forEach(section => {
-                    section.classList.remove('active-section');
-                });
-                
-                document.getElementById(sectionId + '-section').classList.add('active-section');
-            });
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const sectionId = this.getAttribute('data-section');
+            menuItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            sections.forEach(section => section.classList.remove('active-section'));
+            document.getElementById(sectionId + '-section').classList.add('active-section');
         });
+    });
 
-        // ========== CHARTS ==========
-        // Enrollment Chart
-        const enrollmentCtx = document.getElementById('enrollmentChart').getContext('2d');
-        new Chart(enrollmentCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'New Enrollments',
-                    data: [65, 78, 92, 84, 110, 135],
-                    borderColor: '#00ffcc',
-                    backgroundColor: 'rgba(0, 255, 200, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { labels: { color: 'white' } }
-                },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'white' } },
-                    x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'white' } }
-                }
-            }
+    // ========== LOAD ATTENDANCE ==========
+    function loadAttendance() {
+        const batch = document.getElementById('batchSelect').value;
+        const attendanceData = {
+            'Java': [
+                { name: 'Alice Brown', percentage: 85 },
+                { name: 'Bob Wilson', percentage: 92 },
+                { name: 'Charlie Davis', percentage: 78 }
+            ],
+            'Python': [
+                { name: 'David Miller', percentage: 88 },
+                { name: 'Emma Watson', percentage: 95 }
+            ],
+            'MERN': [
+                { name: 'Frank Ocean', percentage: 82 },
+                { name: 'Grace Lee', percentage: 90 }
+            ],
+            'Cloud': [
+                { name: 'Henry Ford', percentage: 75 },
+                { name: 'Ivy Chen', percentage: 89 }
+            ]
+        };
+        
+        const students = attendanceData[batch] || [];
+        const tbody = document.getElementById('attendanceList');
+        tbody.innerHTML = '';
+        students.forEach(s => {
+            tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.percentage}%</td><td><div class="progress-bar"><div class="progress-fill" style="width: ${s.percentage}%"></div></div></td></tr>`;
         });
+    }
+    loadAttendance();
 
-        // Course Distribution Chart
-        const courseCtx = document.getElementById('courseChart').getContext('2d');
-        new Chart(courseCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Java', 'Python', 'MERN', 'Cloud', 'Data Science'],
-                datasets: [{
-                    data: [30, 25, 20, 15, 10],
-                    backgroundColor: ['#667eea', '#764ba2', '#00ffcc', '#f093fb', '#4facfe'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { labels: { color: 'white' } }
-                }
-            }
+    // ========== FACULTY ACTIONS ==========
+    function approveFaculty(id) { alert('Faculty approved! Email sent to faculty.'); }
+    function rejectFaculty(id) { alert('Faculty request rejected.'); }
+    function approveStudent(id) { alert('Student approved! Email sent to student.'); }
+    function rejectStudent(id) { alert('Student request rejected.'); }
+
+    // ========== COURSES ==========
+    const courses = [
+        { title: 'Full Stack Java', desc: 'Learn Java, Spring Boot, React', duration: '6 months', fees: '₹45,000' },
+        { title: 'Python Development', desc: 'Python, Django, Flask', duration: '5 months', fees: '₹40,000' },
+        { title: 'MERN Stack', desc: 'MongoDB, Express, React, Node', duration: '5 months', fees: '₹40,000' }
+    ];
+    function displayCourses() {
+        const container = document.getElementById('coursesList');
+        container.innerHTML = '';
+        courses.forEach(c => {
+            container.innerHTML += `
+                <div class="course-card">
+                    <div class="course-info">
+                        <h4>${c.title}</h4>
+                        <p>${c.desc}</p>
+                        <p><strong>Duration:</strong> ${c.duration}</p>
+                        <p><strong>Fees:</strong> ${c.fees}</p>
+                        <button class="btn-approve" style="margin-top: 10px;">Download Brochure</button>
+                    </div>
+                </div>
+            `;
         });
+    }
+    displayCourses();
+    function addCourse() { alert('Add new course form will open.'); }
 
-        // ========== ANIMATED COUNTERS ==========
-        function animateCounter(element, target) {
-            let current = 0;
-            const increment = target / 50;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target.toLocaleString();
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(current).toLocaleString();
-                }
-            }, 30);
-        }
+    // ========== FEE RECEIPT ==========
+    function showReceiptForm() {
+        const form = document.getElementById('receiptForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function generateReceipt() {
+        alert('PDF Receipt Generated!\n\nStudent: ' + document.getElementById('studentName').value + '\nAmount: ₹' + document.getElementById('amount').value + '\n\nReceipt saved successfully.');
+    }
 
-        // Animate stats when in view
-        const statNumbers = document.querySelectorAll('.stat-number');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const target = parseInt(entry.target.textContent.replace(/[^0-9]/g, ''));
-                    if (!isNaN(target)) {
-                        animateCounter(entry.target, target);
-                    }
-                    observer.unobserve(entry.target);
-                }
-            });
-        });
+    // ========== PLACEMENT ==========
+    function showPlacementForm() {
+        const form = document.getElementById('placementForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function addPlacement() { alert('New placement added successfully!'); }
 
-        statNumbers.forEach(num => observer.observe(num));
+    // ========== NOTICE ==========
+    function showNoticeForm() {
+        const form = document.getElementById('noticeForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function publishNotice() { alert('Notice published successfully!'); }
 
-        console.log('%c🏛️ Admin Dashboard Loaded', 'color: #00ffcc; font-size: 16px; font-weight: bold;');
-    </script>
+    // ========== EVENT ==========
+    function showEventForm() {
+        const form = document.getElementById('eventForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function createEvent() { alert('Event created successfully!'); }
+</script>
 </body>
 </html>

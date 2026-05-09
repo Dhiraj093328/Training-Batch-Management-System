@@ -5,6 +5,9 @@
 
 let currentIdentifier = '';
 
+// Get context path for AJAX requests
+const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 1)) || '';
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -22,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (error === 'invalid') {
             showMessage('Invalid OTP. Please try again.', 'error');
+        } else if (error === 'expired') {
+            showMessage('OTP has expired. Please request a new OTP.', 'error');
         }
     } else if (step === 'reset' && identifier) {
         showStep(3);
@@ -61,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
     }
+    
+    // Auto-hide success/error messages after 5 seconds
+    const autoHideMsg = setTimeout(function() {
+        const msgs = document.querySelectorAll('.error-message, .success-message');
+        msgs.forEach(msg => {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 300);
+        });
+    }, 5000);
 });
 
 /**
@@ -71,6 +85,8 @@ function showStep(stepNumber) {
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
+    
+    if (!step1 || !step2 || !step3) return;
     
     if (stepNumber === 1) {
         step1.style.display = 'block';
@@ -107,7 +123,9 @@ function showMessage(message, type) {
     
     // Insert message at the top of the body
     const forgotBody = document.querySelector('.forgot-body');
-    forgotBody.insertBefore(msgDiv, forgotBody.firstChild);
+    if (forgotBody) {
+        forgotBody.insertBefore(msgDiv, forgotBody.firstChild);
+    }
     
     // Auto-remove message after 5 seconds
     setTimeout(function() {
@@ -138,7 +156,7 @@ function resendOtp() {
         setTimeout(() => {
             resendLink.style.pointerEvents = 'auto';
             resendLink.style.opacity = '1';
-        }, 30000); // Re-enable after 30 seconds
+        }, 30000);
     }
     
     fetch(contextPath + '/admin/forgot-password/resend-otp', {
@@ -154,7 +172,6 @@ function resendOtp() {
             showMessage('OTP resent successfully! Please check your email.', 'success');
         } else {
             showMessage(data.message || 'Failed to resend OTP. Please try again.', 'error');
-            // Re-enable the link if failed
             if (resendLink) {
                 resendLink.style.pointerEvents = 'auto';
                 resendLink.style.opacity = '1';
@@ -164,7 +181,6 @@ function resendOtp() {
     .catch(error => {
         console.error('Error:', error);
         showMessage('Something went wrong. Please try again.', 'error');
-        // Re-enable the link if failed
         if (resendLink) {
             resendLink.style.pointerEvents = 'auto';
             resendLink.style.opacity = '1';
@@ -183,9 +199,6 @@ function addShakeEffect(element) {
         element.classList.remove('shake-effect');
     }, 300);
 }
-
-// Get context path for AJAX requests
-const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 1));
 
 // Export functions for global use
 window.showStep = showStep;

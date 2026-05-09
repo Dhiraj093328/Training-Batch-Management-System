@@ -11,92 +11,77 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @Column(name = "name", length = 100)
+    @Column(nullable = false)
     private String name;
     
-    @Column(name = "email", unique = true, length = 100)
+    @Column(nullable = false, unique = true)
     private String email;
     
-    @Column(name = "contact", length = 15)
+    @Column(length = 15)
     private String contact;
     
-    @Column(name = "office_name", length = 100)
+    @Column(name = "office_name")
     private String officeName;
     
-    @Column(name = "username", unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
     
-    @Column(name = "password", length = 255)
+    @Column(nullable = false)
     private String password;
+    
+    // Reset password fields
+    @Column(name = "reset_token")
+    private String resetToken;
+    
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+    
+    @Column(name = "is_active")
+    private Boolean isActive = true;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
     
     // Constructors
     public Admin() {}
     
     // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
     
-    public String getName() {
-        return name;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
     
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getContact() { return contact; }
+    public void setContact(String contact) { this.contact = contact; }
     
-    public String getEmail() {
-        return email;
-    }
+    public String getOfficeName() { return officeName; }
+    public void setOfficeName(String officeName) { this.officeName = officeName; }
     
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     
-    public String getContact() {
-        return contact;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
     
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
     
-    public String getOfficeName() {
-        return officeName;
-    }
+    public LocalDateTime getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
     
-    public void setOfficeName(String officeName) {
-        this.officeName = officeName;
-    }
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     
-    public String getUsername() {
-        return username;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
