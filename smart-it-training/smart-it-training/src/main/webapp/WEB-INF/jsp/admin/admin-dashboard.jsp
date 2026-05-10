@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,9 @@
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -276,19 +280,31 @@
             background: #28a745;
             color: white;
             border: none;
-            padding: 5px 12px;
+            padding: 6px 15px;
             border-radius: 5px;
             cursor: pointer;
             margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+            transform: scale(1.02);
         }
 
         .btn-reject {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 5px 12px;
+            padding: 6px 15px;
             border-radius: 5px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+            transform: scale(1.02);
         }
 
         .btn-add {
@@ -337,18 +353,38 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        .course-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
         .course-card .course-info {
             padding: 15px;
         }
 
         .course-card h4 {
             margin-bottom: 8px;
+        }
+
+        /* Toast Message */
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 14px 25px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: 500;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         /* Responsive */
@@ -434,31 +470,31 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">12</div>
+                        <div class="stat-number">${pendingFacultyCount}</div>
                         <div class="stat-label">Pending Faculty</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">45</div>
+                        <div class="stat-number">${pendingStudentsCount}</div>
                         <div class="stat-label">Pending Students</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">8</div>
-                        <div class="stat-label">Active Batches</div>
+                        <div class="stat-number">${approvedStudentsCount}</div>
+                        <div class="stat-label">Approved Students</div>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">94%</div>
-                        <div class="stat-label">Placement Rate</div>
+                        <div class="stat-number">${totalStudentsCount}</div>
+                        <div class="stat-label">Total Registered</div>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="stat-icon"><i class="fas fa-database"></i></div>
                 </div>
             </div>
             <div class="section-card">
@@ -484,26 +520,63 @@
                         <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr>
                     </thead>
                     <tbody id="facultyRequestsList">
-                        <tr><td>John Smith</td><td>9876543210</td><td>Java</td><td>john_faculty</td><td>Head Office</td><td><button class="btn-approve" onclick="approveFaculty(1)">Accept</button><button class="btn-reject" onclick="rejectFaculty(1)">Reject</button></td></tr>
-                        <tr><td>Sarah Johnson</td><td>9876543211</td><td>Python</td><td>sarah_faculty</td><td>Head Office</td><td><button class="btn-approve" onclick="approveFaculty(2)">Accept</button><button class="btn-reject" onclick="rejectFaculty(2)">Reject</button></td></tr>
-                        <tr><td>Mike Brown</td><td>9876543212</td><td>MERN</td><td>mike_faculty</td><td>Branch Office</td><td><button class="btn-approve" onclick="approveFaculty(3)">Accept</button><button class="btn-reject" onclick="rejectFaculty(3)">Reject</button></td></tr>
+                        <tr><td colspan="6" style="text-align: center;">Loading faculty requests...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ========== 3. ADMIN STUDENT DASHBOARD ========== -->
+        <!-- ========== 3. ADMIN STUDENT DASHBOARD (DYNAMIC) ========== -->
         <div id="student-section" class="content-section">
             <div class="section-card">
-                <div class="section-title"><i class="fas fa-user-graduate"></i> Student Requests</div>
+                <div class="section-title">
+                    <i class="fas fa-user-graduate"></i> Student Requests 
+                    <c:if test="${pendingStudentsCount > 0}">
+                        <span style="font-size: 0.8rem; background: #ffc107; color: #856404; padding: 2px 10px; border-radius: 20px; margin-left: 10px;">
+                            ${pendingStudentsCount} Pending
+                        </span>
+                    </c:if>
+                </div>
+                
                 <table class="data-table">
                     <thead>
-                        <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Batch</th>
+                            <th>Username</th>
+                            <th>Admin Office</th>
+                            <th>Enrollment No</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody id="studentRequestsList">
-                        <tr><td>Alice Brown</td><td>9876543213</td><td>Java</td><td>alice_student</td><td>Head Office</td><td><button class="btn-approve" onclick="approveStudent(1)">Accept</button><button class="btn-reject" onclick="rejectStudent(1)">Reject</button></td></tr>
-                        <tr><td>Bob Wilson</td><td>9876543214</td><td>Python</td><td>bob_student</td><td>Head Office</td><td><button class="btn-approve" onclick="approveStudent(2)">Accept</button><button class="btn-reject" onclick="rejectStudent(2)">Reject</button></td></tr>
-                        <tr><td>Charlie Davis</td><td>9876543215</td><td>Cloud</td><td>charlie_student</td><td>Branch Office</td><td><button class="btn-approve" onclick="approveStudent(3)">Accept</button><button class="btn-reject" onclick="rejectStudent(3)">Reject</button></td></tr>
+                        <c:forEach items="${pendingStudents}" var="student">
+                            <tr id="student-row-${student.id}">
+                                <td>${student.name}</td>
+                                <td>${student.contact}</td>
+                                <td>${student.batchName}</td>
+                                <td>${student.username}</td>
+                                <td>${student.adminOfficeName}</td>
+                                <td>${student.enrollmentNo}</td>
+                                <td>
+                                    <button class="btn-approve" onclick="approveStudent(${student.id})">
+                                        <i class="fas fa-check"></i> Accept
+                                    </button>
+                                    <button class="btn-reject" onclick="rejectStudent(${student.id})">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty pendingStudents}">
+                            <tr>
+                                <td colspan="7" style="text-align: center;">
+                                    <i class="fas fa-check-circle" style="color: #28a745;"></i> 
+                                    No pending student requests
+                                </td>
+                            </tr>
+                        </c:if>
                     </tbody>
                 </table>
             </div>
@@ -535,7 +608,9 @@
                 <div class="section-title"><i class="fas fa-star"></i> Student Feedback</div>
                 <table class="data-table">
                     <thead><tr><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Date</th></tr></thead>
-                    <tbody id="feedbackList"></tbody>
+                    <tbody id="feedbackList">
+                        <tr><td colspan="5" style="text-align: center;">Loading feedback...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -653,6 +728,115 @@
         });
     });
 
+    // ========== SHOW TOAST MESSAGE ==========
+    function showToast(message, type) {
+        const toast = $('<div class="toast-message">' + message + '</div>');
+        if (type === 'error') {
+            toast.css('background', '#dc3545');
+        } else if (type === 'success') {
+            toast.css('background', '#28a745');
+        } else {
+            toast.css('background', '#17a2b8');
+        }
+        $('body').append(toast);
+        setTimeout(function() {
+            toast.fadeOut(300, function() { $(this).remove(); });
+        }, 3000);
+    }
+
+    // ========== STUDENT APPROVAL FUNCTIONS ==========
+    function approveStudent(studentId) {
+        if (!confirm('Are you sure you want to approve this student? They will receive an email with login credentials.')) {
+            return;
+        }
+        
+        const row = $('#student-row-' + studentId);
+        const approveBtn = row.find('.btn-approve');
+        const originalText = approveBtn.html();
+        
+        approveBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        approveBtn.prop('disabled', true);
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/admin/approve-student',
+            type: 'POST',
+            data: { studentId: studentId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showToast('✅ ' + response.message, 'success');
+                    row.fadeOut(300, function() {
+                        $(this).remove();
+                        updateStudentStats();
+                    });
+                } else {
+                    showToast('❌ ' + response.message, 'error');
+                    approveBtn.html(originalText);
+                    approveBtn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                showToast('❌ Error approving student! Please try again.', 'error');
+                approveBtn.html(originalText);
+                approveBtn.prop('disabled', false);
+            }
+        });
+    }
+
+    function rejectStudent(studentId) {
+        const reason = prompt('Please enter reason for rejection (optional):');
+        
+        const row = $('#student-row-' + studentId);
+        const rejectBtn = row.find('.btn-reject');
+        const originalText = rejectBtn.html();
+        
+        rejectBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        rejectBtn.prop('disabled', true);
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/admin/reject-student',
+            type: 'POST',
+            data: { studentId: studentId, reason: reason },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showToast('❌ ' + response.message, 'error');
+                    row.fadeOut(300, function() {
+                        $(this).remove();
+                        updateStudentStats();
+                    });
+                } else {
+                    showToast('❌ ' + response.message, 'error');
+                    rejectBtn.html(originalText);
+                    rejectBtn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                showToast('❌ Error rejecting student!', 'error');
+                rejectBtn.html(originalText);
+                rejectBtn.prop('disabled', false);
+            }
+        });
+    }
+
+    function updateStudentStats() {
+        const remainingRows = $('#studentRequestsList tr:visible').not(':has(td[colspan])').length;
+        
+        // Update pending count in section title
+        const pendingSpan = $('.section-title span');
+        if (pendingSpan.length) {
+            if (remainingRows > 0) {
+                pendingSpan.text(remainingRows + ' Pending');
+            } else {
+                pendingSpan.remove();
+                $('#studentRequestsList').html('<tr><td colspan="7" style="text-align: center;"><i class="fas fa-check-circle" style="color: #28a745;"></i> No pending student requests</td></tr>');
+            }
+        }
+        
+        // Update stats cards
+        $('.stat-card:eq(1) .stat-number').text(remainingRows);
+    }
+
     // ========== LOAD ATTENDANCE ==========
     function loadAttendance() {
         const batch = document.getElementById('batchSelect').value;
@@ -686,10 +870,12 @@
     loadAttendance();
 
     // ========== FACULTY ACTIONS ==========
-    function approveFaculty(id) { alert('Faculty approved! Email sent to faculty.'); }
-    function rejectFaculty(id) { alert('Faculty request rejected.'); }
-    function approveStudent(id) { alert('Student approved! Email sent to student.'); }
-    function rejectStudent(id) { alert('Student request rejected.'); }
+    function approveFaculty(id) { 
+        showToast('Faculty approved! Email sent to faculty.', 'success');
+    }
+    function rejectFaculty(id) { 
+        showToast('Faculty request rejected.', 'error');
+    }
 
     // ========== COURSES ==========
     const courses = [
@@ -697,8 +883,10 @@
         { title: 'Python Development', desc: 'Python, Django, Flask', duration: '5 months', fees: '₹40,000' },
         { title: 'MERN Stack', desc: 'MongoDB, Express, React, Node', duration: '5 months', fees: '₹40,000' }
     ];
+    
     function displayCourses() {
         const container = document.getElementById('coursesList');
+        if (!container) return;
         container.innerHTML = '';
         courses.forEach(c => {
             container.innerHTML += `
@@ -708,44 +896,70 @@
                         <p>${c.desc}</p>
                         <p><strong>Duration:</strong> ${c.duration}</p>
                         <p><strong>Fees:</strong> ${c.fees}</p>
-                        <button class="btn-approve" style="margin-top: 10px;">Download Brochure</button>
+                        <button class="btn-approve" style="margin-top: 10px;" onclick="downloadBrochure('${c.title}')">Download Brochure</button>
                     </div>
                 </div>
             `;
         });
     }
     displayCourses();
-    function addCourse() { alert('Add new course form will open.'); }
+    
+    function addCourse() { 
+        showToast('Add new course form will open.', 'info');
+    }
+    function downloadBrochure(courseName) {
+        showToast('Downloading brochure for ' + courseName, 'info');
+    }
 
     // ========== FEE RECEIPT ==========
     function showReceiptForm() {
         const form = document.getElementById('receiptForm');
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
     }
     function generateReceipt() {
-        alert('PDF Receipt Generated!\n\nStudent: ' + document.getElementById('studentName').value + '\nAmount: ₹' + document.getElementById('amount').value + '\n\nReceipt saved successfully.');
+        const studentName = document.getElementById('studentName')?.value;
+        const amount = document.getElementById('amount')?.value;
+        if (studentName && amount) {
+            showToast('PDF Receipt Generated for ' + studentName + '! Amount: ₹' + amount, 'success');
+        } else {
+            showToast('Please fill all fields!', 'error');
+        }
     }
 
     // ========== PLACEMENT ==========
     function showPlacementForm() {
         const form = document.getElementById('placementForm');
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
     }
-    function addPlacement() { alert('New placement added successfully!'); }
+    function addPlacement() { 
+        showToast('New placement added successfully!', 'success');
+    }
 
     // ========== NOTICE ==========
     function showNoticeForm() {
         const form = document.getElementById('noticeForm');
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
     }
-    function publishNotice() { alert('Notice published successfully!'); }
+    function publishNotice() { 
+        showToast('Notice published successfully!', 'success');
+    }
 
     // ========== EVENT ==========
     function showEventForm() {
         const form = document.getElementById('eventForm');
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
     }
-    function createEvent() { alert('Event created successfully!'); }
+    function createEvent() { 
+        showToast('Event created successfully!', 'success');
+    }
 </script>
 </body>
 </html>
