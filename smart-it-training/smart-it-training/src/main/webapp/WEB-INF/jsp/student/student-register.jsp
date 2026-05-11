@@ -43,40 +43,38 @@
     </div>
     
     <div class="register-body">
-        <!-- Error / Success Messages -->
-        <c:if test="${not empty error}">
-            <c:choose>
-                <c:when test="${error eq 'exists'}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
+        <!-- Error Messages from URL Parameters -->
+        <c:if test="${param.error != null}">
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <c:choose>
+                    <c:when test="${param.error == 'exists'}">
                         <span>✏️ Username already taken. Please choose another one.</span>
-                    </div>
-                </c:when>
-                <c:when test="${error eq 'email'}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
+                    </c:when>
+                    <c:when test="${param.error == 'email'}">
                         <span>📧 Email is already registered. Try logging in instead.</span>
-                    </div>
-                </c:when>
-                <c:when test="${error eq 'password'}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
+                    </c:when>
+                    <c:when test="${param.error == 'password'}">
                         <span>🔐 Passwords do not match. Please check and try again.</span>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
+                    </c:when>
+                    <c:when test="${param.error == 'weak'}">
+                        <span>🔐 Password must be at least 6 characters long.</span>
+                    </c:when>
+                    <c:when test="${param.error == 'batch'}">
+                        <span>📚 Selected batch is not available. Please contact admin.</span>
+                    </c:when>
+                    <c:otherwise>
                         <span>⚠️ Registration failed. Please check your details.</span>
-                    </div>
-                </c:otherwise>
-            </c:choose>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </c:if>
         
-        <c:if test="${not empty success}">
+        <!-- Success Message -->
+        <c:if test="${param.registered != null}">
             <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
-                <span>🎉 Registration successful! Please wait for admin approval.</span>
+                <span>🎉 Registration successful! Please wait for admin approval. You will receive an email once approved.</span>
             </div>
         </c:if>
         
@@ -85,11 +83,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-user"></i> Full Name</label>
-                    <input type="text" name="name" required placeholder="Enter your full name">
+                    <input type="text" name="name" required placeholder="Enter your full name" value="${param.name != null ? param.name : ''}">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-phone-alt"></i> Contact Number</label>
-                    <input type="tel" name="contact" required placeholder="10-digit number">
+                    <input type="tel" name="contact" required placeholder="10-digit number" value="${param.contact != null ? param.contact : ''}">
                 </div>
             </div>
 
@@ -97,11 +95,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-envelope"></i> Email Address</label>
-                    <input type="email" name="email" required placeholder="you@smartit.com">
+                    <input type="email" name="email" required placeholder="you@smartit.com" value="${param.email != null ? param.email : ''}">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-building"></i> Admin Office</label>
-                    <input type="text" name="adminOfficeName" required placeholder="e.g., Main Branch">
+                    <input type="text" name="adminOfficeName" required placeholder="e.g., Main Branch" value="${param.adminOfficeName != null ? param.adminOfficeName : ''}">
                 </div>
             </div>
 
@@ -110,20 +108,20 @@
                 <div class="form-group">
                     <label><i class="fas fa-layer-group"></i> Batch / Course</label>
                     <select name="batchName" required>
-                        <option value="" disabled selected>— Select your course —</option>
-                        <option value="Java Full Stack">☕ Java Full Stack</option>
-                        <option value="Python Full Stack">🐍 Python Full Stack</option>
-                        <option value="MERN Stack">⚛️ MERN Stack</option>
-                        <option value="Cloud Computing">☁️ Cloud Computing</option>
-                        <option value="Data Science">📊 Data Science</option>
-                        <option value="Cybersecurity">🛡️ Cybersecurity</option>
-                        <option value="DevOps">🚀 DevOps Engineering</option>
-                        <option value="AI & Machine Learning">🤖 AI & ML</option>
+                        <option value="" disabled ${empty param.batchName ? 'selected' : ''}>— Select your course —</option>
+                        <option value="Java Full Stack" ${param.batchName == 'Java Full Stack' ? 'selected' : ''}>☕ Java Full Stack</option>
+                        <option value="Python Full Stack" ${param.batchName == 'Python Full Stack' ? 'selected' : ''}>🐍 Python Full Stack</option>
+                        <option value="MERN Stack" ${param.batchName == 'MERN Stack' ? 'selected' : ''}>⚛️ MERN Stack</option>
+                        <option value="Cloud Computing" ${param.batchName == 'Cloud Computing' ? 'selected' : ''}>☁️ Cloud Computing</option>
+                        <option value="Data Science" ${param.batchName == 'Data Science' ? 'selected' : ''}>📊 Data Science</option>
+                        <option value="Cybersecurity" ${param.batchName == 'Cybersecurity' ? 'selected' : ''}>🛡️ Cybersecurity</option>
+                        <option value="DevOps" ${param.batchName == 'DevOps' ? 'selected' : ''}>🚀 DevOps Engineering</option>
+                        <option value="AI & Machine Learning" ${param.batchName == 'AI & Machine Learning' ? 'selected' : ''}>🤖 AI & ML</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-user-circle"></i> Username</label>
-                    <input type="text" name="username" required placeholder="Choose username">
+                    <input type="text" name="username" required placeholder="Choose username" value="${param.username != null ? param.username : ''}">
                 </div>
             </div>
 

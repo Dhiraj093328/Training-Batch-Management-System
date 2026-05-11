@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Controller
 @RequestMapping("/student")
@@ -30,7 +27,7 @@ public class StudentController {
     @Autowired
     private EmailService emailService;
     
-    // Store OTP in memory (in production, use Redis or database)
+    // Store OTP in memory
     private Map<String, OtpData> otpStorage = new HashMap<>();
     
     class OtpData {
@@ -50,24 +47,13 @@ public class StudentController {
     }
     
     // =============================================
-    // BATCH DATA FOR REGISTRATION PAGE
-    // =============================================
-    
-    @ModelAttribute("batchList")
-    public java.util.List<Batch> getBatchList() {
-        return batchRepository.findAll();
-    }
-    
-    // =============================================
     // REGISTRATION
     // =============================================
     
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-        // Check if batches exist
-        if (batchRepository.count() == 0) {
-            model.addAttribute("batchError", "No batches available. Please contact admin.");
-        }
+        List<Batch> batches = batchRepository.findAll();
+        model.addAttribute("batches", batches);
         return "student/student-register";
     }
     
@@ -87,6 +73,7 @@ public class StudentController {
         System.out.println("Email: " + email);
         System.out.println("Username: " + username);
         System.out.println("Batch: " + batchName);
+        System.out.println("Admin Office: " + adminOfficeName);
         
         // Validation 1: Check passwords match
         if (!password.equals(confirmPassword)) {
@@ -112,14 +99,7 @@ public class StudentController {
             return "redirect:/student/register";
         }
         
-        // Validation 5: Check if batch exists
-        if (!batchRepository.existsByBatchName(batchName)) {
-            System.out.println("Batch not found: " + batchName);
-            redirectAttributes.addAttribute("error", "batch");
-            return "redirect:/student/register";
-        }
-        
-        // Create new student
+        // Create new student with PENDING status
         Student student = new Student();
         student.setName(name);
         student.setContact(contact);
@@ -128,7 +108,7 @@ public class StudentController {
         student.setBatchName(batchName);
         student.setUsername(username);
         student.setPassword(password);
-        student.setStatus(Student.Status.PENDING);
+        student.setStatus(Student.Status.PENDING);  // IMPORTANT: Status is PENDING
         student.setCreatedAt(LocalDateTime.now());
         student.setUpdatedAt(LocalDateTime.now());
         
@@ -139,11 +119,20 @@ public class StudentController {
         // Save to database
         Student savedStudent = studentRepository.save(student);
         
-        System.out.println("Student registered successfully with ID: " + savedStudent.getId());
-        System.out.println("Enrollment No: " + enrollmentNo);
+        System.out.println("========================================");
+        System.out.println("✅ STUDENT REGISTERED SUCCESSFULLY");
+        System.out.println("Student ID: " + savedStudent.getId());
+        System.out.println("Name: " + savedStudent.getName());
+        System.out.println("Status: PENDING - Waiting for admin approval");
+        System.out.println("========================================");
         
-        // Send email notification
-        emailService.sendStudentRegistrationEmail(email, name, username, password);
+        // Send email notification to student
+        try {
+            emailService.sendStudentRegistrationEmail(email, name, username, password);
+            System.out.println("Registration email sent to: " + email);
+        } catch(Exception e) {
+            System.out.println("Email sending failed: " + e.getMessage());
+        }
         
         redirectAttributes.addAttribute("registered", "true");
         return "redirect:/student/login";
@@ -154,17 +143,10 @@ public class StudentController {
     // =============================================
     
     @GetMapping("/login")
-    public String showLoginPage(HttpSession session, Model model) {
+    public String showLoginPage(HttpSession session) {
         if (session.getAttribute("studentId") != null) {
             return "redirect:/student/dashboard";
         }
-        
-        // Check if any pending approval message exists
-        if (session.getAttribute("pendingApproval") != null) {
-            model.addAttribute("pendingApproval", session.getAttribute("pendingApproval"));
-            session.removeAttribute("pendingApproval");
-        }
-        
         return "student/student-login";
     }
     
@@ -185,16 +167,18 @@ public class StudentController {
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
             
+            System.out.println("Student found: " + student.getName());
+            System.out.println("Current Status: " + student.getStatus());
+            
             // Check if account is approved
             if (student.getStatus() != Student.Status.APPROVED) {
-                System.out.println("Login failed: Account pending approval for: " + student.getName());
+                System.out.println("Login failed: Account not approved yet");
                 redirectAttributes.addAttribute("error", "pending");
                 return "redirect:/student/login";
             }
             
             // Check password
             if (student.getPassword().equals(password)) {
-                // Set session attributes
                 session.setAttribute("studentId", student.getId());
                 session.setAttribute("studentName", student.getName());
                 session.setAttribute("studentUsername", student.getUsername());
@@ -204,17 +188,12 @@ public class StudentController {
                 session.setAttribute("studentEnrollmentNo", student.getEnrollmentNo());
                 session.setAttribute("loginTime", LocalDateTime.now().toString());
                 
-                // Update last login time (if you have this field)
                 student.setUpdatedAt(LocalDateTime.now());
                 studentRepository.save(student);
                 
-                System.out.println("Student logged in successfully: " + student.getName());
+                System.out.println("✅ Student logged in: " + student.getName());
                 return "redirect:/student/dashboard";
-            } else {
-                System.out.println("Login failed: Wrong password for user: " + userId);
             }
-        } else {
-            System.out.println("Login failed: User not found - " + userId);
         }
         
         redirectAttributes.addAttribute("error", "true");
@@ -222,7 +201,7 @@ public class StudentController {
     }
     
     // =============================================
-    // FORGOT PASSWORD - OTP BASED
+    // FORGOT PASSWORD
     // =============================================
     
     @GetMapping("/forgot-password")
@@ -235,45 +214,27 @@ public class StudentController {
                           HttpSession session,
                           RedirectAttributes redirectAttributes) {
         
-        System.out.println("===== STUDENT SEND OTP =====");
-        System.out.println("Identifier: " + identifier);
-        
         Optional<Student> studentOpt = studentRepository.findByEmail(identifier);
         if (studentOpt.isEmpty()) {
             studentOpt = studentRepository.findByUsername(identifier);
         }
         
         if (studentOpt.isEmpty()) {
-            System.out.println("Identifier not found: " + identifier);
             redirectAttributes.addAttribute("error", "notfound");
             return "redirect:/student/forgot-password";
         }
         
         Student student = studentOpt.get();
         
-        // Check if account is approved
         if (student.getStatus() != Student.Status.APPROVED) {
-            System.out.println("Account not approved yet");
             redirectAttributes.addAttribute("error", "pending");
             return "redirect:/student/forgot-password";
         }
         
-        // Generate 6-digit OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
-        
-        // Store OTP
         otpStorage.put(student.getEmail(), new OtpData(otp, student.getEmail()));
         
-        // Save OTP to database (optional)
-        student.setResetOtp(otp);
-        student.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
-        studentRepository.save(student);
-        
-        // Send OTP via email
         emailService.sendStudentOtpEmail(student.getEmail(), student.getName(), otp);
-        
-        System.out.println("OTP sent to: " + student.getEmail());
-        System.out.println("OTP: " + otp);
         
         session.setAttribute("resetIdentifier", student.getEmail());
         
@@ -288,57 +249,15 @@ public class StudentController {
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
         
-        System.out.println("===== VERIFY STUDENT OTP =====");
-        System.out.println("Identifier: " + identifier);
-        System.out.println("Entered OTP: " + otp);
-        
-        // First check in-memory storage
         OtpData otpData = otpStorage.get(identifier);
         
-        // If not found, check database
-        if (otpData == null) {
-            Optional<Student> studentOpt = studentRepository.findByEmail(identifier);
-            if (studentOpt.isPresent()) {
-                Student student = studentOpt.get();
-                if (student.getResetOtp() != null && student.getResetOtp().equals(otp) &&
-                    student.getResetOtpExpiry() != null && 
-                    LocalDateTime.now().isBefore(student.getResetOtpExpiry())) {
-                    // Valid OTP from database
-                    System.out.println("OTP verified from database");
-                    session.setAttribute("resetVerified", true);
-                    session.setAttribute("resetIdentifier", identifier);
-                    
-                    redirectAttributes.addAttribute("step", "reset");
-                    redirectAttributes.addAttribute("identifier", identifier);
-                    return "redirect:/student/forgot-password";
-                }
-            }
-            
-            System.out.println("No OTP found for: " + identifier);
+        if (otpData == null || !otpData.isValid() || !otpData.otp.equals(otp)) {
             redirectAttributes.addAttribute("step", "otp");
             redirectAttributes.addAttribute("identifier", identifier);
             redirectAttributes.addAttribute("error", "invalid");
             return "redirect:/student/forgot-password";
         }
         
-        if (!otpData.isValid()) {
-            System.out.println("OTP expired for: " + identifier);
-            otpStorage.remove(identifier);
-            redirectAttributes.addAttribute("step", "otp");
-            redirectAttributes.addAttribute("identifier", identifier);
-            redirectAttributes.addAttribute("error", "expired");
-            return "redirect:/student/forgot-password";
-        }
-        
-        if (!otpData.otp.equals(otp)) {
-            System.out.println("Invalid OTP for: " + identifier);
-            redirectAttributes.addAttribute("step", "otp");
-            redirectAttributes.addAttribute("identifier", identifier);
-            redirectAttributes.addAttribute("error", "invalid");
-            return "redirect:/student/forgot-password";
-        }
-        
-        System.out.println("OTP verified successfully for: " + identifier);
         session.setAttribute("resetVerified", true);
         session.setAttribute("resetIdentifier", identifier);
         
@@ -354,31 +273,18 @@ public class StudentController {
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
         
-        System.out.println("===== RESET STUDENT PASSWORD =====");
-        System.out.println("Identifier: " + identifier);
-        
         Boolean isVerified = (Boolean) session.getAttribute("resetVerified");
         String sessionIdentifier = (String) session.getAttribute("resetIdentifier");
         
-        if (isVerified == null || !isVerified || sessionIdentifier == null || !sessionIdentifier.equals(identifier)) {
-            System.out.println("Unauthorized reset attempt");
+        if (isVerified == null || !isVerified || !sessionIdentifier.equals(identifier)) {
             redirectAttributes.addAttribute("error", "unauthorized");
             return "redirect:/student/forgot-password";
         }
         
         if (!newPassword.equals(confirmPassword)) {
-            System.out.println("Passwords do not match");
             redirectAttributes.addAttribute("step", "reset");
             redirectAttributes.addAttribute("identifier", identifier);
             redirectAttributes.addAttribute("error", "mismatch");
-            return "redirect:/student/forgot-password";
-        }
-        
-        if (newPassword.length() < 6) {
-            System.out.println("Password too short");
-            redirectAttributes.addAttribute("step", "reset");
-            redirectAttributes.addAttribute("identifier", identifier);
-            redirectAttributes.addAttribute("error", "weak");
             return "redirect:/student/forgot-password";
         }
         
@@ -387,39 +293,26 @@ public class StudentController {
             studentOpt = studentRepository.findByUsername(identifier);
         }
         
-        if (studentOpt.isEmpty()) {
-            System.out.println("Student not found");
-            return "redirect:/student/forgot-password";
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            student.setPassword(newPassword);
+            studentRepository.save(student);
+            
+            otpStorage.remove(identifier);
+            session.removeAttribute("resetVerified");
+            session.removeAttribute("resetIdentifier");
+            
+            redirectAttributes.addAttribute("reset", "success");
+            return "redirect:/student/login";
         }
         
-        Student student = studentOpt.get();
-        student.setPassword(newPassword);
-        student.setUpdatedAt(LocalDateTime.now());
-        student.setResetOtp(null);
-        student.setResetOtpExpiry(null);
-        studentRepository.save(student);
-        
-        // Send password reset confirmation email
-        emailService.sendStudentPasswordResetConfirmation(student.getEmail(), student.getName());
-        
-        // Clear OTP and session
-        otpStorage.remove(identifier);
-        session.removeAttribute("resetVerified");
-        session.removeAttribute("resetIdentifier");
-        
-        System.out.println("Password reset successful for: " + student.getEmail());
-        
-        redirectAttributes.addAttribute("reset", "success");
-        return "redirect:/student/login";
+        return "redirect:/student/forgot-password";
     }
     
     @PostMapping("/forgot-password/resend-otp")
     @ResponseBody
     public Map<String, Object> resendOtp(@RequestParam String identifier, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        
-        System.out.println("===== RESEND STUDENT OTP =====");
-        System.out.println("Identifier: " + identifier);
         
         Optional<Student> studentOpt = studentRepository.findByEmail(identifier);
         if (studentOpt.isEmpty()) {
@@ -433,23 +326,10 @@ public class StudentController {
         }
         
         Student student = studentOpt.get();
-        
-        // Generate new OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
         
-        // Update stored OTP
         otpStorage.put(student.getEmail(), new OtpData(otp, student.getEmail()));
-        
-        // Update database
-        student.setResetOtp(otp);
-        student.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
-        studentRepository.save(student);
-        
-        // Send OTP via email
         emailService.sendStudentOtpEmail(student.getEmail(), student.getName(), otp);
-        
-        System.out.println("New OTP sent to: " + student.getEmail());
-        System.out.println("New OTP: " + otp);
         
         response.put("success", true);
         response.put("message", "OTP resent successfully!");
@@ -457,7 +337,7 @@ public class StudentController {
     }
     
     // =============================================
-    // DASHBOARD & PROFILE
+    // DASHBOARD
     // =============================================
     
     @GetMapping("/dashboard")
@@ -466,135 +346,16 @@ public class StudentController {
             return "redirect:/student/login";
         }
         
-        Integer studentId = (Integer) session.getAttribute("studentId");
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        
-        if (studentOpt.isPresent()) {
-            Student student = studentOpt.get();
-            model.addAttribute("student", student);
-            
-            // Add additional data for dashboard
-            model.addAttribute("attendancePercentage", calculateAttendancePercentage(studentId));
-            model.addAttribute("examsCompleted", getExamsCompletedCount(studentId));
-            model.addAttribute("averageScore", getAverageScore(studentId));
-            model.addAttribute("syllabusProgress", getSyllabusProgress(student.getBatchName()));
-            
-            // Add monthly attendance data for chart
-            model.addAttribute("monthlyAttendance", getMonthlyAttendance(studentId));
-        } else {
-            return "redirect:/student/login";
-        }
+        model.addAttribute("studentName", session.getAttribute("studentName"));
+        model.addAttribute("studentBatch", session.getAttribute("studentBatch"));
+        model.addAttribute("studentEnrollmentNo", session.getAttribute("studentEnrollmentNo"));
         
         return "student/student-dashboard";
     }
     
-    @GetMapping("/profile")
-    public String showProfile(HttpSession session, Model model) {
-        if (session.getAttribute("studentId") == null) {
-            return "redirect:/student/login";
-        }
-        
-        Integer studentId = (Integer) session.getAttribute("studentId");
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        
-        if (studentOpt.isPresent()) {
-            model.addAttribute("student", studentOpt.get());
-        }
-        
-        return "student/student-profile";
-    }
-    
-    @PostMapping("/profile/update")
-    public String updateProfile(@RequestParam String name,
-                                @RequestParam String contact,
-                                @RequestParam String email,
-                                HttpSession session,
-                                RedirectAttributes redirectAttributes) {
-        
-        Integer studentId = (Integer) session.getAttribute("studentId");
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        
-        if (studentOpt.isPresent()) {
-            Student student = studentOpt.get();
-            
-            // Check if email changed and if new email already exists
-            if (!student.getEmail().equals(email) && studentRepository.existsByEmail(email)) {
-                redirectAttributes.addAttribute("error", "email_exists");
-                return "redirect:/student/profile";
-            }
-            
-            student.setName(name);
-            student.setContact(contact);
-            student.setEmail(email);
-            student.setUpdatedAt(LocalDateTime.now());
-            studentRepository.save(student);
-            
-            // Update session attributes
-            session.setAttribute("studentName", name);
-            session.setAttribute("studentEmail", email);
-            
-            redirectAttributes.addAttribute("success", "true");
-        }
-        
-        return "redirect:/student/profile";
-    }
-    
-    // =============================================
-    // HELPER METHODS (Replace with actual database implementations)
-    // =============================================
-    
-    private int calculateAttendancePercentage(Integer studentId) {
-        // TODO: Implement actual attendance calculation from database
-        // Example: 
-        // Optional<Student> student = studentRepository.findById(studentId);
-        // if (student.isPresent()) {
-        //     List<Attendance> attendance = attendanceRepository.findByStudentId(studentId);
-        //     long present = attendance.stream().filter(a -> a.getStatus().equals("PRESENT")).count();
-        //     return (int) ((present * 100) / attendance.size());
-        // }
-        return 85; // Sample data
-    }
-    
-    private int getExamsCompletedCount(Integer studentId) {
-        // TODO: Implement actual exam count from database
-        // return resultRepository.countByStudentId(studentId);
-        return 4; // Sample data
-    }
-    
-    private int getAverageScore(Integer studentId) {
-        // TODO: Implement actual average score calculation from database
-        // Double avg = resultRepository.getAverageScoreByStudentId(studentId);
-        // return avg != null ? avg.intValue() : 0;
-        return 82; // Sample data
-    }
-    
-    private int getSyllabusProgress(String batchName) {
-        // TODO: Implement actual syllabus progress from database
-        // List<Syllabus> syllabus = syllabusRepository.findByBatchName(batchName);
-        // long completed = syllabus.stream().filter(Syllabus::isCompleted).count();
-        // return (int) ((completed * 100) / syllabus.size());
-        return 70; // Sample data
-    }
-    
-    private Map<String, Integer> getMonthlyAttendance(Integer studentId) {
-        // TODO: Implement actual monthly attendance from database
-        Map<String, Integer> monthlyData = new HashMap<>();
-        monthlyData.put("January", 92);
-        monthlyData.put("February", 88);
-        monthlyData.put("March", 95);
-        monthlyData.put("April", 90);
-        monthlyData.put("May", 85);
-        return monthlyData;
-    }
-    
-    // =============================================
-    // LOGOUT
-    // =============================================
-    
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         System.out.println("===== STUDENT LOGGED OUT =====");
-        System.out.println("Student: " + session.getAttribute("studentName"));
         session.invalidate();
         return "redirect:/student/login";
     }

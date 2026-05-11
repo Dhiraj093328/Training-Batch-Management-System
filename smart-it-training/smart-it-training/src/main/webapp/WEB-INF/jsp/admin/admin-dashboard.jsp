@@ -251,29 +251,10 @@
         .data-table th {
             background: #f8f9fa;
             font-weight: 600;
-            color: #333;
         }
 
         .data-table tr:hover {
             background: #f8f9fa;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
         }
 
         .btn-approve {
@@ -377,14 +358,45 @@
         }
 
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }
 
         /* Responsive */
@@ -470,28 +482,28 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">${pendingFacultyCount}</div>
+                        <div class="stat-number">${pendingFacultyCount != null ? pendingFacultyCount : 0}</div>
                         <div class="stat-label">Pending Faculty</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">${pendingStudentsCount}</div>
+                        <div class="stat-number">${pendingStudentsCount != null ? pendingStudentsCount : 0}</div>
                         <div class="stat-label">Pending Students</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">${approvedStudentsCount}</div>
+                        <div class="stat-number">${approvedStudentsCount != null ? approvedStudentsCount : 0}</div>
                         <div class="stat-label">Approved Students</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-number">${totalStudentsCount}</div>
+                        <div class="stat-number">${totalStudentsCount != null ? totalStudentsCount : 0}</div>
                         <div class="stat-label">Total Registered</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-database"></i></div>
@@ -501,12 +513,12 @@
                 <div class="section-title">Quick Actions</div>
                 <p>Select any option from the left menu to manage different modules.</p>
                 <ul style="margin-top: 15px; margin-left: 20px;">
-                    <li>Approve Faculty/Student Requests</li>
-                    <li>Manage Courses & Brochures</li>
-                    <li>Generate Fee Receipts</li>
-                    <li>Add Placement Opportunities</li>
-                    <li>Publish Notices & Events</li>
-                    <li>View Feedback & Attendance Reports</li>
+                    <li><i class="fas fa-check-circle" style="color: #28a745;"></i> Approve Faculty/Student Requests</li>
+                    <li><i class="fas fa-book" style="color: #667eea;"></i> Manage Courses & Brochures</li>
+                    <li><i class="fas fa-file-invoice-dollar" style="color: #28a745;"></i> Generate Fee Receipts</li>
+                    <li><i class="fas fa-briefcase" style="color: #764ba2;"></i> Add Placement Opportunities</li>
+                    <li><i class="fas fa-bullhorn" style="color: #ffc107;"></i> Publish Notices & Events</li>
+                    <li><i class="fas fa-star" style="color: #fd7e14;"></i> View Feedback & Attendance Reports</li>
                 </ul>
             </div>
         </div>
@@ -515,14 +527,31 @@
         <div id="faculty-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-chalkboard-user"></i> Faculty Requests</div>
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr>
-                    </thead>
-                    <tbody id="facultyRequestsList">
-                        <tr><td colspan="6" style="text-align: center;">Loading faculty requests...</td></tr>
-                    </tbody>
-                </table>
+                <c:choose>
+                    <c:when test="${not empty pendingFaculty}">
+                        <table class="data-table">
+                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr></thead>
+                            <tbody>
+                                <c:forEach items="${pendingFaculty}" var="faculty">
+                                    <tr id="faculty-row-${faculty.id}">
+                                        <td>${faculty.name}</td>
+                                        <td>${faculty.contact}</td>
+                                        <td>${faculty.batchName}</td>
+                                        <td>${faculty.username}</td>
+                                        <td>${faculty.adminOfficeName}</td>
+                                        <td>
+                                            <button class="btn-approve" onclick="approveFaculty(${faculty.id})">Accept</button>
+                                            <button class="btn-reject" onclick="rejectFaculty(${faculty.id})">Reject</button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="text-align: center; padding: 30px;">No pending faculty requests</div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -538,47 +567,49 @@
                     </c:if>
                 </div>
                 
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Contact</th>
-                            <th>Batch</th>
-                            <th>Username</th>
-                            <th>Admin Office</th>
-                            <th>Enrollment No</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentRequestsList">
-                        <c:forEach items="${pendingStudents}" var="student">
-                            <tr id="student-row-${student.id}">
-                                <td>${student.name}</td>
-                                <td>${student.contact}</td>
-                                <td>${student.batchName}</td>
-                                <td>${student.username}</td>
-                                <td>${student.adminOfficeName}</td>
-                                <td>${student.enrollmentNo}</td>
-                                <td>
-                                    <button class="btn-approve" onclick="approveStudent(${student.id})">
-                                        <i class="fas fa-check"></i> Accept
-                                    </button>
-                                    <button class="btn-reject" onclick="rejectStudent(${student.id})">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty pendingStudents}">
-                            <tr>
-                                <td colspan="7" style="text-align: center;">
-                                    <i class="fas fa-check-circle" style="color: #28a745;"></i> 
-                                    No pending student requests
-                                </td>
-                            </tr>
-                        </c:if>
-                    </tbody>
-                </table>
+                <c:choose>
+                    <c:when test="${not empty pendingStudents}">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Batch</th>
+                                    <th>Username</th>
+                                    <th>Admin Office</th>
+                                    <th>Enrollment No</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentRequestsList">
+                                <c:forEach items="${pendingStudents}" var="student">
+                                    <tr id="student-row-${student.id}">
+                                        <td>${student.name}</td>
+                                        <td>${student.contact}</td>
+                                        <td>${student.batchName}</td>
+                                        <td>${student.username}</td>
+                                        <td>${student.adminOfficeName}</td>
+                                        <td>${student.enrollmentNo}</td>
+                                        <td>
+                                            <button class="btn-approve" onclick="approveStudent(${student.id})">
+                                                <i class="fas fa-check"></i> Accept
+                                            </button>
+                                            <button class="btn-reject" onclick="rejectStudent(${student.id})">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px;"></i>
+                            <p style="margin-top: 10px; color: #666;">No pending student requests</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -608,9 +639,7 @@
                 <div class="section-title"><i class="fas fa-star"></i> Student Feedback</div>
                 <table class="data-table">
                     <thead><tr><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Date</th></tr></thead>
-                    <tbody id="feedbackList">
-                        <tr><td colspan="5" style="text-align: center;">Loading feedback...</td></tr>
-                    </tbody>
+                    <tbody id="feedbackList"></tbody>
                 </table>
             </div>
         </div>
@@ -631,17 +660,14 @@
                 <button class="btn-add" onclick="showReceiptForm()"><i class="fas fa-file-invoice-dollar"></i> Generate Fee Receipt</button>
                 <div id="receiptForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
                     <h4>Generate Fee Receipt</h4>
-                    <form id="receiptFormData">
-                        <input type="text" placeholder="Student Name" id="studentName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="text" placeholder="Contact Number" id="contactNo" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="email" placeholder="Email" id="email" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="text" placeholder="Course" id="courseName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="number" placeholder="Amount" id="amount" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="text" placeholder="Executive Name" id="executiveName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <button type="button" class="btn-add" onclick="generateReceipt()">Generate PDF Receipt</button>
-                    </form>
+                    <input type="text" placeholder="Student Name" id="studentName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Contact Number" id="contactNo" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="email" placeholder="Email" id="email" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Course" id="courseName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="number" placeholder="Amount" id="amount" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Executive Name" id="executiveName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <button type="button" class="btn-add" onclick="generateReceipt()">Generate PDF Receipt</button>
                 </div>
-                <div id="receiptsList" style="margin-top: 20px;"></div>
             </div>
         </div>
 
@@ -652,16 +678,13 @@
                 <button class="btn-add" onclick="showPlacementForm()"><i class="fas fa-plus"></i> Add New Placement</button>
                 <div id="placementForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
                     <h4>Add New Placement Opportunity</h4>
-                    <form id="placementFormData">
-                        <input type="text" placeholder="Company Name" id="companyName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <textarea placeholder="Job Role Description" id="jobRoleDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
-                        <textarea placeholder="Required Skills" id="skills" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
-                        <textarea placeholder="Interview Round Details" id="interviewDetails" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
-                        <input type="date" placeholder="Last Date to Apply" id="lastDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <button type="button" class="btn-add" onclick="addPlacement()">Add Placement</button>
-                    </form>
+                    <input type="text" placeholder="Company Name" id="companyName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <textarea placeholder="Job Role Description" id="jobRoleDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
+                    <textarea placeholder="Required Skills" id="skills" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
+                    <textarea placeholder="Interview Round Details" id="interviewDetails" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
+                    <input type="date" placeholder="Last Date to Apply" id="lastDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <button type="button" class="btn-add" onclick="addPlacement()">Add Placement</button>
                 </div>
-                <div id="placementsList" style="margin-top: 20px;"></div>
             </div>
         </div>
 
@@ -672,13 +695,10 @@
                 <button class="btn-add" onclick="showNoticeForm()"><i class="fas fa-plus"></i> Publish New Notice</button>
                 <div id="noticeForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
                     <h4>Publish Notice</h4>
-                    <form>
-                        <input type="text" placeholder="Notice Title" id="noticeTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <textarea placeholder="Notice Content" id="noticeContent" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="4"></textarea>
-                        <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
-                    </form>
+                    <input type="text" placeholder="Notice Title" id="noticeTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <textarea placeholder="Notice Content" id="noticeContent" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="4"></textarea>
+                    <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
                 </div>
-                <div id="noticesList" style="margin-top: 20px;"></div>
             </div>
         </div>
 
@@ -689,22 +709,36 @@
                 <button class="btn-add" onclick="showEventForm()"><i class="fas fa-plus"></i> Create New Event</button>
                 <div id="eventForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
                     <h4>Create Event</h4>
-                    <form>
-                        <input type="text" placeholder="Event Title" id="eventTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <textarea placeholder="Event Description" id="eventDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
-                        <input type="date" placeholder="Event Date" id="eventDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="time" placeholder="Event Time" id="eventTime" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <input type="text" placeholder="Location" id="eventLocation" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                        <button type="button" class="btn-add" onclick="createEvent()">Create Event</button>
-                    </form>
+                    <input type="text" placeholder="Event Title" id="eventTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <textarea placeholder="Event Description" id="eventDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
+                    <input type="date" placeholder="Event Date" id="eventDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="time" placeholder="Event Time" id="eventTime" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Location" id="eventLocation" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <button type="button" class="btn-add" onclick="createEvent()">Create Event</button>
                 </div>
-                <div id="eventsList" style="margin-top: 20px;"></div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Reject Modal -->
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <h3>Reject Student Request</h3>
+        <p id="rejectStudentName"></p>
+        <textarea id="rejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
+        <input type="hidden" id="rejectStudentId">
+        <div class="modal-buttons">
+            <button class="btn-reject" onclick="confirmReject()">Confirm Reject</button>
+            <button class="btn-approve" onclick="closeModal()" style="background: #6c757d;">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    let currentRejectStudentId = null;
+    let currentRejectStudentName = null;
+
     // ========== DATE & TIME ==========
     function updateDateTime() {
         const now = new Date();
@@ -731,22 +765,16 @@
     // ========== SHOW TOAST MESSAGE ==========
     function showToast(message, type) {
         const toast = $('<div class="toast-message">' + message + '</div>');
-        if (type === 'error') {
-            toast.css('background', '#dc3545');
-        } else if (type === 'success') {
-            toast.css('background', '#28a745');
-        } else {
-            toast.css('background', '#17a2b8');
-        }
+        if (type === 'error') toast.css('background', '#dc3545');
+        else if (type === 'success') toast.css('background', '#28a745');
+        else toast.css('background', '#17a2b8');
         $('body').append(toast);
-        setTimeout(function() {
-            toast.fadeOut(300, function() { $(this).remove(); });
-        }, 3000);
+        setTimeout(() => toast.fadeOut(300, () => toast.remove()), 3000);
     }
 
     // ========== STUDENT APPROVAL FUNCTIONS ==========
     function approveStudent(studentId) {
-        if (!confirm('Are you sure you want to approve this student? They will receive an email with login credentials.')) {
+        if (!confirm('Are you sure you want to APPROVE this student? They will receive an email with login credentials.')) {
             return;
         }
         
@@ -765,10 +793,7 @@
             success: function(response) {
                 if (response.success) {
                     showToast('✅ ' + response.message, 'success');
-                    row.fadeOut(300, function() {
-                        $(this).remove();
-                        updateStudentStats();
-                    });
+                    row.fadeOut(300, function() { $(this).remove(); updateCounts(); });
                 } else {
                     showToast('❌ ' + response.message, 'error');
                     approveBtn.html(originalText);
@@ -776,16 +801,24 @@
                 }
             },
             error: function() {
-                showToast('❌ Error approving student! Please try again.', 'error');
+                showToast('❌ Error approving student!', 'error');
                 approveBtn.html(originalText);
                 approveBtn.prop('disabled', false);
             }
         });
     }
 
-    function rejectStudent(studentId) {
-        const reason = prompt('Please enter reason for rejection (optional):');
-        
+    function rejectStudent(studentId, studentName) {
+        currentRejectStudentId = studentId;
+        currentRejectStudentName = studentName;
+        document.getElementById('rejectStudentName').innerHTML = 'Student: <strong>' + studentName + '</strong>';
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').style.display = 'flex';
+    }
+
+    function confirmReject() {
+        const studentId = currentRejectStudentId;
+        const reason = document.getElementById('rejectReason').value;
         const row = $('#student-row-' + studentId);
         const rejectBtn = row.find('.btn-reject');
         const originalText = rejectBtn.html();
@@ -801,10 +834,8 @@
             success: function(response) {
                 if (response.success) {
                     showToast('❌ ' + response.message, 'error');
-                    row.fadeOut(300, function() {
-                        $(this).remove();
-                        updateStudentStats();
-                    });
+                    row.fadeOut(300, function() { $(this).remove(); updateCounts(); });
+                    closeModal();
                 } else {
                     showToast('❌ ' + response.message, 'error');
                     rejectBtn.html(originalText);
@@ -819,47 +850,32 @@
         });
     }
 
-    function updateStudentStats() {
-        const remainingRows = $('#studentRequestsList tr:visible').not(':has(td[colspan])').length;
-        
-        // Update pending count in section title
-        const pendingSpan = $('.section-title span');
-        if (pendingSpan.length) {
-            if (remainingRows > 0) {
-                pendingSpan.text(remainingRows + ' Pending');
-            } else {
-                pendingSpan.remove();
-                $('#studentRequestsList').html('<tr><td colspan="7" style="text-align: center;"><i class="fas fa-check-circle" style="color: #28a745;"></i> No pending student requests</td></tr>');
-            }
-        }
-        
-        // Update stats cards
+    function closeModal() {
+        document.getElementById('rejectModal').style.display = 'none';
+        currentRejectStudentId = null;
+        currentRejectStudentName = null;
+    }
+
+    function updateCounts() {
+        const remainingRows = $('#studentRequestsList tr:visible').length;
         $('.stat-card:eq(1) .stat-number').text(remainingRows);
+        const pendingSpan = $('.section-title span');
+        if (remainingRows > 0) pendingSpan.text(remainingRows + ' Pending');
+        else {
+            pendingSpan.remove();
+            $('#studentRequestsList').html('<tr><td colspan="7" style="text-align: center;"><i class="fas fa-check-circle" style="color: #28a745;"></i> No pending student requests</td></tr>');
+        }
     }
 
     // ========== LOAD ATTENDANCE ==========
     function loadAttendance() {
         const batch = document.getElementById('batchSelect').value;
         const attendanceData = {
-            'Java': [
-                { name: 'Alice Brown', percentage: 85 },
-                { name: 'Bob Wilson', percentage: 92 },
-                { name: 'Charlie Davis', percentage: 78 }
-            ],
-            'Python': [
-                { name: 'David Miller', percentage: 88 },
-                { name: 'Emma Watson', percentage: 95 }
-            ],
-            'MERN': [
-                { name: 'Frank Ocean', percentage: 82 },
-                { name: 'Grace Lee', percentage: 90 }
-            ],
-            'Cloud': [
-                { name: 'Henry Ford', percentage: 75 },
-                { name: 'Ivy Chen', percentage: 89 }
-            ]
+            'Java': [{ name: 'Alice Brown', percentage: 85 }, { name: 'Bob Wilson', percentage: 92 }, { name: 'Charlie Davis', percentage: 78 }],
+            'Python': [{ name: 'David Miller', percentage: 88 }, { name: 'Emma Watson', percentage: 95 }],
+            'MERN': [{ name: 'Frank Ocean', percentage: 82 }, { name: 'Grace Lee', percentage: 90 }],
+            'Cloud': [{ name: 'Henry Ford', percentage: 75 }, { name: 'Ivy Chen', percentage: 89 }]
         };
-        
         const students = attendanceData[batch] || [];
         const tbody = document.getElementById('attendanceList');
         tbody.innerHTML = '';
@@ -870,12 +886,8 @@
     loadAttendance();
 
     // ========== FACULTY ACTIONS ==========
-    function approveFaculty(id) { 
-        showToast('Faculty approved! Email sent to faculty.', 'success');
-    }
-    function rejectFaculty(id) { 
-        showToast('Faculty request rejected.', 'error');
-    }
+    function approveFaculty(id) { showToast('Faculty approved!', 'success'); }
+    function rejectFaculty(id) { showToast('Faculty request rejected.', 'error'); }
 
     // ========== COURSES ==========
     const courses = [
@@ -889,77 +901,30 @@
         if (!container) return;
         container.innerHTML = '';
         courses.forEach(c => {
-            container.innerHTML += `
-                <div class="course-card">
-                    <div class="course-info">
-                        <h4>${c.title}</h4>
-                        <p>${c.desc}</p>
-                        <p><strong>Duration:</strong> ${c.duration}</p>
-                        <p><strong>Fees:</strong> ${c.fees}</p>
-                        <button class="btn-approve" style="margin-top: 10px;" onclick="downloadBrochure('${c.title}')">Download Brochure</button>
-                    </div>
-                </div>
-            `;
+            container.innerHTML += `<div class="course-card"><div class="course-info"><h4>${c.title}</h4><p>${c.desc}</p><p><strong>Duration:</strong> ${c.duration}</p><p><strong>Fees:</strong> ${c.fees}</p><button class="btn-approve" onclick="downloadBrochure('${c.title}')">Download Brochure</button></div></div>`;
         });
     }
     displayCourses();
-    
-    function addCourse() { 
-        showToast('Add new course form will open.', 'info');
-    }
-    function downloadBrochure(courseName) {
-        showToast('Downloading brochure for ' + courseName, 'info');
-    }
+    function addCourse() { showToast('Add new course form will open.', 'info'); }
+    function downloadBrochure(courseName) { showToast('Downloading brochure for ' + courseName, 'info'); }
 
     // ========== FEE RECEIPT ==========
-    function showReceiptForm() {
-        const form = document.getElementById('receiptForm');
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-    function generateReceipt() {
-        const studentName = document.getElementById('studentName')?.value;
-        const amount = document.getElementById('amount')?.value;
-        if (studentName && amount) {
-            showToast('PDF Receipt Generated for ' + studentName + '! Amount: ₹' + amount, 'success');
-        } else {
-            showToast('Please fill all fields!', 'error');
-        }
-    }
+    function showReceiptForm() { const f = document.getElementById('receiptForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function generateReceipt() { showToast('PDF Receipt Generated!', 'success'); }
 
     // ========== PLACEMENT ==========
-    function showPlacementForm() {
-        const form = document.getElementById('placementForm');
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-    function addPlacement() { 
-        showToast('New placement added successfully!', 'success');
-    }
+    function showPlacementForm() { const f = document.getElementById('placementForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function addPlacement() { showToast('New placement added!', 'success'); }
 
     // ========== NOTICE ==========
-    function showNoticeForm() {
-        const form = document.getElementById('noticeForm');
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-    function publishNotice() { 
-        showToast('Notice published successfully!', 'success');
-    }
+    function showNoticeForm() { const f = document.getElementById('noticeForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function publishNotice() { showToast('Notice published!', 'success'); }
 
     // ========== EVENT ==========
-    function showEventForm() {
-        const form = document.getElementById('eventForm');
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-    function createEvent() { 
-        showToast('Event created successfully!', 'success');
-    }
+    function showEventForm() { const f = document.getElementById('eventForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function createEvent() { showToast('Event created!', 'success'); }
+
+    $(window).click(function(e) { if ($(e.target).is('#rejectModal')) closeModal(); });
 </script>
 </body>
 </html>

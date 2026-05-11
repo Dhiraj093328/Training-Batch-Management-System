@@ -103,7 +103,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             
             helper.setTo(to);
-            helper.setSubject("Smart IT Training - Student Account Approved");
+            helper.setSubject("Smart IT Training - Your Student Account is Approved!");
             
             String htmlContent = getStudentApprovalTemplate(name, username, password);
             helper.setText(htmlContent, true);
@@ -416,16 +416,17 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student Registration Template
+    // Student Registration Template (Enhanced with credentials and better styling)
     private String getStudentRegistrationTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
-            "body { font-family: 'Poppins', Arial, sans-serif; }" +
+            "body { font-family: 'Poppins', Arial, sans-serif; line-height: 1.6; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
             ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
             ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
-            ".credentials { background: #fff; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; }" +
-            ".status-box { background: #fff3cd; padding: 12px; border-radius: 8px; color: #856404; margin: 15px 0; }" +
+            ".credentials { background: #fff; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }" +
+            ".status-box { background: #fff3cd; padding: 12px; border-radius: 8px; color: #856404; margin: 15px 0; border-left: 4px solid #ffc107; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -442,32 +443,44 @@ public class EmailService {
             "<strong>⏳ Status:</strong> PENDING APPROVAL<br>" +
             "You will receive an email once your account is approved by admin." +
             "</div>" +
+            "<p>Thank you for registering with Smart IT Training Centre!</p>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
     
-    // Student Approval Template
+    // Student Approval Template (Enhanced with better styling and credentials)
     private String getStudentApprovalTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
-            "body { font-family: 'Poppins', Arial, sans-serif; }" +
+            "body { font-family: 'Poppins', Arial, sans-serif; line-height: 1.6; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
+            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
             ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
-            ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; margin: 15px 0; }" +
+            ".credentials { background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; border-radius: 8px; }" +
+            ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; margin: 15px 0; transition: all 0.3s ease; }" +
+            ".btn:hover { background: #218838; transform: translateY(-2px); }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
-            "<div class='header'><h2>✅ Student Account Approved!</h2></div>" +
+            "<div class='header'><h2>✅ Account Approved!</h2><p>Smart IT Training Centre</p></div>" +
             "<div class='content'>" +
             "<h3>Dear " + name + ",</h3>" +
-            "<p>Congratulations! Your student account has been approved.</p>" +
-            "<p>You can now login using your credentials:</p>" +
+            "<p>Congratulations! Your student account has been approved by the admin.</p>" +
+            "<div class='credentials'>" +
+            "<p><strong>🔑 Login Credentials:</strong></p>" +
             "<p><strong>Username:</strong> " + username + "</p>" +
             "<p><strong>Password:</strong> " + password + "</p>" +
+            "</div>" +
+            "<div style='text-align: center;'>" +
             "<a href='http://localhost:8080/student/login' class='btn'>Login to Dashboard</a>" +
             "</div>" +
+            "<p>You can now access all student features including attendance, exams, and syllabus.</p>" +
+            "<p><strong>Note:</strong> For security reasons, please change your password after first login.</p>" +
+            "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -478,8 +491,9 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
-            ".content { background: #f9f9f9; padding: 30px; }" +
+            ".header { background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -490,6 +504,7 @@ public class EmailService {
             "<p><strong>Reason:</strong> " + reason + "</p>" +
             "<p>Please contact the admin office for more details.</p>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -501,7 +516,9 @@ public class EmailService {
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 500px; margin: 0 auto; padding: 20px; }" +
             ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
-            ".otp-code { background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 36px; font-weight: bold; padding: 20px; text-align: center; letter-spacing: 8px; margin: 20px 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; text-align: center; border-radius: 0 0 15px 15px; }" +
+            ".otp-code { background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 36px; font-weight: bold; padding: 20px; border-radius: 12px; letter-spacing: 8px; margin: 20px 0; }" +
+            ".warning { background: #fff3cd; padding: 12px; border-radius: 8px; color: #856404; font-size: 13px; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -510,7 +527,8 @@ public class EmailService {
             "<h3>Dear " + name + ",</h3>" +
             "<p>Your OTP for password reset is:</p>" +
             "<div class='otp-code'>" + otp + "</div>" +
-            "<p>This OTP is valid for 10 minutes.</p>" +
+            "<div class='warning'><strong>⚠️ Note:</strong> This OTP is valid for 10 minutes. Do not share it with anyone.</div>" +
+            "<p>If you didn't request this, please ignore this email.</p>" +
             "</div>" +
             "</div>" +
             "</body></html>";
@@ -523,7 +541,9 @@ public class EmailService {
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 500px; margin: 0 auto; padding: 20px; }" +
             ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
+            ".content { background: #f9f9f9; padding: 30px; text-align: center; border-radius: 0 0 15px 15px; }" +
             ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; margin: 15px 0; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -533,6 +553,7 @@ public class EmailService {
             "<p>Your student account password has been successfully reset.</p>" +
             "<a href='http://localhost:8080/student/login' class='btn'>Login Now</a>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -543,8 +564,11 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; }" +
-            ".credentials { background: #fff; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; }" +
+            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".credentials { background: #fff; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; border-radius: 8px; }" +
+            ".status-box { background: #fff3cd; padding: 12px; border-radius: 8px; color: #856404; margin: 15px 0; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -553,11 +577,16 @@ public class EmailService {
             "<h3>Dear " + name + ",</h3>" +
             "<p>Your faculty registration has been submitted for approval.</p>" +
             "<div class='credentials'>" +
+            "<p><strong>📝 Registration Details:</strong></p>" +
             "<p><strong>Username:</strong> " + username + "</p>" +
             "<p><strong>Password:</strong> " + password + "</p>" +
             "</div>" +
-            "<p>You will receive an email once your account is approved.</p>" +
+            "<div class='status-box'>" +
+            "<strong>⏳ Status:</strong> PENDING APPROVAL<br>" +
+            "You will receive an email once your account is approved." +
             "</div>" +
+            "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -568,8 +597,11 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
-            ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; }" +
+            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".credentials { background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; border-radius: 8px; }" +
+            ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; margin: 15px 0; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -577,10 +609,16 @@ public class EmailService {
             "<div class='content'>" +
             "<h3>Dear " + name + ",</h3>" +
             "<p>Your faculty account has been approved!</p>" +
+            "<div class='credentials'>" +
+            "<p><strong>🔑 Login Credentials:</strong></p>" +
             "<p><strong>Username:</strong> " + username + "</p>" +
             "<p><strong>Password:</strong> " + password + "</p>" +
+            "</div>" +
+            "<div style='text-align: center;'>" +
             "<a href='http://localhost:8080/faculty/login' class='btn'>Login to Dashboard</a>" +
             "</div>" +
+            "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -591,7 +629,9 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 25px; text-align: center; }" +
+            ".header { background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -602,6 +642,7 @@ public class EmailService {
             "<p><strong>Reason:</strong> " + reason + "</p>" +
             "<p>Please contact admin for more details.</p>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -612,8 +653,10 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 500px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; }" +
-            ".otp-code { background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 36px; font-weight: bold; padding: 20px; text-align: center; letter-spacing: 8px; margin: 20px 0; }" +
+            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; text-align: center; border-radius: 0 0 15px 15px; }" +
+            ".otp-code { background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 36px; font-weight: bold; padding: 20px; border-radius: 12px; letter-spacing: 8px; margin: 20px 0; }" +
+            ".warning { background: #fff3cd; padding: 12px; border-radius: 8px; color: #856404; font-size: 13px; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -622,7 +665,8 @@ public class EmailService {
             "<h3>Dear " + name + ",</h3>" +
             "<p>Your OTP for password reset is:</p>" +
             "<div class='otp-code'>" + otp + "</div>" +
-            "<p>This OTP is valid for 10 minutes.</p>" +
+            "<div class='warning'><strong>⚠️ Note:</strong> This OTP is valid for 10 minutes. Do not share it with anyone.</div>" +
+            "<p>If you didn't request this, please ignore this email.</p>" +
             "</div>" +
             "</div>" +
             "</body></html>";
@@ -635,7 +679,9 @@ public class EmailService {
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 500px; margin: 0 auto; padding: 20px; }" +
             ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
+            ".content { background: #f9f9f9; padding: 30px; text-align: center; border-radius: 0 0 15px 15px; }" +
             ".btn { display: inline-block; background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -645,6 +691,7 @@ public class EmailService {
             "<p>Your faculty account password has been successfully reset.</p>" +
             "<a href='http://localhost:8080/faculty/login' class='btn'>Login Now</a>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -655,8 +702,10 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; }" +
-            ".receipt-details { background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0; }" +
+            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".receipt-details { background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #667eea; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -670,6 +719,7 @@ public class EmailService {
             "</div>" +
             "<p>Download your receipt from the student portal.</p>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }
@@ -680,7 +730,9 @@ public class EmailService {
             "<html><head><style>" +
             "body { font-family: 'Poppins', Arial, sans-serif; }" +
             ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px; }" +
+            ".header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
             "</style></head>" +
             "<body>" +
             "<div class='container'>" +
@@ -691,6 +743,7 @@ public class EmailService {
             "<p>You will be notified once shortlisted.</p>" +
             "<p>Good luck!</p>" +
             "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +
             "</body></html>";
     }

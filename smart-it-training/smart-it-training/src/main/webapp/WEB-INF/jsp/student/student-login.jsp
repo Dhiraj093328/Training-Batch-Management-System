@@ -35,17 +35,63 @@
     </div>
     
     <div class="login-body">
-        <!-- Alert messages -->
-        <c:if test="${not empty error}">
+        <!-- ========== ALERT MESSAGES ========== -->
+        
+        <!-- Registration Success - Pending Approval -->
+        <c:if test="${not empty param.registered}">
+            <div class="alert alert-success" id="successAlert">
+                <i class="fas fa-check-double"></i> 
+                <span>🎉 REGISTRATION SUCCESSFUL! Your account is under review. You will receive an email once approved.</span>
+            </div>
+        </c:if>
+        
+        <!-- Account Approved Message -->
+        <c:if test="${not empty param.approved}">
+            <div class="alert alert-success" id="successAlert">
+                <i class="fas fa-check-double"></i> 
+                <span>✅ ACCOUNT APPROVED! You can now login with your credentials.</span>
+            </div>
+        </c:if>
+        
+        <!-- Account Rejected Message -->
+        <c:if test="${not empty param.rejected}">
+            <div class="alert alert-error" id="errorAlert">
+                <i class="fas fa-times-circle"></i> 
+                <span>❌ ACCOUNT REJECTED! Your registration request has been declined. Please contact admin for more details.</span>
+            </div>
+        </c:if>
+        
+        <!-- Password Reset Success -->
+        <c:if test="${not empty param.reset}">
+            <div class="alert alert-success" id="successAlert">
+                <i class="fas fa-sync-alt fa-fw"></i> 
+                <span>🔐 PASSWORD RESET SUCCESSFUL — Login with your new credentials.</span>
+            </div>
+        </c:if>
+        
+        <!-- Login Error - Invalid Credentials -->
+        <c:if test="${not empty param.error}">
             <c:choose>
-                <c:when test="${error eq 'pending'}">
-                    <div class="alert alert-warning">
+                <c:when test="${param.error eq 'pending'}">
+                    <div class="alert alert-warning" id="warningAlert">
                         <i class="fas fa-hourglass-half fa-fw"></i> 
-                        <span>⏳ PENDING APPROVAL — Await admin verification to unlock full access.</span>
+                        <span>⏳ PENDING APPROVAL — Your account is awaiting admin verification. You will receive an email once approved.</span>
+                    </div>
+                </c:when>
+                <c:when test="${param.error eq 'rejected'}">
+                    <div class="alert alert-error" id="errorAlert">
+                        <i class="fas fa-times-circle"></i> 
+                        <span>❌ ACCOUNT REJECTED! Your registration has been declined. Please contact admin.</span>
+                    </div>
+                </c:when>
+                <c:when test="${param.error eq 'true'}">
+                    <div class="alert alert-error" id="errorAlert">
+                        <i class="fas fa-skull-crosswalk"></i> 
+                        <span>⛔ ACCESS DENIED — Invalid username/email or password. Please try again.</span>
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="alert alert-error">
+                    <div class="alert alert-error" id="errorAlert">
                         <i class="fas fa-skull-crosswalk"></i> 
                         <span>⛔ ACCESS DENIED — Invalid credentials or account mismatch.</span>
                     </div>
@@ -53,26 +99,12 @@
             </c:choose>
         </c:if>
         
-        <c:if test="${not empty registered}">
-            <div class="alert alert-success">
-                <i class="fas fa-check-double"></i> 
-                <span>🎉 REGISTRATION SUCCESS! Your account is under review. We'll notify you soon.</span>
-            </div>
-        </c:if>
-        
-        <c:if test="${not empty reset}">
-            <div class="alert alert-success">
-                <i class="fas fa-sync-alt fa-fw"></i> 
-                <span>🔐 PASSWORD RESET SUCCESSFUL — Login with your new credentials.</span>
-            </div>
-        </c:if>
-        
         <form action="${pageContext.request.contextPath}/student/login" method="post" id="loginForm">
             <div class="form-group">
                 <label><i class="fas fa-fingerprint"></i> IDENTIFIER</label>
                 <div class="input-group">
                     <i class="fas fa-envelope input-icon"></i>
-                    <input type="text" name="username" required placeholder="student@smartit.com / username" autocomplete="username" value="${username}">
+                    <input type="text" name="username" required placeholder="student@smartit.com / username" autocomplete="username" value="${param.username != null ? param.username : ''}">
                 </div>
             </div>
             
@@ -112,5 +144,44 @@
 
 <!-- External JavaScript -->
 <script src="${pageContext.request.contextPath}/js/student-login.js"></script>
+
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const warningAlert = document.getElementById('warningAlert');
+        
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.transition = 'opacity 0.5s ease';
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    if (successAlert.parentNode) successAlert.remove();
+                }, 500);
+            }, 5000);
+        }
+        
+        if (errorAlert) {
+            setTimeout(function() {
+                errorAlert.style.transition = 'opacity 0.5s ease';
+                errorAlert.style.opacity = '0';
+                setTimeout(function() {
+                    if (errorAlert.parentNode) errorAlert.remove();
+                }, 500);
+            }, 5000);
+        }
+        
+        if (warningAlert) {
+            setTimeout(function() {
+                warningAlert.style.transition = 'opacity 0.5s ease';
+                warningAlert.style.opacity = '0';
+                setTimeout(function() {
+                    if (warningAlert.parentNode) warningAlert.remove();
+                }, 500);
+            }, 5000);
+        }
+    });
+</script>
 </body>
 </html>

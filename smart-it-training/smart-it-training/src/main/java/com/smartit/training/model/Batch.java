@@ -11,9 +11,10 @@ public class Batch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @Column(name = "batch_name", unique = true, nullable = false)
+    @Column(name = "batch_name", unique = true, nullable = false, length = 50)
     private String batchName;
     
+    @Column(columnDefinition = "TEXT")
     private String description;
     
     @Column(name = "is_active")
@@ -21,6 +22,15 @@ public class Batch {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    public Batch() {}
+    
+    public Batch(String batchName, String description) {
+        this.batchName = batchName;
+        this.description = description;
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+    }
     
     // Getters and Setters
     public Integer getId() { return id; }

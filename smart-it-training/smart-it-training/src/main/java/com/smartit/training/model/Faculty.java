@@ -1,11 +1,13 @@
 package com.smartit.training.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "student")
-public class Student {
+@Table(name = "faculty")
+public class Faculty {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,22 +34,26 @@ public class Student {
     @Column(nullable = false, length = 255)
     private String password;
     
-    @Column(name = "enrollment_no", unique = true, length = 50)
-    private String enrollmentNo;
+    @Column(name = "employee_id", unique = true, length = 50)
+    private String employeeId;
     
-    // ===== RESET PASSWORD FIELDS =====
-    @Column(name = "reset_token", length = 255)
-    private String resetToken;
+    @Column(length = 255)
+    private String qualification;
     
-    @Column(name = "reset_token_expiry")
-    private LocalDateTime resetTokenExpiry;
+    @Column(name = "experience_years")
+    private Integer experienceYears = 0;
+    
+    @Column(name = "joining_date")
+    private LocalDate joiningDate;
+    
+    @Column(name = "profile_image", length = 255)
+    private String profileImage;
     
     @Column(name = "reset_otp", length = 10)
     private String resetOtp;
     
     @Column(name = "reset_otp_expiry")
     private LocalDateTime resetOtpExpiry;
-    // ===== END RESET PASSWORD FIELDS =====
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -66,13 +72,13 @@ public class Student {
     private LocalDateTime updatedAt;
     
     public enum Status {
-        PENDING, APPROVED, REJECTED
+        PENDING, APPROVED, REJECTED, INACTIVE
     }
     
     // Constructors
-    public Student() {}
+    public Faculty() {}
     
-    public Student(String name, String email, String contact, String adminOfficeName, 
+    public Faculty(String name, String email, String contact, String adminOfficeName, 
                    String batchName, String username, String password) {
         this.name = name;
         this.email = email;
@@ -95,10 +101,7 @@ public class Student {
         updatedAt = LocalDateTime.now();
     }
     
-    // =============================================
-    // GETTERS AND SETTERS
-    // =============================================
-    
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -163,28 +166,44 @@ public class Student {
         this.password = password;
     }
     
-    public String getEnrollmentNo() {
-        return enrollmentNo;
+    public String getEmployeeId() {
+        return employeeId;
     }
     
-    public void setEnrollmentNo(String enrollmentNo) {
-        this.enrollmentNo = enrollmentNo;
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
     
-    public String getResetToken() {
-        return resetToken;
+    public String getQualification() {
+        return qualification;
     }
     
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
     }
     
-    public LocalDateTime getResetTokenExpiry() {
-        return resetTokenExpiry;
+    public Integer getExperienceYears() {
+        return experienceYears;
     }
     
-    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
-        this.resetTokenExpiry = resetTokenExpiry;
+    public void setExperienceYears(Integer experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+    
+    public LocalDate getJoiningDate() {
+        return joiningDate;
+    }
+    
+    public void setJoiningDate(LocalDate joiningDate) {
+        this.joiningDate = joiningDate;
+    }
+    
+    public String getProfileImage() {
+        return profileImage;
+    }
+    
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
     
     public String getResetOtp() {
@@ -243,10 +262,7 @@ public class Student {
         this.updatedAt = updatedAt;
     }
     
-    // =============================================
-    // HELPER METHODS
-    // =============================================
-    
+    // Helper Methods
     public boolean isApproved() {
         return status == Status.APPROVED;
     }
@@ -286,33 +302,15 @@ public class Student {
         this.resetOtpExpiry = null;
     }
     
-    public void setResetToken1(String token) {
-        this.resetToken = token;
-        this.resetTokenExpiry = LocalDateTime.now().plusHours(1);
-    }
-    
-    public boolean isResetTokenValid(String token) {
-        return this.resetToken != null && 
-               this.resetToken.equals(token) && 
-               this.resetTokenExpiry != null && 
-               LocalDateTime.now().isBefore(this.resetTokenExpiry);
-    }
-    
-    public void clearResetToken() {
-        this.resetToken = null;
-        this.resetTokenExpiry = null;
-    }
-    
     @Override
     public String toString() {
-        return "Student{" +
+        return "Faculty{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", batchName='" + batchName + '\'' +
                 ", status=" + status +
-                ", enrollmentNo='" + enrollmentNo + '\'' +
                 '}';
     }
 }
