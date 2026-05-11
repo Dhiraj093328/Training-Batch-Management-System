@@ -1,127 +1,223 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Reset Password | Smart IT Training</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Student Dashboard | Smart IT Training</title>
+    
+    <!-- External Dependencies -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- External CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/student-forgot-password.css">
-    
-    <!-- Google Fonts + Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/student-dashboard.css">
 </head>
 <body>
 
-<!-- Animated Background -->
-<div class="bg-animation">
-    <div class="gradient-orb orb-purple"></div>
-    <div class="gradient-orb orb-blue"></div>
-    <div class="gradient-orb orb-pink"></div>
-    <div class="tech-grid"></div>
-    <div class="glow-line" style="top: 15%; animation-delay: 0s;"></div>
-    <div class="glow-line" style="top: 45%; animation-delay: 3s; width: 80%; left: 10%;"></div>
-    <div class="glow-line" style="top: 75%; animation-delay: 6s; width: 60%; left: 20%;"></div>
-    
-    <div class="floating-cube" style="width: 60px; height: 60px; left: 5%; animation-duration: 18s;"></div>
-    <div class="floating-cube" style="width: 40px; height: 40px; right: 8%; animation-duration: 22s; top: 30%;"></div>
-    <div class="floating-cube" style="width: 80px; height: 80px; left: 80%; animation-duration: 25s; top: 60%;"></div>
-    <div class="floating-cube" style="width: 30px; height: 30px; left: 15%; animation-duration: 16s; top: 70%;"></div>
-</div>
-
-<div class="forgot-container">
-    <div class="forgot-header">
-        <div class="header-icon">
-            <i class="fas fa-key"></i>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">🎓</div>
+            <h2>Smart IT Training</h2>
+            <p>Student Portal</p>
         </div>
-        <h1>Reset Password</h1>
-        <p>We'll help you get back into your account</p>
+        <div class="sidebar-menu">
+            <div class="menu-item active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+            </div>
+            <div class="menu-item" data-section="attendance">
+                <i class="fas fa-calendar-check"></i> <span>Attendance Score</span>
+            </div>
+            <div class="menu-item" data-section="exam">
+                <i class="fas fa-file-alt"></i> <span>Online Exam & Result</span>
+            </div>
+            <div class="menu-item" data-section="syllabus">
+                <i class="fas fa-book"></i> <span>Syllabus Coverage</span>
+            </div>
+        </div>
     </div>
-    
-    <div class="forgot-body">
-        <!-- Alert Messages -->
-        <c:if test="${not empty param.error}">
-            <c:choose>
-                <c:when test="${param.error eq 'notfound'}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Email not found. Please check and try again.</span>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="welcome-text">
+                <h3>Welcome, ${sessionScope.studentName}!</h3>
+                <p><i class="fas fa-user-graduate"></i> Student Dashboard</p>
+            </div>
+            <div class="student-badge">
+                <i class="fas fa-layer-group"></i> Batch: ${sessionScope.studentBatch}
+            </div>
+            <div class="date-time">
+                <div class="date" id="currentDate"></div>
+                <div class="time" id="currentTime"></div>
+            </div>
+            <a href="${pageContext.request.contextPath}/student/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+
+        <!-- ========== DASHBOARD SECTION ========== -->
+        <div id="dashboard-section" class="content-section active-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="attendancePercent">0%</div>
+                        <div class="stat-label">Overall Attendance</div>
                     </div>
-                </c:when>
-                <c:when test="${param.error eq 'invalid'}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Something went wrong. Please try again.</span>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>${param.error}</span>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </c:if>
-        
-        <c:if test="${not empty param.success}">
-            <c:choose>
-                <c:when test="${param.success eq 'sent'}">
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Reset link sent! Please check your email inbox.</span>
-                    </div>
-                </c:when>
-                <c:when test="${param.success eq 'reset'}">
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Password reset successful! Please login with your new password.</span>
-                    </div>
-                </c:when>
-            </c:choose>
-        </c:if>
-        
-        <form action="${pageContext.request.contextPath}/student/forgot-password" method="post" id="forgotForm">
-            <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email Address</label>
-                <div class="input-group">
-                    <i class="fas fa-at input-icon"></i>
-                    <input type="email" name="email" id="email" required placeholder="Enter your registered email">
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                 </div>
-                <div class="info-text">
-                    <i class="fas fa-info-circle"></i> We'll send a password reset link to this email
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="examsCompleted">0</div>
+                        <div class="stat-label">Exams Completed</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="avgScore">0%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="syllabusPercent">0%</div>
+                        <div class="stat-label">Syllabus Covered</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
                 </div>
             </div>
-            
-            <button type="submit" class="reset-btn" id="resetBtn">
-                <span>Send Reset Link</span> <i class="fas fa-paper-plane"></i>
-            </button>
-            
-            <div class="action-links">
-                <div class="action-link">
-                    <a href="${pageContext.request.contextPath}/student/login">
-                        <i class="fas fa-arrow-left"></i> Back to Login
-                    </a>
-                </div>
-                <div class="action-link">
-                    <a href="${pageContext.request.contextPath}/student/register">
-                        <i class="fas fa-user-plus"></i> Create New Account
-                    </a>
+            <div class="section-card">
+                <div class="section-title">Quick Overview</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <div>
+                        <p><strong><i class="fas fa-user"></i> Name:</strong> ${sessionScope.studentName}</p>
+                        <p><strong><i class="fas fa-envelope"></i> Email:</strong> ${sessionScope.studentEmail}</p>
+                        <p><strong><i class="fas fa-id-card"></i> Enrollment No:</strong> ${sessionScope.studentEnrollmentNo}</p>
+                    </div>
+                    <div>
+                        <p><strong><i class="fas fa-layer-group"></i> Batch:</strong> ${sessionScope.studentBatch}</p>
+                        <p><strong><i class="fas fa-calendar-alt"></i> Login Time:</strong> ${sessionScope.loginTime}</p>
+                        <p><strong><i class="fas fa-check-circle"></i> Status:</strong> <span style="color: #28a745;">Active</span></p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="security-badge">
-                <span><i class="fas fa-shield-alt"></i> Secure Encrypted</span>
-                <span><i class="fas fa-clock"></i> Link expires in 24 hours</span>
-                <span><i class="fas fa-envelope"></i> Check spam folder</span>
+        </div>
+
+        <!-- ========== ATTENDANCE SCORE SECTION ========== -->
+        <div id="attendance-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-calendar-check"></i> My Attendance Score</div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h4>Overall Attendance</h4>
+                    <div style="font-size: 2rem; font-weight: 700; color: #667eea;" id="overallAttendance">0%</div>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill" id="overallAttendanceBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h4>Monthly Attendance Trend</h4>
+                    <canvas id="attendanceChart" style="max-height: 300px;"></canvas>
+                </div>
+                
+                <h4>Monthly Attendance Details</h4>
+                <table class="attendance-table" id="attendanceTable">
+                    <thead>
+                        <tr><th>Month</th><th>Present Days</th><th>Total Days</th><th>Attendance %</th><th>Progress</th></tr>
+                    </thead>
+                    <tbody id="attendanceTableBody"></tbody>
+                </table>
             </div>
-        </form>
+        </div>
+
+        <!-- ========== ONLINE EXAM & RESULT SECTION ========== -->
+        <div id="exam-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-file-alt"></i> Online Exams</div>
+                
+                <h4><i class="fas fa-clock"></i> Upcoming Exams</h4>
+                <div class="exam-grid" id="upcomingExams">
+                    <div class="exam-card">
+                        <h4>Core Java Assessment</h4>
+                        <div class="exam-date"><i class="fas fa-calendar"></i> Dec 15, 2024 | 10:00 AM</div>
+                        <div>Duration: 60 mins | Total Marks: 50</div>
+                        <span class="exam-status status-upcoming">Not Started</span>
+                    </div>
+                    <div class="exam-card">
+                        <h4>Spring Boot Test</h4>
+                        <div class="exam-date"><i class="fas fa-calendar"></i> Dec 20, 2024 | 02:00 PM</div>
+                        <div>Duration: 90 mins | Total Marks: 100</div>
+                        <span class="exam-status status-upcoming">Not Started</span>
+                    </div>
+                    <div class="exam-card">
+                        <h4>MySQL Database Exam</h4>
+                        <div class="exam-date"><i class="fas fa-calendar"></i> Dec 22, 2024 | 11:00 AM</div>
+                        <div>Duration: 45 mins | Total Marks: 50</div>
+                        <span class="exam-status status-upcoming">Not Started</span>
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 30px;"><i class="fas fa-chart-line"></i> Completed Exams & Results</h4>
+                <div class="result-grid" id="completedExams">
+                    <div class="result-card">
+                        <h4>Python Fundamentals</h4>
+                        <div class="score">42/50</div>
+                        <div>Percentage: 84% | Grade: A</div>
+                        <div class="grade">Excellent</div>
+                        <div><small>Completed: Dec 05, 2024</small></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Database Management</h4>
+                        <div class="score">38/50</div>
+                        <div>Percentage: 76% | Grade: B+</div>
+                        <div class="grade">Good</div>
+                        <div><small>Completed: Nov 28, 2024</small></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Web Technologies</h4>
+                        <div class="score">45/50</div>
+                        <div>Percentage: 90% | Grade: A+</div>
+                        <div class="grade">Outstanding</div>
+                        <div><small>Completed: Nov 15, 2024</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== SYLLABUS COVERAGE SECTION ========== -->
+        <div id="syllabus-section" class="content-section">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-book"></i> Syllabus Coverage</div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h4>Overall Syllabus Progress</h4>
+                    <div style="font-size: 2rem; font-weight: 700; color: #667eea;" id="overallSyllabus">0%</div>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill" id="overallSyllabusBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <h4>Subject-wise Progress</h4>
+                <div id="subjectProgressList"></div>
+                
+                <h4 style="margin-top: 30px;">Topic-wise Syllabus</h4>
+                <div id="syllabusTopicsList"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- External JavaScript -->
-<script src="${pageContext.request.contextPath}/js/student-forgot-password.js"></script>
+<!-- External JS -->
+<script src="${pageContext.request.contextPath}/js/student-dashboard.js"></script>
 </body>
 </html>

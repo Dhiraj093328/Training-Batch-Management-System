@@ -1,187 +1,216 @@
-// Get DOM elements
-const forgotForm = document.getElementById('forgotForm');
-const resetBtn = document.getElementById('resetBtn');
-const emailInput = document.getElementById('email');
+// student-dashboard.js
 
-// Show error message function
-function showErrorAlert(message) {
-    let existingAlert = document.querySelector('.alert-error');
-    if (existingAlert) existingAlert.remove();
-    
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-error';
-    alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>' + message + '</span>';
-    const bodyDiv = document.querySelector('.forgot-body');
-    const formElement = document.querySelector('form');
-    bodyDiv.insertBefore(alertDiv, formElement);
-    
-    setTimeout(() => {
-        alertDiv.style.opacity = '0';
-        setTimeout(() => {
-            if (alertDiv.parentNode) alertDiv.remove();
-        }, 300);
-    }, 4000);
+// ========== DATE & TIME ==========
+function updateDateTime() {
+    const now = new Date();
+    document.getElementById('currentDate').innerHTML = '<i class="far fa-calendar-alt"></i> ' + now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('currentTime').innerHTML = '<i class="far fa-clock"></i> ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 }
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
-// Show success message function
-function showSuccessAlert(message) {
-    let existingAlert = document.querySelector('.alert-success');
-    if (existingAlert) existingAlert.remove();
-    
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success';
-    alertDiv.innerHTML = '<i class="fas fa-check-circle"></i><span>' + message + '</span>';
-    const bodyDiv = document.querySelector('.forgot-body');
-    const formElement = document.querySelector('form');
-    bodyDiv.insertBefore(alertDiv, formElement);
-    
-    setTimeout(() => {
-        alertDiv.style.opacity = '0';
-        setTimeout(() => {
-            if (alertDiv.parentNode) alertDiv.remove();
-        }, 300);
-    }, 4000);
-}
+// ========== SIDEBAR NAVIGATION ==========
+const menuItems = document.querySelectorAll('.menu-item');
+const sections = document.querySelectorAll('.content-section');
 
-// Form validation and submission
-if (forgotForm) {
-    forgotForm.addEventListener('submit', function(e) {
-        const email = emailInput.value.trim();
+menuItems.forEach(item => {
+    item.addEventListener('click', function() {
+        const sectionId = this.getAttribute('data-section');
+        menuItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+        sections.forEach(section => section.classList.remove('active-section'));
+        document.getElementById(sectionId + '-section').classList.add('active-section');
         
-        // Check if email is empty
-        if (!email) {
-            e.preventDefault();
-            showErrorAlert('Please enter your email address');
-            return false;
-        }
-        
-        // Check if email is valid format
-        if (!email.includes('@') || !email.includes('.')) {
-            e.preventDefault();
-            showErrorAlert('Please enter a valid email address');
-            return false;
-        }
-        
-        // Show loading state on button
-        if (resetBtn) {
-            resetBtn.innerHTML = '<span>Sending...</span> <i class="fas fa-spinner fa-pulse"></i>';
-            resetBtn.disabled = true;
-            
-            // Reset button after 8 seconds if stuck
-            setTimeout(() => {
-                if (resetBtn.disabled) {
-                    resetBtn.innerHTML = '<span>Send Reset Link</span> <i class="fas fa-paper-plane"></i>';
-                    resetBtn.disabled = false;
-                }
-            }, 8000);
-        }
-    });
-}
-
-// Input focus effects
-const allInputs = document.querySelectorAll('.form-group input');
-allInputs.forEach(input => {
-    input.addEventListener('focus', function() {
-        this.style.transform = 'translateY(-2px)';
-        const icon = this.parentElement.querySelector('.input-icon');
-        if (icon) icon.style.color = '#3B82F6';
-    });
-    
-    input.addEventListener('blur', function() {
-        this.style.transform = 'translateY(0)';
-        const icon = this.parentElement.querySelector('.input-icon');
-        if (icon) icon.style.color = '#9CA3AF';
-    });
-    
-    // Ripple effect on click
-    input.addEventListener('click', function(e) {
-        createRipple(e.clientX, e.clientY);
+        // Load data when section is opened
+        if (sectionId === 'attendance') loadAttendanceData();
+        if (sectionId === 'syllabus') loadSyllabusData();
     });
 });
 
-// Ripple effect on button
-if (resetBtn) {
-    resetBtn.addEventListener('click', function(e) {
-        createRipple(e.clientX, e.clientY);
-    });
-}
-
-// Create ripple animation
-function createRipple(x, y) {
-    const ripple = document.createElement('div');
-    ripple.style.position = 'fixed';
-    ripple.style.width = '8px';
-    ripple.style.height = '8px';
-    ripple.style.backgroundColor = '#3B82F6';
-    ripple.style.borderRadius = '50%';
-    ripple.style.pointerEvents = 'none';
-    ripple.style.zIndex = '9999';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-    ripple.style.transform = 'translate(-50%, -50%)';
-    ripple.style.animation = 'rippleAnim 0.6s ease-out forwards';
-    document.body.appendChild(ripple);
+// ========== ATTENDANCE DATA ==========
+function loadAttendanceData() {
+    // Monthly attendance data
+    const monthlyData = [
+        { month: 'January', present: 22, total: 24, percent: 92 },
+        { month: 'February', present: 20, total: 22, percent: 91 },
+        { month: 'March', present: 18, total: 23, percent: 78 },
+        { month: 'April', present: 21, total: 22, percent: 95 },
+        { month: 'May', present: 19, total: 21, percent: 90 },
+        { month: 'June', present: 23, total: 24, percent: 96 }
+    ];
     
-    setTimeout(() => {
-        if (ripple.parentNode) ripple.remove();
-    }, 600);
+    // Calculate overall attendance
+    let totalPresent = 0, totalDays = 0;
+    monthlyData.forEach(m => {
+        totalPresent += m.present;
+        totalDays += m.total;
+    });
+    const overallPercent = Math.round((totalPresent / totalDays) * 100);
+    
+    document.getElementById('attendancePercent').innerText = overallPercent + '%';
+    document.getElementById('overallAttendance').innerText = overallPercent + '%';
+    document.getElementById('overallAttendanceBar').style.width = overallPercent + '%';
+    
+    // Populate table
+    const tbody = document.getElementById('attendanceTableBody');
+    tbody.innerHTML = '';
+    monthlyData.forEach(m => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${m.month}</td>
+                <td>${m.present}</td>
+                <td>${m.total}</td>
+                <td>${m.percent}%</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width: ${m.percent}%"></div></div></td>
+            </tr>
+        `;
+    });
+    
+    // Create chart
+    createAttendanceChart(monthlyData);
 }
 
-// Add ripple animation keyframes
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-    @keyframes rippleAnim {
-        0% {
-            width: 0px;
-            height: 0px;
-            opacity: 0.8;
-            background-color: #3B82F6;
-        }
-        100% {
-            width: 100px;
-            height: 100px;
-            opacity: 0;
-            background-color: transparent;
-        }
+function createAttendanceChart(data) {
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    // Destroy existing chart if it exists to avoid duplication
+    if (window.attendanceChartInstance) {
+        window.attendanceChartInstance.destroy();
     }
-`;
-document.head.appendChild(styleSheet);
-
-// Auto-focus email field for better UX
-setTimeout(() => {
-    if (emailInput) emailInput.focus();
-}, 300);
-
-// Link hover animations
-const links = document.querySelectorAll('.action-link a');
-links.forEach(link => {
-    link.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateX(3px)';
-        this.style.transition = 'transform 0.2s ease';
-    });
-    link.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateX(0)';
-    });
-});
-
-// Real-time email validation
-if (emailInput) {
-    emailInput.addEventListener('input', function() {
-        const email = this.value.trim();
-        const infoText = document.querySelector('.info-text');
-        
-        if (email && (!email.includes('@') || !email.includes('.'))) {
-            infoText.style.color = '#DC2626';
-            infoText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a valid email address';
-        } else if (email && email.includes('@') && email.includes('.') && email.length > 5) {
-            infoText.style.color = '#10B981';
-            infoText.innerHTML = '<i class="fas fa-check-circle"></i> Valid email format';
-        } else {
-            infoText.style.color = '#6B7280';
-            infoText.innerHTML = '<i class="fas fa-info-circle"></i> We\'ll send a password reset link to this email';
+    window.attendanceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.month),
+            datasets: [{
+                label: 'Attendance Percentage',
+                data: data.map(d => d.percent),
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: { display: true, text: 'Percentage (%)' }
+                }
+            }
         }
     });
 }
 
-// Console greeting
-console.log("%c🔐 Smart IT Training | Password Reset Portal Ready", "color: #3B82F6; font-size: 13px; font-weight: bold;");
+// ========== SYLLABUS DATA ==========
+function loadSyllabusData() {
+    const overallPercent = 72;
+    document.getElementById('syllabusPercent').innerText = overallPercent + '%';
+    document.getElementById('overallSyllabus').innerText = overallPercent + '%';
+    document.getElementById('overallSyllabusBar').style.width = overallPercent + '%';
+    
+    // Subject-wise progress
+    const subjects = [
+        { name: 'Core Java', completed: 12, total: 15, percent: 80 },
+        { name: 'Spring Boot', completed: 8, total: 12, percent: 67 },
+        { name: 'MySQL', completed: 10, total: 10, percent: 100 },
+        { name: 'React JS', completed: 6, total: 10, percent: 60 },
+        { name: 'HTML/CSS', completed: 8, total: 8, percent: 100 }
+    ];
+    
+    const subjectContainer = document.getElementById('subjectProgressList');
+    subjectContainer.innerHTML = '';
+    subjects.forEach(sub => {
+        subjectContainer.innerHTML += `
+            <div class="subject-progress">
+                <div class="subject-title">${sub.name}</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>${sub.completed}/${sub.total} topics completed</span>
+                    <span>${sub.percent}%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: ${sub.percent}%"></div></div>
+            </div>
+        `;
+    });
+    
+    // Topic-wise syllabus
+    const topics = [
+        { subject: 'Core Java', topic: 'Introduction to Java', completed: true },
+        { subject: 'Core Java', topic: 'OOP Concepts', completed: true },
+        { subject: 'Core Java', topic: 'Exception Handling', completed: true },
+        { subject: 'Core Java', topic: 'Collections Framework', completed: false },
+        { subject: 'Core Java', topic: 'Multithreading', completed: false },
+        { subject: 'Spring Boot', topic: 'Spring Core', completed: true },
+        { subject: 'Spring Boot', topic: 'Spring MVC', completed: true },
+        { subject: 'Spring Boot', topic: 'Spring Data JPA', completed: false },
+        { subject: 'MySQL', topic: 'SQL Basics', completed: true },
+        { subject: 'MySQL', topic: 'Joins', completed: true },
+        { subject: 'React JS', topic: 'Components', completed: true },
+        { subject: 'React JS', topic: 'Props & State', completed: false }
+    ];
+    
+    const topicsContainer = document.getElementById('syllabusTopicsList');
+    topicsContainer.innerHTML = '';
+    let currentSubject = '';
+    topics.forEach(topic => {
+        if (currentSubject !== topic.subject) {
+            currentSubject = topic.subject;
+            topicsContainer.innerHTML += `<h5 style="margin-top: 15px; color: #667eea;">${topic.subject}</h5>`;
+        }
+        topicsContainer.innerHTML += `
+            <div class="syllabus-item">
+                <div class="topic">
+                    <i class="fas ${topic.completed ? 'fa-check-circle completed' : 'fa-circle pending'}"></i>
+                    <span>${topic.topic}</span>
+                </div>
+                <span class="${topic.completed ? 'completed' : 'pending'}">
+                    ${topic.completed ? 'Completed' : 'Pending'}
+                </span>
+                <div class="syllabus-progress">
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${topic.completed ? 100 : 0}%"></div></div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// ========== ANIMATION FOR STATS ==========
+function animateNumbers() {
+    const attendance = 85;
+    const exams = 4;
+    const avgScore = 82;
+    const syllabus = 70;
+    
+    animateNumber('attendancePercent', attendance);
+    animateNumber('examsCompleted', exams);
+    animateNumber('avgScore', avgScore);
+    animateNumber('syllabusPercent', syllabus);
+}
+
+function animateNumber(elementId, target) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    let current = 0;
+    const increment = target / 50;
+    const isPercent = elementId === 'attendancePercent' || elementId === 'avgScore' || elementId === 'syllabusPercent';
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            element.innerText = target + (isPercent ? '%' : '');
+            clearInterval(timer);
+        } else {
+            element.innerText = Math.floor(current) + (isPercent ? '%' : '');
+        }
+    }, 20);
+}
+
+// ========== INITIALIZATION ==========
+document.addEventListener('DOMContentLoaded', () => {
+    loadAttendanceData();
+    animateNumbers();
+    console.log('%c🎓 Student Dashboard Loaded', 'color: #667eea; font-size: 14px; font-weight: bold;');
+});
