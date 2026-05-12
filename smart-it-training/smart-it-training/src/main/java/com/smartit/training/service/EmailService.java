@@ -16,7 +16,6 @@ public class EmailService {
     // ADMIN EMAILS
     // =============================================
     
-    // Send Admin Registration Success Email
     public void sendAdminRegistrationEmail(String to, String name, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -35,7 +34,6 @@ public class EmailService {
         }
     }
     
-    // Send Admin OTP Email
     public void sendAdminOtpEmail(String to, String name, String otp) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -54,7 +52,6 @@ public class EmailService {
         }
     }
     
-    // Send Admin Password Reset Confirmation
     public void sendAdminPasswordResetConfirmation(String to, String name) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -77,7 +74,6 @@ public class EmailService {
     // STUDENT EMAILS
     // =============================================
     
-    // Send Student Registration Email (Pending Approval)
     public void sendStudentRegistrationEmail(String to, String name, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -96,7 +92,6 @@ public class EmailService {
         }
     }
     
-    // Send Student Approval Email
     public void sendStudentApprovalEmail(String to, String name, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -115,7 +110,6 @@ public class EmailService {
         }
     }
     
-    // Send Student Rejection Email
     public void sendStudentRejectionEmail(String to, String name, String reason) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -134,7 +128,6 @@ public class EmailService {
         }
     }
     
-    // Send Student OTP Email
     public void sendStudentOtpEmail(String to, String name, String otp) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -153,7 +146,6 @@ public class EmailService {
         }
     }
     
-    // Send Student Password Reset Confirmation
     public void sendStudentPasswordResetConfirmation(String to, String name) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -176,7 +168,6 @@ public class EmailService {
     // FACULTY EMAILS
     // =============================================
     
-    // Send Faculty Registration Email (Pending Approval)
     public void sendFacultyRegistrationEmail(String to, String name, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -195,7 +186,6 @@ public class EmailService {
         }
     }
     
-    // Send Faculty Approval Email
     public void sendFacultyApprovalEmail(String to, String name, String username, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -214,7 +204,6 @@ public class EmailService {
         }
     }
     
-    // Send Faculty Rejection Email
     public void sendFacultyRejectionEmail(String to, String name, String reason) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -233,7 +222,6 @@ public class EmailService {
         }
     }
     
-    // Send Faculty OTP Email
     public void sendFacultyOtpEmail(String to, String name, String otp) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -252,7 +240,6 @@ public class EmailService {
         }
     }
     
-    // Send Faculty Password Reset Confirmation
     public void sendFacultyPasswordResetConfirmation(String to, String name) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -275,7 +262,6 @@ public class EmailService {
     // COMMON/OTHER EMAILS
     // =============================================
     
-    // Send Fee Receipt Email
     public void sendFeeReceiptEmail(String to, String name, String receiptNumber, String amount, String course) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -294,7 +280,6 @@ public class EmailService {
         }
     }
     
-    // Send Placement Application Confirmation
     public void sendPlacementApplicationEmail(String to, String name, String companyName) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -313,7 +298,6 @@ public class EmailService {
         }
     }
     
-    // Send Notice Email to All Students
     public void sendBulkEmail(String[] recipients, String subject, String content) {
         try {
             for (String to : recipients) {
@@ -335,7 +319,6 @@ public class EmailService {
     // HTML TEMPLATES
     // =============================================
     
-    // Admin Registration Template
     private String getAdminRegistrationTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -368,7 +351,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Admin OTP Template
     private String getAdminOtpTemplate(String name, String otp) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -393,7 +375,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Admin Password Reset Confirmation Template
     private String getAdminPasswordResetTemplate(String name) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -416,7 +397,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student Registration Template (Enhanced with credentials and better styling)
     private String getStudentRegistrationTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -450,7 +430,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student Approval Template (Enhanced with better styling and credentials)
     private String getStudentApprovalTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -485,7 +464,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student Rejection Template
     private String getStudentRejectionTemplate(String name, String reason) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -509,7 +487,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student OTP Template
     private String getStudentOtpTemplate(String name, String otp) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -534,7 +511,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Student Password Reset Confirmation Template
     private String getStudentPasswordResetTemplate(String name) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -558,7 +534,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Faculty Registration Template
     private String getFacultyRegistrationTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -591,7 +566,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Faculty Approval Template
     private String getFacultyApprovalTemplate(String name, String username, String password) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -623,7 +597,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Faculty Rejection Template
     private String getFacultyRejectionTemplate(String name, String reason) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -647,7 +620,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Faculty OTP Template
     private String getFacultyOtpTemplate(String name, String otp) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -672,7 +644,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Faculty Password Reset Confirmation Template
     private String getFacultyPasswordResetTemplate(String name) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -696,7 +667,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Fee Receipt Template
     private String getFeeReceiptTemplate(String name, String receiptNumber, String amount, String course) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +
@@ -724,7 +694,6 @@ public class EmailService {
             "</body></html>";
     }
     
-    // Placement Application Template
     private String getPlacementApplicationTemplate(String name, String companyName) {
         return "<!DOCTYPE html>" +
             "<html><head><style>" +

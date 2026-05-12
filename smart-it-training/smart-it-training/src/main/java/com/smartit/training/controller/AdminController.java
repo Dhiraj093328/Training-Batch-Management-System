@@ -2,8 +2,10 @@ package com.smartit.training.controller;
 
 import com.smartit.training.model.Admin;
 import com.smartit.training.model.Student;
+import com.smartit.training.model.Faculty;
 import com.smartit.training.repository.AdminRepository;
 import com.smartit.training.repository.StudentRepository;
+import com.smartit.training.repository.FacultyRepository;
 import com.smartit.training.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,9 @@ public class AdminController {
     
     @Autowired
     private StudentRepository studentRepository;
+    
+    @Autowired
+    private FacultyRepository facultyRepository;
     
     @Autowired
     private EmailService emailService;
@@ -107,14 +112,17 @@ public class AdminController {
     }
     
     @PostMapping("/login")
-    public String processLogin(@RequestParam String userId,
+    public String processLogin(@RequestParam String username,
                                @RequestParam String password,
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
         
-        Optional<Admin> adminOpt = adminRepository.findByUsername(userId);
+        System.out.println("===== ADMIN LOGIN =====");
+        System.out.println("Username: " + username);
+        
+        Optional<Admin> adminOpt = adminRepository.findByUsername(username);
         if (adminOpt.isEmpty()) {
-            adminOpt = adminRepository.findByEmail(userId);
+            adminOpt = adminRepository.findByEmail(username);
         }
         
         if (adminOpt.isPresent()) {
@@ -127,8 +135,13 @@ public class AdminController {
                 session.setAttribute("adminOffice", admin.getOfficeName());
                 session.setAttribute("loginTime", LocalDateTime.now().toString());
                 
+                System.out.println("Admin logged in: " + admin.getName());
                 return "redirect:/admin/dashboard";
+            } else {
+                System.out.println("Login failed: Wrong password");
             }
+        } else {
+            System.out.println("Login failed: User not found");
         }
         
         redirectAttributes.addAttribute("error", "true");
@@ -136,7 +149,7 @@ public class AdminController {
     }
     
     // =============================================
-    // DASHBOARD
+    // DASHBOARD - MAIN DASHBOARD
     // =============================================
     
     @GetMapping("/dashboard")
@@ -147,19 +160,248 @@ public class AdminController {
         
         System.out.println("===== ADMIN DASHBOARD =====");
         
+        // Get student data
         List<Student> pendingStudents = studentRepository.findByStatus(Student.Status.PENDING);
+        List<Student> approvedStudents = studentRepository.findByStatus(Student.Status.APPROVED);
         
-        System.out.println("Total Pending Students Found: " + pendingStudents.size());
-        for (Student s : pendingStudents) {
-            System.out.println("  - " + s.getName() + " | " + s.getBatchName() + " | " + s.getUsername());
-        }
+        // Get faculty data
+        List<Faculty> pendingFaculty = facultyRepository.findByStatus(Faculty.Status.PENDING);
+        List<Faculty> approvedFaculty = facultyRepository.findByStatus(Faculty.Status.APPROVED);
+        
+        // Calculate counts
+        long totalStudents = studentRepository.count();
+        long pendingStudentsCount = pendingStudents.size();
+        long approvedStudentsCount = approvedStudents.size();
+        long pendingFacultyCount = pendingFaculty.size();
+        long approvedFacultyCount = approvedFaculty.size();
+        
+        System.out.println("Total Students: " + totalStudents);
+        System.out.println("Pending Students: " + pendingStudentsCount);
+        System.out.println("Pending Faculty: " + pendingFacultyCount);
         
         model.addAttribute("pendingStudents", pendingStudents);
-        model.addAttribute("pendingStudentsCount", pendingStudents.size());
-        model.addAttribute("totalStudentsCount", studentRepository.count());
-        model.addAttribute("approvedStudentsCount", studentRepository.countByStatus(Student.Status.APPROVED));
+        model.addAttribute("pendingStudentsCount", pendingStudentsCount);
+        model.addAttribute("approvedStudentsCount", approvedStudentsCount);
+        model.addAttribute("totalStudentsCount", totalStudents);
+        
+        model.addAttribute("pendingFaculty", pendingFaculty);
+        model.addAttribute("pendingFacultyCount", pendingFacultyCount);
+        model.addAttribute("approvedFacultyCount", approvedFacultyCount);
         
         return "admin/admin-dashboard";
+    }
+    
+    // =============================================
+    // STUDENT MANAGEMENT - APPROVAL METHODS
+    // =============================================
+    
+    @PostMapping("/approve-student")
+    @ResponseBody
+    public Map<String, Object> approveStudent(@RequestParam Integer studentId, 
+                                               HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminName = (String) session.getAttribute("adminName");
+        
+        System.out.println("===== APPROVE STUDENT =====");
+        System.out.println("Student ID: " + studentId);
+        System.out.println("Approved by: " + adminName);
+        
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            
+            student.setStatus(Student.Status.APPROVED);
+            student.setApprovedBy(adminId);
+            student.setApprovedAt(LocalDateTime.now());
+            student.setUpdatedAt(LocalDateTime.now());
+            studentRepository.save(student);
+            
+            System.out.println("Student approved: " + student.getName());
+            
+            try {
+                emailService.sendStudentApprovalEmail(
+                    student.getEmail(), 
+                    student.getName(), 
+                    student.getUsername(), 
+                    student.getPassword()
+                );
+                System.out.println("Approval email sent to: " + student.getEmail());
+            } catch(Exception e) {
+                System.out.println("Email sending failed: " + e.getMessage());
+            }
+            
+            response.put("success", true);
+            response.put("message", "Student approved successfully!");
+            response.put("studentId", studentId);
+        } else {
+            response.put("success", false);
+            response.put("message", "Student not found!");
+        }
+        
+        return response;
+    }
+    
+    @PostMapping("/reject-student")
+    @ResponseBody
+    public Map<String, Object> rejectStudent(@RequestParam Integer studentId,
+                                              @RequestParam(required = false) String reason,
+                                              HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminName = (String) session.getAttribute("adminName");
+        
+        System.out.println("===== REJECT STUDENT =====");
+        System.out.println("Student ID: " + studentId);
+        System.out.println("Rejected by: " + adminName);
+        
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            
+            student.setStatus(Student.Status.REJECTED);
+            student.setApprovedBy(adminId);
+            student.setApprovedAt(LocalDateTime.now());
+            student.setUpdatedAt(LocalDateTime.now());
+            studentRepository.save(student);
+            
+            System.out.println("Student rejected: " + student.getName());
+            
+            String rejectReason = (reason != null && !reason.isEmpty()) ? reason : "Not specified";
+            try {
+                emailService.sendStudentRejectionEmail(student.getEmail(), student.getName(), rejectReason);
+                System.out.println("Rejection email sent to: " + student.getEmail());
+            } catch(Exception e) {
+                System.out.println("Email sending failed: " + e.getMessage());
+            }
+            
+            response.put("success", true);
+            response.put("message", "Student rejected!");
+            response.put("studentId", studentId);
+        } else {
+            response.put("success", false);
+            response.put("message", "Student not found!");
+        }
+        
+        return response;
+    }
+    
+    // =============================================
+    // FACULTY MANAGEMENT - APPROVAL METHODS
+    // =============================================
+    
+    // Approve Faculty Request
+    @PostMapping("/approve-faculty")
+    @ResponseBody
+    public Map<String, Object> approveFaculty(@RequestParam Integer facultyId, 
+                                               HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminName = (String) session.getAttribute("adminName");
+        
+        System.out.println("===== APPROVE FACULTY =====");
+        System.out.println("Faculty ID: " + facultyId);
+        System.out.println("Approved by: " + adminName);
+        
+        Optional<Faculty> facultyOpt = facultyRepository.findById(facultyId);
+        
+        if (facultyOpt.isPresent()) {
+            Faculty faculty = facultyOpt.get();
+            
+            System.out.println("Faculty Name: " + faculty.getName());
+            System.out.println("Previous Status: " + faculty.getStatus());
+            
+            // Update faculty status to APPROVED
+            faculty.setStatus(Faculty.Status.APPROVED);
+            faculty.setApprovedBy(adminId);
+            faculty.setApprovedAt(LocalDateTime.now());
+            faculty.setUpdatedAt(LocalDateTime.now());
+            facultyRepository.save(faculty);
+            
+            System.out.println("New Status: " + faculty.getStatus());
+            System.out.println("Faculty approved: " + faculty.getName());
+            
+            // Send approval email to faculty
+            try {
+                emailService.sendFacultyApprovalEmail(
+                    faculty.getEmail(), 
+                    faculty.getName(), 
+                    faculty.getUsername(), 
+                    faculty.getPassword()
+                );
+                System.out.println("Approval email sent to: " + faculty.getEmail());
+            } catch(Exception e) {
+                System.out.println("Email sending failed: " + e.getMessage());
+            }
+            
+            response.put("success", true);
+            response.put("message", "Faculty approved successfully!");
+            response.put("facultyId", facultyId);
+        } else {
+            response.put("success", false);
+            response.put("message", "Faculty not found!");
+        }
+        
+        return response;
+    }
+    
+    // Reject Faculty Request
+    @PostMapping("/reject-faculty")
+    @ResponseBody
+    public Map<String, Object> rejectFaculty(@RequestParam Integer facultyId,
+                                              @RequestParam(required = false) String reason,
+                                              HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminName = (String) session.getAttribute("adminName");
+        
+        System.out.println("===== REJECT FACULTY =====");
+        System.out.println("Faculty ID: " + facultyId);
+        System.out.println("Rejected by: " + adminName);
+        System.out.println("Reason: " + (reason != null ? reason : "Not specified"));
+        
+        Optional<Faculty> facultyOpt = facultyRepository.findById(facultyId);
+        
+        if (facultyOpt.isPresent()) {
+            Faculty faculty = facultyOpt.get();
+            
+            System.out.println("Faculty Name: " + faculty.getName());
+            System.out.println("Previous Status: " + faculty.getStatus());
+            
+            // Update faculty status to REJECTED
+            faculty.setStatus(Faculty.Status.REJECTED);
+            faculty.setApprovedBy(adminId);
+            faculty.setApprovedAt(LocalDateTime.now());
+            faculty.setUpdatedAt(LocalDateTime.now());
+            facultyRepository.save(faculty);
+            
+            System.out.println("New Status: " + faculty.getStatus());
+            System.out.println("Faculty rejected: " + faculty.getName());
+            
+            // Send rejection email
+            String rejectReason = (reason != null && !reason.isEmpty()) ? reason : "Not specified";
+            try {
+                emailService.sendFacultyRejectionEmail(faculty.getEmail(), faculty.getName(), rejectReason);
+                System.out.println("Rejection email sent to: " + faculty.getEmail());
+            } catch(Exception e) {
+                System.out.println("Email sending failed: " + e.getMessage());
+            }
+            
+            response.put("success", true);
+            response.put("message", "Faculty rejected!");
+            response.put("facultyId", facultyId);
+        } else {
+            response.put("success", false);
+            response.put("message", "Faculty not found!");
+        }
+        
+        return response;
     }
     
     // =============================================
@@ -306,6 +548,9 @@ public class AdminController {
     public Map<String, Object> resendOtp(@RequestParam String identifier, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
+        System.out.println("===== RESEND OTP =====");
+        System.out.println("Identifier: " + identifier);
+        
         Optional<Admin> adminOpt = adminRepository.findByEmail(identifier);
         if (adminOpt.isEmpty()) {
             adminOpt = adminRepository.findByUsername(identifier);
@@ -323,105 +568,11 @@ public class AdminController {
         otpStorage.put(admin.getEmail(), new OtpData(otp, admin.getEmail()));
         emailService.sendAdminOtpEmail(admin.getEmail(), admin.getName(), otp);
         
+        System.out.println("New OTP sent to: " + admin.getEmail());
+        System.out.println("New OTP: " + otp);
+        
         response.put("success", true);
         response.put("message", "OTP resent successfully!");
-        return response;
-    }
-    
-    // =============================================
-    // STUDENT APPROVAL METHODS
-    // =============================================
-    
-    @PostMapping("/approve-student")
-    @ResponseBody
-    public Map<String, Object> approveStudent(@RequestParam Integer studentId, 
-                                               HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        Integer adminId = (Integer) session.getAttribute("adminId");
-        String adminName = (String) session.getAttribute("adminName");
-        
-        System.out.println("===== APPROVE STUDENT =====");
-        System.out.println("Student ID: " + studentId);
-        System.out.println("Approved by: " + adminName);
-        
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        
-        if (studentOpt.isPresent()) {
-            Student student = studentOpt.get();
-            
-            student.setStatus(Student.Status.APPROVED);
-            student.setApprovedBy(adminId);
-            student.setApprovedAt(LocalDateTime.now());
-            student.setUpdatedAt(LocalDateTime.now());
-            studentRepository.save(student);
-            
-            System.out.println("Student approved: " + student.getName());
-            
-            try {
-                emailService.sendStudentApprovalEmail(
-                    student.getEmail(), 
-                    student.getName(), 
-                    student.getUsername(), 
-                    student.getPassword()
-                );
-                System.out.println("Approval email sent to: " + student.getEmail());
-            } catch(Exception e) {
-                System.out.println("Email sending failed: " + e.getMessage());
-            }
-            
-            response.put("success", true);
-            response.put("message", "Student approved successfully!");
-        } else {
-            response.put("success", false);
-            response.put("message", "Student not found!");
-        }
-        
-        return response;
-    }
-    
-    @PostMapping("/reject-student")
-    @ResponseBody
-    public Map<String, Object> rejectStudent(@RequestParam Integer studentId,
-                                              @RequestParam(required = false) String reason,
-                                              HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        Integer adminId = (Integer) session.getAttribute("adminId");
-        String adminName = (String) session.getAttribute("adminName");
-        
-        System.out.println("===== REJECT STUDENT =====");
-        System.out.println("Student ID: " + studentId);
-        System.out.println("Rejected by: " + adminName);
-        
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        
-        if (studentOpt.isPresent()) {
-            Student student = studentOpt.get();
-            
-            student.setStatus(Student.Status.REJECTED);
-            student.setApprovedBy(adminId);
-            student.setApprovedAt(LocalDateTime.now());
-            student.setUpdatedAt(LocalDateTime.now());
-            studentRepository.save(student);
-            
-            System.out.println("Student rejected: " + student.getName());
-            
-            String rejectReason = (reason != null && !reason.isEmpty()) ? reason : "Not specified";
-            try {
-                emailService.sendStudentRejectionEmail(student.getEmail(), student.getName(), rejectReason);
-                System.out.println("Rejection email sent to: " + student.getEmail());
-            } catch(Exception e) {
-                System.out.println("Email sending failed: " + e.getMessage());
-            }
-            
-            response.put("success", true);
-            response.put("message", "Student rejected!");
-        } else {
-            response.put("success", false);
-            response.put("message", "Student not found!");
-        }
-        
         return response;
     }
     

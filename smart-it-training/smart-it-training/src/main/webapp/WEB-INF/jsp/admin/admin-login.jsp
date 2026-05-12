@@ -30,7 +30,7 @@
             <% if(request.getParameter("error") != null) { %>
                 <div class="alert alert-error" id="serverErrorMsg">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <span>Invalid User ID or Password. Please try again.</span>
+                    <span>Invalid Username or Password. Please try again.</span>
                 </div>
             <% } %>
             
@@ -58,11 +58,11 @@
             
             <div id="messageContainer"></div>
             
-            <!-- Login Form -->
+            <!-- Login Form - FIXED: Changed name from 'userId' to 'username' -->
             <form id="secureLoginForm" action="${pageContext.request.contextPath}/admin/login" method="post">
                 <div class="input-group">
-                    <label><i class="fas fa-user-circle"></i> User ID / Email</label>
-                    <input type="text" class="input-field" id="userId" name="userId" placeholder="admin@smartit.edu or empID" autocomplete="username" required>
+                    <label><i class="fas fa-user-circle"></i> Username / Email</label>
+                    <input type="text" class="input-field" id="username" name="username" placeholder="admin@smartit.edu or username" autocomplete="username" required>
                 </div>
 
                 <div class="input-group">

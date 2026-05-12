@@ -530,7 +530,17 @@
                 <c:choose>
                     <c:when test="${not empty pendingFaculty}">
                         <table class="data-table">
-                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Action</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Batch</th>
+                                    <th>Username</th>
+                                    <th>Admin Office</th>
+                                    <th>Qualification</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 <c:forEach items="${pendingFaculty}" var="faculty">
                                     <tr id="faculty-row-${faculty.id}">
@@ -539,23 +549,31 @@
                                         <td>${faculty.batchName}</td>
                                         <td>${faculty.username}</td>
                                         <td>${faculty.adminOfficeName}</td>
+                                        <td>${faculty.qualification}</td>
                                         <td>
-                                            <button class="btn-approve" onclick="approveFaculty(${faculty.id})">Accept</button>
-                                            <button class="btn-reject" onclick="rejectFaculty(${faculty.id})">Reject</button>
-                                        </td>
-                                    </tr>
+                                            <button class="btn-approve" onclick="approveFaculty(${faculty.id})">
+                                                <i class="fas fa-check"></i> Accept
+                                            </button>
+                                            <button class="btn-reject" onclick="showFacultyRejectModal(${faculty.id}, '${faculty.name}')">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                         </td>
+                                     </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
                     </c:when>
                     <c:otherwise>
-                        <div style="text-align: center; padding: 30px;">No pending faculty requests</div>
+                        <div style="text-align: center; padding: 30px;">
+                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px;"></i>
+                            <p style="margin-top: 10px;">No pending faculty requests</p>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
 
-        <!-- ========== 3. ADMIN STUDENT DASHBOARD (DYNAMIC) ========== -->
+        <!-- ========== 3. ADMIN STUDENT DASHBOARD ========== -->
         <div id="student-section" class="content-section">
             <div class="section-card">
                 <div class="section-title">
@@ -594,11 +612,11 @@
                                             <button class="btn-approve" onclick="approveStudent(${student.id})">
                                                 <i class="fas fa-check"></i> Accept
                                             </button>
-                                            <button class="btn-reject" onclick="rejectStudent(${student.id})">
+                                            <button class="btn-reject" onclick="showStudentRejectModal(${student.id}, '${student.name}')">
                                                 <i class="fas fa-times"></i> Reject
                                             </button>
-                                        </td>
-                                    </tr>
+                                         </td>
+                                     </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
@@ -721,23 +739,37 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div id="rejectModal" class="modal">
+<!-- Faculty Reject Modal -->
+<div id="facultyRejectModal" class="modal">
+    <div class="modal-content">
+        <h3>Reject Faculty Request</h3>
+        <p id="rejectFacultyName"></p>
+        <textarea id="facultyRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
+        <input type="hidden" id="rejectFacultyId">
+        <div class="modal-buttons">
+            <button class="btn-reject" onclick="confirmFacultyReject()">Confirm Reject</button>
+            <button class="btn-approve" onclick="closeFacultyModal()" style="background: #6c757d;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Student Reject Modal -->
+<div id="studentRejectModal" class="modal">
     <div class="modal-content">
         <h3>Reject Student Request</h3>
         <p id="rejectStudentName"></p>
-        <textarea id="rejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
+        <textarea id="studentRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
         <input type="hidden" id="rejectStudentId">
         <div class="modal-buttons">
-            <button class="btn-reject" onclick="confirmReject()">Confirm Reject</button>
-            <button class="btn-approve" onclick="closeModal()" style="background: #6c757d;">Cancel</button>
+            <button class="btn-reject" onclick="confirmStudentReject()">Confirm Reject</button>
+            <button class="btn-approve" onclick="closeStudentModal()" style="background: #6c757d;">Cancel</button>
         </div>
     </div>
 </div>
 
 <script>
+    let currentRejectFacultyId = null;
     let currentRejectStudentId = null;
-    let currentRejectStudentName = null;
 
     // ========== DATE & TIME ==========
     function updateDateTime() {
@@ -772,6 +804,89 @@
         setTimeout(() => toast.fadeOut(300, () => toast.remove()), 3000);
     }
 
+    // ========== FACULTY APPROVAL FUNCTIONS ==========
+    function approveFaculty(facultyId) {
+        if (!confirm('Are you sure you want to APPROVE this faculty member? They will receive an email with login credentials.')) {
+            return;
+        }
+        
+        const row = $('#faculty-row-' + facultyId);
+        const approveBtn = row.find('.btn-approve');
+        const originalText = approveBtn.html();
+        
+        approveBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        approveBtn.prop('disabled', true);
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/admin/approve-faculty',
+            type: 'POST',
+            data: { facultyId: facultyId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showToast('✅ ' + response.message, 'success');
+                    row.fadeOut(300, function() { $(this).remove(); });
+                } else {
+                    showToast('❌ ' + response.message, 'error');
+                    approveBtn.html(originalText);
+                    approveBtn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                showToast('❌ Error approving faculty!', 'error');
+                approveBtn.html(originalText);
+                approveBtn.prop('disabled', false);
+            }
+        });
+    }
+
+    function showFacultyRejectModal(facultyId, facultyName) {
+        currentRejectFacultyId = facultyId;
+        document.getElementById('rejectFacultyId').value = facultyId;
+        document.getElementById('rejectFacultyName').innerHTML = 'Faculty: <strong>' + facultyName + '</strong>';
+        document.getElementById('facultyRejectReason').value = '';
+        document.getElementById('facultyRejectModal').style.display = 'flex';
+    }
+
+    function confirmFacultyReject() {
+        const facultyId = currentRejectFacultyId;
+        const reason = document.getElementById('facultyRejectReason').value;
+        const row = $('#faculty-row-' + facultyId);
+        const rejectBtn = row.find('.btn-reject');
+        const originalText = rejectBtn.html();
+        
+        rejectBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        rejectBtn.prop('disabled', true);
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/admin/reject-faculty',
+            type: 'POST',
+            data: { facultyId: facultyId, reason: reason },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showToast('❌ Faculty rejected', 'error');
+                    row.fadeOut(300, function() { $(this).remove(); });
+                    closeFacultyModal();
+                } else {
+                    showToast('❌ ' + response.message, 'error');
+                    rejectBtn.html(originalText);
+                    rejectBtn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                showToast('❌ Error rejecting faculty!', 'error');
+                rejectBtn.html(originalText);
+                rejectBtn.prop('disabled', false);
+            }
+        });
+    }
+
+    function closeFacultyModal() {
+        document.getElementById('facultyRejectModal').style.display = 'none';
+        currentRejectFacultyId = null;
+    }
+
     // ========== STUDENT APPROVAL FUNCTIONS ==========
     function approveStudent(studentId) {
         if (!confirm('Are you sure you want to APPROVE this student? They will receive an email with login credentials.')) {
@@ -793,7 +908,7 @@
             success: function(response) {
                 if (response.success) {
                     showToast('✅ ' + response.message, 'success');
-                    row.fadeOut(300, function() { $(this).remove(); updateCounts(); });
+                    row.fadeOut(300, function() { $(this).remove(); });
                 } else {
                     showToast('❌ ' + response.message, 'error');
                     approveBtn.html(originalText);
@@ -808,17 +923,17 @@
         });
     }
 
-    function rejectStudent(studentId, studentName) {
+    function showStudentRejectModal(studentId, studentName) {
         currentRejectStudentId = studentId;
-        currentRejectStudentName = studentName;
+        document.getElementById('rejectStudentId').value = studentId;
         document.getElementById('rejectStudentName').innerHTML = 'Student: <strong>' + studentName + '</strong>';
-        document.getElementById('rejectReason').value = '';
-        document.getElementById('rejectModal').style.display = 'flex';
+        document.getElementById('studentRejectReason').value = '';
+        document.getElementById('studentRejectModal').style.display = 'flex';
     }
 
-    function confirmReject() {
+    function confirmStudentReject() {
         const studentId = currentRejectStudentId;
-        const reason = document.getElementById('rejectReason').value;
+        const reason = document.getElementById('studentRejectReason').value;
         const row = $('#student-row-' + studentId);
         const rejectBtn = row.find('.btn-reject');
         const originalText = rejectBtn.html();
@@ -833,9 +948,9 @@
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    showToast('❌ ' + response.message, 'error');
-                    row.fadeOut(300, function() { $(this).remove(); updateCounts(); });
-                    closeModal();
+                    showToast('❌ Student rejected', 'error');
+                    row.fadeOut(300, function() { $(this).remove(); });
+                    closeStudentModal();
                 } else {
                     showToast('❌ ' + response.message, 'error');
                     rejectBtn.html(originalText);
@@ -850,21 +965,9 @@
         });
     }
 
-    function closeModal() {
-        document.getElementById('rejectModal').style.display = 'none';
+    function closeStudentModal() {
+        document.getElementById('studentRejectModal').style.display = 'none';
         currentRejectStudentId = null;
-        currentRejectStudentName = null;
-    }
-
-    function updateCounts() {
-        const remainingRows = $('#studentRequestsList tr:visible').length;
-        $('.stat-card:eq(1) .stat-number').text(remainingRows);
-        const pendingSpan = $('.section-title span');
-        if (remainingRows > 0) pendingSpan.text(remainingRows + ' Pending');
-        else {
-            pendingSpan.remove();
-            $('#studentRequestsList').html('<tr><td colspan="7" style="text-align: center;"><i class="fas fa-check-circle" style="color: #28a745;"></i> No pending student requests</td></tr>');
-        }
     }
 
     // ========== LOAD ATTENDANCE ==========
@@ -884,10 +987,6 @@
         });
     }
     loadAttendance();
-
-    // ========== FACULTY ACTIONS ==========
-    function approveFaculty(id) { showToast('Faculty approved!', 'success'); }
-    function rejectFaculty(id) { showToast('Faculty request rejected.', 'error'); }
 
     // ========== COURSES ==========
     const courses = [
@@ -924,7 +1023,11 @@
     function showEventForm() { const f = document.getElementById('eventForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
     function createEvent() { showToast('Event created!', 'success'); }
 
-    $(window).click(function(e) { if ($(e.target).is('#rejectModal')) closeModal(); });
+    // Close modals when clicking outside
+    $(window).click(function(e) {
+        if ($(e.target).is('#facultyRejectModal')) closeFacultyModal();
+        if ($(e.target).is('#studentRejectModal')) closeStudentModal();
+    });
 </script>
 </body>
 </html>
