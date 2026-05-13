@@ -15,6 +15,9 @@ public class Attendance {
     @Column(name = "student_id", nullable = false)
     private Integer studentId;
     
+    @Column(name = "student_name", length = 100)
+    private String studentName;
+    
     @Column(name = "batch_name", length = 50)
     private String batchName;
     
@@ -28,6 +31,9 @@ public class Attendance {
     @Column(name = "marked_by_faculty_id")
     private Integer markedByFacultyId;
     
+    @Column(name = "marked_by_faculty_name", length = 100)
+    private String markedByFacultyName;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -35,13 +41,13 @@ public class Attendance {
         PRESENT, ABSENT, LATE
     }
     
-    // Constructors
-    public Attendance() {}
-    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+    
+    // Constructors
+    public Attendance() {}
     
     // Getters and Setters
     public Integer getId() { return id; }
@@ -49,6 +55,9 @@ public class Attendance {
     
     public Integer getStudentId() { return studentId; }
     public void setStudentId(Integer studentId) { this.studentId = studentId; }
+    
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
     
     public String getBatchName() { return batchName; }
     public void setBatchName(String batchName) { this.batchName = batchName; }
@@ -61,6 +70,9 @@ public class Attendance {
     
     public Integer getMarkedByFacultyId() { return markedByFacultyId; }
     public void setMarkedByFacultyId(Integer markedByFacultyId) { this.markedByFacultyId = markedByFacultyId; }
+    
+    public String getMarkedByFacultyName() { return markedByFacultyName; }
+    public void setMarkedByFacultyName(String markedByFacultyName) { this.markedByFacultyName = markedByFacultyName; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
