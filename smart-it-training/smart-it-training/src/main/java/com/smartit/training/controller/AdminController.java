@@ -3,9 +3,11 @@ package com.smartit.training.controller;
 import com.smartit.training.model.Admin;
 import com.smartit.training.model.Student;
 import com.smartit.training.model.Faculty;
+import com.smartit.training.model.Feedback;
 import com.smartit.training.repository.AdminRepository;
 import com.smartit.training.repository.StudentRepository;
 import com.smartit.training.repository.FacultyRepository;
+import com.smartit.training.repository.FeedbackRepository;
 import com.smartit.training.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,9 @@ public class AdminController {
     
     @Autowired
     private FacultyRepository facultyRepository;
+    
+    @Autowired
+    private FeedbackRepository feedbackRepository;
     
     @Autowired
     private EmailService emailService;
@@ -294,7 +300,6 @@ public class AdminController {
     // FACULTY MANAGEMENT - APPROVAL METHODS
     // =============================================
     
-    // Approve Faculty Request
     @PostMapping("/approve-faculty")
     @ResponseBody
     public Map<String, Object> approveFaculty(@RequestParam Integer facultyId, 
@@ -316,7 +321,6 @@ public class AdminController {
             System.out.println("Faculty Name: " + faculty.getName());
             System.out.println("Previous Status: " + faculty.getStatus());
             
-            // Update faculty status to APPROVED
             faculty.setStatus(Faculty.Status.APPROVED);
             faculty.setApprovedBy(adminId);
             faculty.setApprovedAt(LocalDateTime.now());
@@ -326,7 +330,6 @@ public class AdminController {
             System.out.println("New Status: " + faculty.getStatus());
             System.out.println("Faculty approved: " + faculty.getName());
             
-            // Send approval email to faculty
             try {
                 emailService.sendFacultyApprovalEmail(
                     faculty.getEmail(), 
@@ -350,7 +353,6 @@ public class AdminController {
         return response;
     }
     
-    // Reject Faculty Request
     @PostMapping("/reject-faculty")
     @ResponseBody
     public Map<String, Object> rejectFaculty(@RequestParam Integer facultyId,
@@ -374,7 +376,6 @@ public class AdminController {
             System.out.println("Faculty Name: " + faculty.getName());
             System.out.println("Previous Status: " + faculty.getStatus());
             
-            // Update faculty status to REJECTED
             faculty.setStatus(Faculty.Status.REJECTED);
             faculty.setApprovedBy(adminId);
             faculty.setApprovedAt(LocalDateTime.now());
@@ -384,7 +385,6 @@ public class AdminController {
             System.out.println("New Status: " + faculty.getStatus());
             System.out.println("Faculty rejected: " + faculty.getName());
             
-            // Send rejection email
             String rejectReason = (reason != null && !reason.isEmpty()) ? reason : "Not specified";
             try {
                 emailService.sendFacultyRejectionEmail(faculty.getEmail(), faculty.getName(), rejectReason);
@@ -399,6 +399,170 @@ public class AdminController {
         } else {
             response.put("success", false);
             response.put("message", "Faculty not found!");
+        }
+        
+        return response;
+    }
+    
+    // =============================================
+    // FEEDBACK MANAGEMENT
+    // =============================================
+    
+    // Admin Feedback Dashboard - HTML Page
+    @GetMapping("/feedback-dashboard")
+    public String showFeedbackDashboard(HttpSession session, Model model) {
+        if (session.getAttribute("adminId") == null) {
+            return "redirect:/admin/login";
+        }
+        
+        System.out.println("===== ADMIN FEEDBACK DASHBOARD =====");
+        
+        List<Feedback> unreadFeedbacks = feedbackRepository.findByIsReadOrderByCreatedAtDesc(false);
+        List<Feedback> allFeedbacks = feedbackRepository.findAllByOrderByCreatedAtDesc();
+        Double avgRating = feedbackRepository.getAverageRating();
+        long unreadCount = feedbackRepository.countByIsRead(false);
+        
+        model.addAttribute("unreadFeedbacks", unreadFeedbacks);
+        model.addAttribute("allFeedbacks", allFeedbacks);
+        model.addAttribute("avgRating", avgRating != null ? Math.round(avgRating * 10) / 10.0 : 0);
+        model.addAttribute("totalFeedbacks", allFeedbacks.size());
+        model.addAttribute("unreadCount", unreadCount);
+        
+        return "admin/admin-feedback-dashboard";
+    }
+    
+    // Get Feedback Statistics (API)
+    @GetMapping("/feedback/stats")
+    @ResponseBody
+    public Map<String, Object> getFeedbackStats() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("total", feedbackRepository.count());
+        response.put("unread", feedbackRepository.countByIsRead(false));
+        Double avg = feedbackRepository.getAverageRating();
+        response.put("avgRating", avg != null ? Math.round(avg * 10) / 10.0 : 0);
+        return response;
+    }
+    
+    // Get All Feedbacks (API)
+    @GetMapping("/feedback/all")
+    @ResponseBody
+    public Map<String, Object> getAllFeedbacks() {
+        Map<String, Object> response = new HashMap<>();
+        List<Feedback> feedbacks = feedbackRepository.findAllByOrderByCreatedAtDesc();
+        List<Map<String, Object>> feedbackList = new ArrayList<>();
+        for (Feedback f : feedbacks) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", f.getId());
+            map.put("name", f.getName());
+            map.put("email", f.getEmail());
+            map.put("rating", f.getRating());
+            map.put("message", f.getMessage());
+            map.put("read", f.getIsRead());
+            map.put("replyMessage", f.getReplyMessage());
+            map.put("repliedAt", f.getRepliedAt() != null ? f.getRepliedAt().toString() : null);
+            map.put("createdAt", f.getCreatedAt().toString());
+            feedbackList.add(map);
+        }
+        response.put("success", true);
+        response.put("feedbacks", feedbackList);
+        return response;
+    }
+    
+    // Get Unread Feedbacks (API)
+    @GetMapping("/feedback/unread")
+    @ResponseBody
+    public Map<String, Object> getUnreadFeedbacks() {
+        Map<String, Object> response = new HashMap<>();
+        List<Feedback> feedbacks = feedbackRepository.findByIsReadOrderByCreatedAtDesc(false);
+        List<Map<String, Object>> feedbackList = new ArrayList<>();
+        for (Feedback f : feedbacks) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", f.getId());
+            map.put("name", f.getName());
+            map.put("email", f.getEmail());
+            map.put("rating", f.getRating());
+            map.put("message", f.getMessage());
+            map.put("createdAt", f.getCreatedAt().toString());
+            feedbackList.add(map);
+        }
+        response.put("success", true);
+        response.put("feedbacks", feedbackList);
+        return response;
+    }
+    
+    // Mark feedback as read
+    @PostMapping("/feedback/mark-read")
+    @ResponseBody
+    public Map<String, Object> markFeedbackAsRead(@RequestParam Integer feedbackId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
+        if (feedbackOpt.isPresent()) {
+            Feedback feedback = feedbackOpt.get();
+            feedback.setIsRead(true);
+            feedbackRepository.save(feedback);
+            response.put("success", true);
+            response.put("message", "Feedback marked as read");
+        } else {
+            response.put("success", false);
+            response.put("message", "Feedback not found!");
+        }
+        
+        return response;
+    }
+    
+    // Delete feedback
+    @PostMapping("/feedback/delete")
+    @ResponseBody
+    public Map<String, Object> deleteFeedback(@RequestParam Integer feedbackId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
+        if (feedbackOpt.isPresent()) {
+            feedbackRepository.deleteById(feedbackId);
+            response.put("success", true);
+            response.put("message", "Feedback deleted successfully!");
+        } else {
+            response.put("success", false);
+            response.put("message", "Feedback not found!");
+        }
+        
+        return response;
+    }
+    
+    // Reply to feedback
+    @PostMapping("/feedback/reply")
+    @ResponseBody
+    public Map<String, Object> replyToFeedback(@RequestParam Integer feedbackId,
+                                                @RequestParam String replyMessage,
+                                                HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminName = (String) session.getAttribute("adminName");
+        
+        Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
+        if (feedbackOpt.isPresent()) {
+            Feedback feedback = feedbackOpt.get();
+            feedback.setRepliedBy(adminId);
+            feedback.setReplyMessage(replyMessage);
+            feedback.setRepliedAt(LocalDateTime.now());
+            feedback.setIsRead(true);
+            feedbackRepository.save(feedback);
+            
+            try {
+                emailService.sendFeedbackReplyEmail(feedback.getEmail(), feedback.getName(), replyMessage);
+                System.out.println("Reply email sent to: " + feedback.getEmail());
+            } catch(Exception e) {
+                System.out.println("Email failed: " + e.getMessage());
+            }
+            
+            response.put("success", true);
+            response.put("message", "Reply sent successfully!");
+        } else {
+            response.put("success", false);
+            response.put("message", "Feedback not found!");
         }
         
         return response;

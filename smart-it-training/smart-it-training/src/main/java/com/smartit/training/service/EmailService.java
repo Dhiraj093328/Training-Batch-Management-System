@@ -259,6 +259,29 @@ public class EmailService {
     }
     
     // =============================================
+    // FEEDBACK EMAILS - ADDED
+    // =============================================
+    
+    // Send Feedback Reply Email
+    public void sendFeedbackReplyEmail(String to, String name, String replyMessage) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            
+            helper.setTo(to);
+            helper.setSubject("Smart IT Training - Response to Your Feedback");
+            
+            String htmlContent = getFeedbackReplyTemplate(name, replyMessage);
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            
+            System.out.println("Feedback reply email sent to: " + to);
+        } catch (Exception e) {
+            System.err.println("Failed to send feedback reply email: " + e.getMessage());
+        }
+    }
+    
+    // =============================================
     // COMMON/OTHER EMAILS
     // =============================================
     
@@ -661,6 +684,38 @@ public class EmailService {
             "<h3>Dear " + name + ",</h3>" +
             "<p>Your faculty account password has been successfully reset.</p>" +
             "<a href='http://localhost:8080/faculty/login' class='btn'>Login Now</a>" +
+            "</div>" +
+            "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
+            "</div>" +
+            "</body></html>";
+    }
+    
+    // =============================================
+    // FEEDBACK REPLY TEMPLATE - ADDED
+    // =============================================
+    
+    private String getFeedbackReplyTemplate(String name, String replyMessage) {
+        return "<!DOCTYPE html>" +
+            "<html><head><style>" +
+            "body { font-family: 'Poppins', Arial, sans-serif; line-height: 1.6; }" +
+            ".container { max-width: 550px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; text-align: center; border-radius: 15px 15px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 15px 15px; }" +
+            ".reply-box { background: #f0f0f0; padding: 15px; border-left: 4px solid #667eea; margin: 20px 0; border-radius: 8px; }" +
+            ".footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }" +
+            "</style></head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'><h2>📝 Response to Your Feedback</h2></div>" +
+            "<div class='content'>" +
+            "<h3>Dear " + name + ",</h3>" +
+            "<p>Thank you for taking the time to share your valuable feedback with us. We truly appreciate your input and are committed to continuous improvement.</p>" +
+            "<div class='reply-box'>" +
+            "<p><strong>Our Response:</strong></p>" +
+            "<p>" + replyMessage + "</p>" +
+            "</div>" +
+            "<p>Your feedback helps us serve you better. If you have any further questions or suggestions, please don't hesitate to reach out.</p>" +
+            "<p>Best regards,<br><strong>Smart IT Training Centre Team</strong></p>" +
             "</div>" +
             "<div class='footer'><p>© 2025 Smart IT Training Centre. All rights reserved.</p></div>" +
             "</div>" +

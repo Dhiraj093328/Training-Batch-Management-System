@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,13 +33,11 @@
             overflow-x: hidden;
         }
 
-        /* ========== DASHBOARD CONTAINER ========== */
         .dashboard-container {
             display: flex;
             min-height: 100vh;
         }
 
-        /* ========== SIDEBAR ========== */
         .sidebar {
             width: 280px;
             background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -46,7 +45,6 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            transition: all 0.3s ease;
             z-index: 100;
         }
 
@@ -97,14 +95,12 @@
             font-size: 1.1rem;
         }
 
-        /* ========== MAIN CONTENT ========== */
         .main-content {
             margin-left: 280px;
             flex: 1;
             padding: 20px;
         }
 
-        /* Top Bar */
         .top-bar {
             background: white;
             border-radius: 15px;
@@ -148,8 +144,6 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
             text-decoration: none;
         }
 
@@ -158,7 +152,6 @@
             box-shadow: 0 5px 20px rgba(255,65,108,0.4);
         }
 
-        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -205,7 +198,6 @@
             font-size: 1.5rem;
         }
 
-        /* Content Sections */
         .content-section {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -236,7 +228,6 @@
             padding-left: 15px;
         }
 
-        /* Tables */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -265,12 +256,10 @@
             border-radius: 5px;
             cursor: pointer;
             margin-right: 5px;
-            transition: all 0.3s ease;
         }
 
         .btn-approve:hover {
             background: #218838;
-            transform: scale(1.02);
         }
 
         .btn-reject {
@@ -280,12 +269,10 @@
             padding: 6px 15px;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .btn-reject:hover {
             background: #c82333;
-            transform: scale(1.02);
         }
 
         .btn-add {
@@ -299,7 +286,24 @@
             font-weight: 500;
         }
 
-        /* Progress Bar */
+        .btn-view, .btn-reply-feedback, .btn-delete-feedback {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+        
+        .btn-reply-feedback { background: #28a745; }
+        .btn-delete-feedback { background: #dc3545; }
+        
+        .status-read { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .status-unread { background: #ffc107; color: #856404; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .stars { color: #ffc107; }
+
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -315,7 +319,6 @@
             transition: width 0.5s ease;
         }
 
-        /* Course Cards */
         .courses-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -342,7 +345,6 @@
             margin-bottom: 8px;
         }
 
-        /* Toast Message */
         .toast-message {
             position: fixed;
             bottom: 20px;
@@ -362,7 +364,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -380,7 +381,7 @@
             background: white;
             padding: 25px;
             border-radius: 15px;
-            width: 400px;
+            width: 450px;
             max-width: 90%;
         }
 
@@ -399,7 +400,34 @@
             justify-content: flex-end;
         }
 
-        /* Responsive */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .feedback-tab-content {
+            display: none;
+        }
+        
+        .feedback-tab-content.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 80px;
@@ -419,7 +447,6 @@
 <body>
 
 <div class="dashboard-container">
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="logo-icon">🏛️</div>
@@ -460,9 +487,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
         <div class="top-bar">
             <div class="welcome-text">
                 <h3>Welcome, ${sessionScope.adminName}!</h3>
@@ -477,7 +502,7 @@
             </a>
         </div>
 
-        <!-- ========== 1. DASHBOARD SECTION ========== -->
+        <!-- Dashboard Section -->
         <div id="dashboard-section" class="content-section active-section">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -523,24 +548,14 @@
             </div>
         </div>
 
-        <!-- ========== 2. ADMIN FACULTY DASHBOARD ========== -->
+        <!-- Faculty Section -->
         <div id="faculty-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-chalkboard-user"></i> Faculty Requests</div>
                 <c:choose>
                     <c:when test="${not empty pendingFaculty}">
                         <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Batch</th>
-                                    <th>Username</th>
-                                    <th>Admin Office</th>
-                                    <th>Qualification</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Qualification</th><th>Action</th></tr></thead>
                             <tbody>
                                 <c:forEach items="${pendingFaculty}" var="faculty">
                                     <tr id="faculty-row-${faculty.id}">
@@ -551,55 +566,32 @@
                                         <td>${faculty.adminOfficeName}</td>
                                         <td>${faculty.qualification}</td>
                                         <td>
-                                            <button class="btn-approve" onclick="approveFaculty(${faculty.id})">
-                                                <i class="fas fa-check"></i> Accept
-                                            </button>
-                                            <button class="btn-reject" onclick="showFacultyRejectModal(${faculty.id}, '${faculty.name}')">
-                                                <i class="fas fa-times"></i> Reject
-                                            </button>
-                                         </td>
-                                     </tr>
+                                            <button class="btn-approve" onclick="approveFaculty(${faculty.id})">Accept</button>
+                                            <button class="btn-reject" onclick="showFacultyRejectModal(${faculty.id}, '${faculty.name}')">Reject</button>
+                                        </td>
+                                    </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
                     </c:when>
                     <c:otherwise>
-                        <div style="text-align: center; padding: 30px;">
-                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px;"></i>
-                            <p style="margin-top: 10px;">No pending faculty requests</p>
-                        </div>
+                        <div style="text-align: center; padding: 30px;"><i class="fas fa-check-circle" style="color: #28a745; font-size: 48px;"></i><p>No pending faculty requests</p></div>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
 
-        <!-- ========== 3. ADMIN STUDENT DASHBOARD ========== -->
+        <!-- Student Section -->
         <div id="student-section" class="content-section">
             <div class="section-card">
-                <div class="section-title">
-                    <i class="fas fa-user-graduate"></i> Student Requests 
-                    <c:if test="${pendingStudentsCount > 0}">
-                        <span style="font-size: 0.8rem; background: #ffc107; color: #856404; padding: 2px 10px; border-radius: 20px; margin-left: 10px;">
-                            ${pendingStudentsCount} Pending
-                        </span>
-                    </c:if>
+                <div class="section-title"><i class="fas fa-user-graduate"></i> Student Requests 
+                    <c:if test="${pendingStudentsCount > 0}"><span style="font-size:0.8rem;background:#ffc107;color:#856404;padding:2px 10px;border-radius:20px;margin-left:10px;">${pendingStudentsCount} Pending</span></c:if>
                 </div>
-                
                 <c:choose>
                     <c:when test="${not empty pendingStudents}">
                         <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Batch</th>
-                                    <th>Username</th>
-                                    <th>Admin Office</th>
-                                    <th>Enrollment No</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="studentRequestsList">
+                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Enrollment No</th><th>Action</th></tr></thead>
+                            <tbody>
                                 <c:forEach items="${pendingStudents}" var="student">
                                     <tr id="student-row-${student.id}">
                                         <td>${student.name}</td>
@@ -609,60 +601,70 @@
                                         <td>${student.adminOfficeName}</td>
                                         <td>${student.enrollmentNo}</td>
                                         <td>
-                                            <button class="btn-approve" onclick="approveStudent(${student.id})">
-                                                <i class="fas fa-check"></i> Accept
-                                            </button>
-                                            <button class="btn-reject" onclick="showStudentRejectModal(${student.id}, '${student.name}')">
-                                                <i class="fas fa-times"></i> Reject
-                                            </button>
-                                         </td>
-                                     </tr>
+                                            <button class="btn-approve" onclick="approveStudent(${student.id})">Accept</button>
+                                            <button class="btn-reject" onclick="showStudentRejectModal(${student.id}, '${student.name}')">Reject</button>
+                                        </td>
+                                    </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
                     </c:when>
                     <c:otherwise>
-                        <div style="text-align: center; padding: 40px;">
-                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px;"></i>
-                            <p style="margin-top: 10px; color: #666;">No pending student requests</p>
-                        </div>
+                        <div style="text-align:center;padding:40px;"><i class="fas fa-check-circle" style="color:#28a745;font-size:48px;"></i><p>No pending student requests</p></div>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
 
-        <!-- ========== 4. ADMIN ATTENDANCE DASHBOARD ========== -->
+        <!-- Attendance Section -->
         <div id="attendance-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-calendar-check"></i> Attendance Reports</div>
-                <div style="margin-bottom: 20px;">
+                <div style="margin-bottom:20px;">
                     <label>Select Batch: </label>
-                    <select id="batchSelect" onchange="loadAttendance()" style="padding: 8px 15px; border-radius: 8px; border: 1px solid #ddd; margin-left: 10px;">
+                    <select id="batchSelect" onchange="loadAttendance()" style="padding:8px 15px;border-radius:8px;border:1px solid #ddd;margin-left:10px;">
                         <option value="Java">Java Batch</option>
                         <option value="Python">Python Batch</option>
                         <option value="MERN">MERN Batch</option>
                         <option value="Cloud">Cloud Batch</option>
                     </select>
                 </div>
-                <table class="data-table">
-                    <thead><tr><th>Student Name</th><th>Attendance %</th><th>Progress</th></tr></thead>
-                    <tbody id="attendanceList"></tbody>
-                </table>
+                <table class="data-table"><thead><tr><th>Student Name</th><th>Attendance %</th><th>Progress</th></tr></thead><tbody id="attendanceList"></tbody></table>
             </div>
         </div>
 
-        <!-- ========== 5. ADMIN FEEDBACK DASHBOARD ========== -->
+        <!-- Feedback Section -->
         <div id="feedback-section" class="content-section">
             <div class="section-card">
-                <div class="section-title"><i class="fas fa-star"></i> Student Feedback</div>
-                <table class="data-table">
-                    <thead><tr><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Date</th></tr></thead>
-                    <tbody id="feedbackList"></tbody>
-                </table>
+                <div class="section-title"><i class="fas fa-star"></i> Feedback Management</div>
+                
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card"><div class="stat-info"><div class="stat-number" id="totalFeedbacks">0</div><div class="stat-label">Total Feedbacks</div></div><div class="stat-icon"><i class="fas fa-comments"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><div class="stat-number" id="unreadFeedbacks">0</div><div class="stat-label">Unread</div></div><div class="stat-icon"><i class="fas fa-envelope"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><div class="stat-number" id="avgRating">0</div><div class="stat-label">Average Rating</div></div><div class="stat-icon"><i class="fas fa-star"></i></div></div>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="showFeedbackTab('all')">All Feedbacks</button>
+                    <button class="tab" onclick="showFeedbackTab('unread')">Unread (<span id="unreadCountBadge">0</span>)</button>
+                </div>
+                
+                <div id="all-feedback-tab" class="feedback-tab-content active">
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="allFeedbackBody"></tbody>
+                    </table>
+                </div>
+                <div id="unread-feedback-tab" class="feedback-tab-content">
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Action</th></tr></thead>
+                        <tbody id="unreadFeedbackBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- ========== 6. ADMIN COURSES DASHBOARD ========== -->
+        <!-- Courses Section -->
         <div id="courses-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-book"></i> Course Management</div>
@@ -671,67 +673,67 @@
             </div>
         </div>
 
-        <!-- ========== 7. ADMIN ACCOUNT DASHBOARD ========== -->
+        <!-- Account Section -->
         <div id="account-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-wallet"></i> Fee Receipt Generation</div>
                 <button class="btn-add" onclick="showReceiptForm()"><i class="fas fa-file-invoice-dollar"></i> Generate Fee Receipt</button>
-                <div id="receiptForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <div id="receiptForm" style="display:none; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;">
                     <h4>Generate Fee Receipt</h4>
-                    <input type="text" placeholder="Student Name" id="studentName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="text" placeholder="Contact Number" id="contactNo" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="email" placeholder="Email" id="email" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="text" placeholder="Course" id="courseName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="number" placeholder="Amount" id="amount" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="text" placeholder="Executive Name" id="executiveName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Student Name" id="studentName" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="text" placeholder="Contact Number" id="contactNo" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="email" placeholder="Email" id="email" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="text" placeholder="Course" id="courseName" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="number" placeholder="Amount" id="amount" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="text" placeholder="Executive Name" id="executiveName" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
                     <button type="button" class="btn-add" onclick="generateReceipt()">Generate PDF Receipt</button>
                 </div>
             </div>
         </div>
 
-        <!-- ========== 8. ADMIN PLACEMENT DASHBOARD ========== -->
+        <!-- Placement Section -->
         <div id="placement-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-briefcase"></i> Placement Management</div>
                 <button class="btn-add" onclick="showPlacementForm()"><i class="fas fa-plus"></i> Add New Placement</button>
-                <div id="placementForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <div id="placementForm" style="display:none; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;">
                     <h4>Add New Placement Opportunity</h4>
-                    <input type="text" placeholder="Company Name" id="companyName" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <textarea placeholder="Job Role Description" id="jobRoleDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
-                    <textarea placeholder="Required Skills" id="skills" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
-                    <textarea placeholder="Interview Round Details" id="interviewDetails" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="2"></textarea>
-                    <input type="date" placeholder="Last Date to Apply" id="lastDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Company Name" id="companyName" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <textarea placeholder="Job Role Description" id="jobRoleDesc" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="3"></textarea>
+                    <textarea placeholder="Required Skills" id="skills" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="2"></textarea>
+                    <textarea placeholder="Interview Round Details" id="interviewDetails" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="2"></textarea>
+                    <input type="date" placeholder="Last Date to Apply" id="lastDate" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
                     <button type="button" class="btn-add" onclick="addPlacement()">Add Placement</button>
                 </div>
             </div>
         </div>
 
-        <!-- ========== 9. ADMIN NOTICE DASHBOARD ========== -->
+        <!-- Notice Section -->
         <div id="notice-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-bullhorn"></i> E-Notice Management</div>
                 <button class="btn-add" onclick="showNoticeForm()"><i class="fas fa-plus"></i> Publish New Notice</button>
-                <div id="noticeForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <div id="noticeForm" style="display:none; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;">
                     <h4>Publish Notice</h4>
-                    <input type="text" placeholder="Notice Title" id="noticeTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <textarea placeholder="Notice Content" id="noticeContent" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="4"></textarea>
+                    <input type="text" placeholder="Notice Title" id="noticeTitle" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <textarea placeholder="Notice Content" id="noticeContent" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="4"></textarea>
                     <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
                 </div>
             </div>
         </div>
 
-        <!-- ========== 10. ADMIN EVENT DASHBOARD ========== -->
+        <!-- Event Section -->
         <div id="event-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-calendar-alt"></i> Event Management</div>
                 <button class="btn-add" onclick="showEventForm()"><i class="fas fa-plus"></i> Create New Event</button>
-                <div id="eventForm" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <div id="eventForm" style="display:none; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;">
                     <h4>Create Event</h4>
-                    <input type="text" placeholder="Event Title" id="eventTitle" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <textarea placeholder="Event Description" id="eventDesc" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;" rows="3"></textarea>
-                    <input type="date" placeholder="Event Date" id="eventDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="time" placeholder="Event Time" id="eventTime" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-                    <input type="text" placeholder="Location" id="eventLocation" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
+                    <input type="text" placeholder="Event Title" id="eventTitle" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <textarea placeholder="Event Description" id="eventDesc" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="3"></textarea>
+                    <input type="date" placeholder="Event Date" id="eventDate" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="time" placeholder="Event Time" id="eventTime" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
+                    <input type="text" placeholder="Location" id="eventLocation" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
                     <button type="button" class="btn-add" onclick="createEvent()">Create Event</button>
                 </div>
             </div>
@@ -739,39 +741,27 @@
     </div>
 </div>
 
-<!-- Faculty Reject Modal -->
+<!-- Modals -->
 <div id="facultyRejectModal" class="modal">
-    <div class="modal-content">
-        <h3>Reject Faculty Request</h3>
-        <p id="rejectFacultyName"></p>
-        <textarea id="facultyRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
-        <input type="hidden" id="rejectFacultyId">
-        <div class="modal-buttons">
-            <button class="btn-reject" onclick="confirmFacultyReject()">Confirm Reject</button>
-            <button class="btn-approve" onclick="closeFacultyModal()" style="background: #6c757d;">Cancel</button>
-        </div>
-    </div>
+    <div class="modal-content"><h3>Reject Faculty Request</h3><p id="rejectFacultyName"></p><textarea id="facultyRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea><input type="hidden" id="rejectFacultyId"><div class="modal-buttons"><button class="btn-reject" onclick="confirmFacultyReject()">Confirm Reject</button><button class="btn-approve" onclick="closeFacultyModal()" style="background:#6c757d;">Cancel</button></div></div>
 </div>
 
-<!-- Student Reject Modal -->
 <div id="studentRejectModal" class="modal">
-    <div class="modal-content">
-        <h3>Reject Student Request</h3>
-        <p id="rejectStudentName"></p>
-        <textarea id="studentRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea>
-        <input type="hidden" id="rejectStudentId">
-        <div class="modal-buttons">
-            <button class="btn-reject" onclick="confirmStudentReject()">Confirm Reject</button>
-            <button class="btn-approve" onclick="closeStudentModal()" style="background: #6c757d;">Cancel</button>
-        </div>
-    </div>
+    <div class="modal-content"><h3>Reject Student Request</h3><p id="rejectStudentName"></p><textarea id="studentRejectReason" rows="3" placeholder="Enter reason for rejection (optional)"></textarea><input type="hidden" id="rejectStudentId"><div class="modal-buttons"><button class="btn-reject" onclick="confirmStudentReject()">Confirm Reject</button><button class="btn-approve" onclick="closeStudentModal()" style="background:#6c757d;">Cancel</button></div></div>
+</div>
+
+<div id="feedbackReplyModal" class="modal">
+    <div class="modal-content"><h3>Reply to Feedback</h3><p id="replyFeedbackName"></p><textarea id="replyMessage" rows="4" placeholder="Enter your reply message..."></textarea><input type="hidden" id="replyFeedbackId"><div class="modal-buttons"><button class="btn-reply-feedback" onclick="submitFeedbackReply()">Send Reply</button><button class="btn-approve" onclick="closeFeedbackReplyModal()" style="background:#6c757d;">Cancel</button></div></div>
+</div>
+
+<div id="viewFeedbackModal" class="modal">
+    <div class="modal-content"><h3>Feedback Details</h3><div id="viewFeedbackContent"></div><button class="btn-approve" onclick="closeViewFeedbackModal()" style="margin-top:15px;">Close</button></div>
 </div>
 
 <script>
     let currentRejectFacultyId = null;
     let currentRejectStudentId = null;
 
-    // ========== DATE & TIME ==========
     function updateDateTime() {
         const now = new Date();
         document.getElementById('currentDate').innerHTML = '<i class="far fa-calendar-alt"></i> ' + now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -780,10 +770,9 @@
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // ========== SIDEBAR NAVIGATION ==========
+    // Sidebar Navigation
     const menuItems = document.querySelectorAll('.menu-item');
     const sections = document.querySelectorAll('.content-section');
-
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
             const sectionId = this.getAttribute('data-section');
@@ -791,10 +780,10 @@
             this.classList.add('active');
             sections.forEach(section => section.classList.remove('active-section'));
             document.getElementById(sectionId + '-section').classList.add('active-section');
+            if (sectionId === 'feedback') { loadAllFeedbacks(); loadFeedbackStats(); }
         });
     });
 
-    // ========== SHOW TOAST MESSAGE ==========
     function showToast(message, type) {
         const toast = $('<div class="toast-message">' + message + '</div>');
         if (type === 'error') toast.css('background', '#dc3545');
@@ -804,230 +793,227 @@
         setTimeout(() => toast.fadeOut(300, () => toast.remove()), 3000);
     }
 
-    // ========== FACULTY APPROVAL FUNCTIONS ==========
+    // ========== FEEDBACK FUNCTIONS ==========
+    function showFeedbackTab(tab) {
+        document.querySelectorAll('.feedback-tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        if (tab === 'all') {
+            document.getElementById('all-feedback-tab').classList.add('active');
+            event.target.classList.add('active');
+            loadAllFeedbacks();
+        } else {
+            document.getElementById('unread-feedback-tab').classList.add('active');
+            event.target.classList.add('active');
+            loadUnreadFeedbacks();
+        }
+    }
+
+    function loadFeedbackStats() {
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/stats', type: 'GET', success: function(data) {
+            if (data.success) {
+                $('#totalFeedbacks').text(data.total); $('#unreadFeedbacks').text(data.unread); 
+                $('#avgRating').text(data.avgRating); $('#unreadCountBadge').text(data.unread);
+            }
+        }, error: function() { console.log('Error loading stats'); } });
+    }
+
+    function loadAllFeedbacks() {
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/all', type: 'GET', success: function(response) {
+            if (response.success) {
+                let html = ''; let stars = '';
+                response.feedbacks.forEach(f => {
+                    stars = '★'.repeat(f.rating) + '☆'.repeat(5-f.rating);
+                    let dateStr = new Date(f.createdAt).toLocaleDateString();
+                    html += '<tr id="feedback-row-' + f.id + '">' +
+                        '<td>' + dateStr + '</td>' +
+                        '<td>' + f.name + '</td>' +
+                        '<td>' + f.email + '</td>' +
+                        '<td><span class="stars">' + stars + '</span> (' + f.rating + ')</td>' +
+                        '<td>' + (f.message.length > 50 ? f.message.substring(0,50)+'...' : f.message) + '</td>' +
+                        '<td><span class="' + (f.read ? 'status-read' : 'status-unread') + '">' + (f.read ? 'Read' : 'Unread') + '</span></td>' +
+                        '<td><button class="btn-view" onclick="viewFeedback(' + f.id + ', \'' + f.name.replace(/'/g, "\\'") + '\', \'' + f.email + '\', ' + f.rating + ', \'' + f.message.replace(/'/g, "\\'") + '\', \'' + f.createdAt + '\')">View</button>' +
+                        '<button class="btn-reply-feedback" onclick="showReplyModal(' + f.id + ', \'' + f.name.replace(/'/g, "\\'") + '\')">Reply</button>' +
+                        '<button class="btn-delete-feedback" onclick="deleteFeedback(' + f.id + ')">Delete</button></td>' +
+                        '</tr>';
+                });
+                $('#allFeedbackBody').html(html);
+                if (response.feedbacks.length === 0) $('#allFeedbackBody').html('<tr><td colspan="7" style="text-align:center;">No feedback found</td></tr>');
+            }
+        }, error: function() { showToast('Error loading feedbacks!', 'error'); } });
+    }
+
+    function loadUnreadFeedbacks() {
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/unread', type: 'GET', success: function(response) {
+            if (response.success) {
+                let html = ''; let stars = '';
+                response.feedbacks.forEach(f => {
+                    stars = '★'.repeat(f.rating) + '☆'.repeat(5-f.rating);
+                    let dateStr = new Date(f.createdAt).toLocaleDateString();
+                    html += '<tr id="unread-row-' + f.id + '">' +
+                        '<td>' + dateStr + '</td>' +
+                        '<td>' + f.name + '</td>' +
+                        '<td>' + f.email + '</td>' +
+                        '<td><span class="stars">' + stars + '</span></td>' +
+                        '<td>' + (f.message.length > 50 ? f.message.substring(0,50)+'...' : f.message) + '</td>' +
+                        '<td><button class="btn-view" onclick="viewFeedback(' + f.id + ', \'' + f.name.replace(/'/g, "\\'") + '\', \'' + f.email + '\', ' + f.rating + ', \'' + f.message.replace(/'/g, "\\'") + '\', \'' + f.createdAt + '\')">View</button>' +
+                        '<button class="btn-reply-feedback" onclick="showReplyModal(' + f.id + ', \'' + f.name.replace(/'/g, "\\'") + '\')">Reply</button>' +
+                        '<button class="btn-delete-feedback" onclick="deleteFeedback(' + f.id + ')">Delete</button></td>' +
+                        '</tr>';
+                });
+                $('#unreadFeedbackBody').html(html);
+                if (response.feedbacks.length === 0) $('#unreadFeedbackBody').html('<tr><td colspan="6" style="text-align:center;">No unread feedback</td></tr>');
+            }
+        }, error: function() { showToast('Error loading unread feedbacks!', 'error'); } });
+    }
+
+    function viewFeedback(id, name, email, rating, message, date) {
+        let stars = '★'.repeat(rating) + '☆'.repeat(5-rating);
+        $('#viewFeedbackContent').html('<p><strong>Name:</strong> ' + name + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Rating:</strong> <span class="stars">' + stars + '</span> (' + rating + ')</p><p><strong>Date:</strong> ' + new Date(date).toLocaleString() + '</p><p><strong>Message:</strong> ' + message + '</p>');
+        $('#viewFeedbackModal').css('display', 'flex');
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/mark-read', type: 'POST', data: { feedbackId: id }, success: function() { loadAllFeedbacks(); loadFeedbackStats(); } });
+    }
+
+    function showReplyModal(id, name) {
+        $('#replyFeedbackId').val(id); 
+        $('#replyFeedbackName').html('<strong>' + name + '</strong>'); 
+        $('#replyMessage').val(''); 
+        $('#feedbackReplyModal').css('display', 'flex');
+    }
+
+    function submitFeedbackReply() {
+        const id = $('#replyFeedbackId').val(); 
+        const message = $('#replyMessage').val();
+        if (!message) { showToast('Please enter a reply message!', 'error'); return; }
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/reply', type: 'POST', data: { feedbackId: id, replyMessage: message }, success: function(response) {
+            if (response.success) { showToast(response.message, 'success'); closeFeedbackReplyModal(); loadAllFeedbacks(); loadFeedbackStats(); }
+            else showToast(response.message, 'error');
+        }, error: function() { showToast('Error sending reply!', 'error'); } });
+    }
+
+    function deleteFeedback(id) {
+        if (!confirm('Are you sure you want to delete this feedback?')) return;
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/delete', type: 'POST', data: { feedbackId: id }, success: function(response) {
+            if (response.success) { showToast(response.message, 'success'); $('#feedback-row-' + id).remove(); loadFeedbackStats(); }
+            else showToast(response.message, 'error');
+        }, error: function() { showToast('Error deleting feedback!', 'error'); } });
+    }
+
+    function closeFeedbackReplyModal() { $('#feedbackReplyModal').css('display', 'none'); }
+    function closeViewFeedbackModal() { $('#viewFeedbackModal').css('display', 'none'); }
+
+    // Faculty Functions
     function approveFaculty(facultyId) {
-        if (!confirm('Are you sure you want to APPROVE this faculty member? They will receive an email with login credentials.')) {
-            return;
-        }
-        
+        if (!confirm('Approve this faculty?')) return;
         const row = $('#faculty-row-' + facultyId);
-        const approveBtn = row.find('.btn-approve');
-        const originalText = approveBtn.html();
-        
-        approveBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-        approveBtn.prop('disabled', true);
-        
-        $.ajax({
-            url: '${pageContext.request.contextPath}/admin/approve-faculty',
-            type: 'POST',
-            data: { facultyId: facultyId },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    showToast('✅ ' + response.message, 'success');
-                    row.fadeOut(300, function() { $(this).remove(); });
-                } else {
-                    showToast('❌ ' + response.message, 'error');
-                    approveBtn.html(originalText);
-                    approveBtn.prop('disabled', false);
-                }
-            },
-            error: function() {
-                showToast('❌ Error approving faculty!', 'error');
-                approveBtn.html(originalText);
-                approveBtn.prop('disabled', false);
-            }
-        });
+        const btn = row.find('.btn-approve');
+        const orig = btn.html();
+        btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/approve-faculty', type: 'POST', data: { facultyId: facultyId }, success: function(r) { 
+            if(r.success){ showToast(r.message,'success'); row.fadeOut(); } 
+            else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
+        }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
     }
 
-    function showFacultyRejectModal(facultyId, facultyName) {
-        currentRejectFacultyId = facultyId;
-        document.getElementById('rejectFacultyId').value = facultyId;
-        document.getElementById('rejectFacultyName').innerHTML = 'Faculty: <strong>' + facultyName + '</strong>';
-        document.getElementById('facultyRejectReason').value = '';
-        document.getElementById('facultyRejectModal').style.display = 'flex';
+    function showFacultyRejectModal(id, name) { 
+        currentRejectFacultyId = id; 
+        $('#rejectFacultyId').val(id); 
+        $('#rejectFacultyName').html('Faculty: <strong>' + name + '</strong>'); 
+        $('#facultyRejectReason').val(''); 
+        $('#facultyRejectModal').css('display','flex'); 
     }
 
-    function confirmFacultyReject() {
-        const facultyId = currentRejectFacultyId;
-        const reason = document.getElementById('facultyRejectReason').value;
-        const row = $('#faculty-row-' + facultyId);
-        const rejectBtn = row.find('.btn-reject');
-        const originalText = rejectBtn.html();
-        
-        rejectBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-        rejectBtn.prop('disabled', true);
-        
-        $.ajax({
-            url: '${pageContext.request.contextPath}/admin/reject-faculty',
-            type: 'POST',
-            data: { facultyId: facultyId, reason: reason },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    showToast('❌ Faculty rejected', 'error');
-                    row.fadeOut(300, function() { $(this).remove(); });
-                    closeFacultyModal();
-                } else {
-                    showToast('❌ ' + response.message, 'error');
-                    rejectBtn.html(originalText);
-                    rejectBtn.prop('disabled', false);
-                }
-            },
-            error: function() {
-                showToast('❌ Error rejecting faculty!', 'error');
-                rejectBtn.html(originalText);
-                rejectBtn.prop('disabled', false);
-            }
-        });
+    function confirmFacultyReject() { 
+        const id = currentRejectFacultyId; 
+        const reason = $('#facultyRejectReason').val(); 
+        const row = $('#faculty-row-' + id); 
+        const btn = row.find('.btn-reject'); 
+        const orig = btn.html(); 
+        btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/reject-faculty', type: 'POST', data: { facultyId: id, reason: reason }, success: function(r) { 
+            if(r.success){ showToast(r.message,'error'); row.fadeOut(); closeFacultyModal(); } 
+            else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
+        }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
     }
 
-    function closeFacultyModal() {
-        document.getElementById('facultyRejectModal').style.display = 'none';
-        currentRejectFacultyId = null;
-    }
+    function closeFacultyModal() { $('#facultyRejectModal').css('display','none'); currentRejectFacultyId = null; }
 
-    // ========== STUDENT APPROVAL FUNCTIONS ==========
+    // Student Functions
     function approveStudent(studentId) {
-        if (!confirm('Are you sure you want to APPROVE this student? They will receive an email with login credentials.')) {
-            return;
-        }
-        
+        if (!confirm('Approve this student?')) return;
         const row = $('#student-row-' + studentId);
-        const approveBtn = row.find('.btn-approve');
-        const originalText = approveBtn.html();
-        
-        approveBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-        approveBtn.prop('disabled', true);
-        
-        $.ajax({
-            url: '${pageContext.request.contextPath}/admin/approve-student',
-            type: 'POST',
-            data: { studentId: studentId },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    showToast('✅ ' + response.message, 'success');
-                    row.fadeOut(300, function() { $(this).remove(); });
-                } else {
-                    showToast('❌ ' + response.message, 'error');
-                    approveBtn.html(originalText);
-                    approveBtn.prop('disabled', false);
-                }
-            },
-            error: function() {
-                showToast('❌ Error approving student!', 'error');
-                approveBtn.html(originalText);
-                approveBtn.prop('disabled', false);
-            }
-        });
+        const btn = row.find('.btn-approve');
+        const orig = btn.html();
+        btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/approve-student', type: 'POST', data: { studentId: studentId }, success: function(r) { 
+            if(r.success){ showToast(r.message,'success'); row.fadeOut(); } 
+            else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
+        }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
     }
 
-    function showStudentRejectModal(studentId, studentName) {
-        currentRejectStudentId = studentId;
-        document.getElementById('rejectStudentId').value = studentId;
-        document.getElementById('rejectStudentName').innerHTML = 'Student: <strong>' + studentName + '</strong>';
-        document.getElementById('studentRejectReason').value = '';
-        document.getElementById('studentRejectModal').style.display = 'flex';
+    function showStudentRejectModal(id, name) { 
+        currentRejectStudentId = id; 
+        $('#rejectStudentId').val(id); 
+        $('#rejectStudentName').html('Student: <strong>' + name + '</strong>'); 
+        $('#studentRejectReason').val(''); 
+        $('#studentRejectModal').css('display','flex'); 
     }
 
-    function confirmStudentReject() {
-        const studentId = currentRejectStudentId;
-        const reason = document.getElementById('studentRejectReason').value;
-        const row = $('#student-row-' + studentId);
-        const rejectBtn = row.find('.btn-reject');
-        const originalText = rejectBtn.html();
-        
-        rejectBtn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-        rejectBtn.prop('disabled', true);
-        
-        $.ajax({
-            url: '${pageContext.request.contextPath}/admin/reject-student',
-            type: 'POST',
-            data: { studentId: studentId, reason: reason },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    showToast('❌ Student rejected', 'error');
-                    row.fadeOut(300, function() { $(this).remove(); });
-                    closeStudentModal();
-                } else {
-                    showToast('❌ ' + response.message, 'error');
-                    rejectBtn.html(originalText);
-                    rejectBtn.prop('disabled', false);
-                }
-            },
-            error: function() {
-                showToast('❌ Error rejecting student!', 'error');
-                rejectBtn.html(originalText);
-                rejectBtn.prop('disabled', false);
-            }
-        });
+    function confirmStudentReject() { 
+        const id = currentRejectStudentId; 
+        const reason = $('#studentRejectReason').val(); 
+        const row = $('#student-row-' + id); 
+        const btn = row.find('.btn-reject'); 
+        const orig = btn.html(); 
+        btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
+        $.ajax({ url: '${pageContext.request.contextPath}/admin/reject-student', type: 'POST', data: { studentId: id, reason: reason }, success: function(r) { 
+            if(r.success){ showToast(r.message,'error'); row.fadeOut(); closeStudentModal(); } 
+            else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
+        }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
     }
 
-    function closeStudentModal() {
-        document.getElementById('studentRejectModal').style.display = 'none';
-        currentRejectStudentId = null;
-    }
+    function closeStudentModal() { $('#studentRejectModal').css('display','none'); currentRejectStudentId = null; }
 
-    // ========== LOAD ATTENDANCE ==========
+    // Attendance Function
     function loadAttendance() {
-        const batch = document.getElementById('batchSelect').value;
-        const attendanceData = {
-            'Java': [{ name: 'Alice Brown', percentage: 85 }, { name: 'Bob Wilson', percentage: 92 }, { name: 'Charlie Davis', percentage: 78 }],
-            'Python': [{ name: 'David Miller', percentage: 88 }, { name: 'Emma Watson', percentage: 95 }],
-            'MERN': [{ name: 'Frank Ocean', percentage: 82 }, { name: 'Grace Lee', percentage: 90 }],
-            'Cloud': [{ name: 'Henry Ford', percentage: 75 }, { name: 'Ivy Chen', percentage: 89 }]
-        };
-        const students = attendanceData[batch] || [];
-        const tbody = document.getElementById('attendanceList');
-        tbody.innerHTML = '';
-        students.forEach(s => {
-            tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.percentage}%</td><td><div class="progress-bar"><div class="progress-fill" style="width: ${s.percentage}%"></div></div></td></tr>`;
-        });
+        const batch = $('#batchSelect').val();
+        const data = { 'Java':[{name:'Alice Brown',p:85},{name:'Bob Wilson',p:92},{name:'Charlie Davis',p:78}], 'Python':[{name:'David Miller',p:88},{name:'Emma Watson',p:95}], 'MERN':[{name:'Frank Ocean',p:82},{name:'Grace Lee',p:90}], 'Cloud':[{name:'Henry Ford',p:75},{name:'Ivy Chen',p:89}] };
+        const students = data[batch] || []; 
+        const tbody = $('#attendanceList'); 
+        tbody.empty();
+        students.forEach(s => { tbody.append('<tr><td>' + s.name + '</td><td>' + s.p + '%</td><td><div class="progress-bar"><div class="progress-fill" style="width:' + s.p + '%"></div></div></td></tr>'); });
     }
     loadAttendance();
 
-    // ========== COURSES ==========
-    const courses = [
-        { title: 'Full Stack Java', desc: 'Learn Java, Spring Boot, React', duration: '6 months', fees: '₹45,000' },
-        { title: 'Python Development', desc: 'Python, Django, Flask', duration: '5 months', fees: '₹40,000' },
-        { title: 'MERN Stack', desc: 'MongoDB, Express, React, Node', duration: '5 months', fees: '₹40,000' }
-    ];
-    
-    function displayCourses() {
-        const container = document.getElementById('coursesList');
-        if (!container) return;
-        container.innerHTML = '';
-        courses.forEach(c => {
-            container.innerHTML += `<div class="course-card"><div class="course-info"><h4>${c.title}</h4><p>${c.desc}</p><p><strong>Duration:</strong> ${c.duration}</p><p><strong>Fees:</strong> ${c.fees}</p><button class="btn-approve" onclick="downloadBrochure('${c.title}')">Download Brochure</button></div></div>`;
-        });
+    // Courses Functions
+    const courses = [{ title:'Full Stack Java', desc:'Learn Java, Spring Boot, React', duration:'6 months', fees:'₹45,000' }, { title:'Python Development', desc:'Python, Django, Flask', duration:'5 months', fees:'₹40,000' }, { title:'MERN Stack', desc:'MongoDB, Express, React, Node', duration:'5 months', fees:'₹40,000' }];
+    function displayCourses() { 
+        const c = $('#coursesList'); 
+        if(!c.length) return; 
+        c.empty(); 
+        courses.forEach(crs => { c.append('<div class="course-card"><div class="course-info"><h4>' + crs.title + '</h4><p>' + crs.desc + '</p><p><strong>Duration:</strong> ' + crs.duration + '</p><p><strong>Fees:</strong> ' + crs.fees + '</p><button class="btn-approve" onclick="downloadBrochure(\'' + crs.title + '\')">Download Brochure</button></div></div>'); }); 
     }
     displayCourses();
     function addCourse() { showToast('Add new course form will open.', 'info'); }
-    function downloadBrochure(courseName) { showToast('Downloading brochure for ' + courseName, 'info'); }
-
-    // ========== FEE RECEIPT ==========
-    function showReceiptForm() { const f = document.getElementById('receiptForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function downloadBrochure(cn) { showToast('Downloading brochure for ' + cn, 'info'); }
+    function showReceiptForm() { const f = $('#receiptForm'); if(f.length) f.toggle(); }
     function generateReceipt() { showToast('PDF Receipt Generated!', 'success'); }
-
-    // ========== PLACEMENT ==========
-    function showPlacementForm() { const f = document.getElementById('placementForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function showPlacementForm() { const f = $('#placementForm'); if(f.length) f.toggle(); }
     function addPlacement() { showToast('New placement added!', 'success'); }
-
-    // ========== NOTICE ==========
-    function showNoticeForm() { const f = document.getElementById('noticeForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function showNoticeForm() { const f = $('#noticeForm'); if(f.length) f.toggle(); }
     function publishNotice() { showToast('Notice published!', 'success'); }
-
-    // ========== EVENT ==========
-    function showEventForm() { const f = document.getElementById('eventForm'); if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+    function showEventForm() { const f = $('#eventForm'); if(f.length) f.toggle(); }
     function createEvent() { showToast('Event created!', 'success'); }
 
     // Close modals when clicking outside
     $(window).click(function(e) {
         if ($(e.target).is('#facultyRejectModal')) closeFacultyModal();
         if ($(e.target).is('#studentRejectModal')) closeStudentModal();
+        if ($(e.target).is('#feedbackReplyModal')) closeFeedbackReplyModal();
+        if ($(e.target).is('#viewFeedbackModal')) closeViewFeedbackModal();
     });
+    
+    // Load initial feedback stats
+    loadFeedbackStats();
 </script>
 </body>
 </html>
