@@ -4,10 +4,12 @@ import com.smartit.training.model.Admin;
 import com.smartit.training.model.Student;
 import com.smartit.training.model.Faculty;
 import com.smartit.training.model.Feedback;
+import com.smartit.training.model.Notice;
 import com.smartit.training.repository.AdminRepository;
 import com.smartit.training.repository.StudentRepository;
 import com.smartit.training.repository.FacultyRepository;
 import com.smartit.training.repository.FeedbackRepository;
+import com.smartit.training.repository.NoticeRepository;
 import com.smartit.training.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +41,9 @@ public class AdminController {
     
     @Autowired
     private FeedbackRepository feedbackRepository;
+    
+    @Autowired
+    private NoticeRepository noticeRepository;
     
     @Autowired
     private EmailService emailService;
@@ -195,6 +201,130 @@ public class AdminController {
         model.addAttribute("approvedFacultyCount", approvedFacultyCount);
         
         return "admin/admin-dashboard";
+    }
+    
+    // =============================================
+    // NOTICE MANAGEMENT (NEW)
+    // =============================================
+    
+    // Get all notices (for admin dashboard)
+    @GetMapping("/notices")
+    @ResponseBody
+    public Map<String, Object> getAllNotices() {
+        Map<String, Object> response = new HashMap<>();
+        List<Notice> notices = noticeRepository.findAllByOrderByCreatedAtDesc();
+        List<Map<String, Object>> noticeList = new ArrayList<>();
+        
+        for (Notice notice : notices) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", notice.getId());
+            map.put("title", notice.getTitle());
+            map.put("content", notice.getContent());
+            map.put("category", notice.getCategory());
+            map.put("isUrgent", notice.getIsUrgent());
+            map.put("isActive", notice.getIsActive());
+            map.put("createdByName", notice.getCreatedByName());
+            map.put("createdAt", notice.getCreatedAt().toString());
+            map.put("expiryDate", notice.getExpiryDate() != null ? notice.getExpiryDate().toString() : null);
+            noticeList.add(map);
+        }
+        
+        response.put("success", true);
+        response.put("notices", noticeList);
+        return response;
+    }
+    
+    // Publish new notice
+    @PostMapping("/notice/publish")
+    @ResponseBody
+    public Map<String, Object> publishNotice(@RequestParam String title,
+                                              @RequestParam String content,
+                                              @RequestParam(required = false) String category,
+                                              @RequestParam(required = false) Boolean isUrgent,
+                                              @RequestParam(required = false) String expiryDate,
+                                              HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        Notice notice = new Notice();
+        notice.setTitle(title);
+        notice.setContent(content);
+        notice.setCategory(category != null && !category.isEmpty() ? category : "General");
+        notice.setIsUrgent(isUrgent != null && isUrgent);
+        notice.setIsActive(true);
+        notice.setCreatedBy((Integer) session.getAttribute("adminId"));
+        notice.setCreatedByName((String) session.getAttribute("adminName"));
+        notice.setCreatedAt(LocalDateTime.now());
+        
+        if (expiryDate != null && !expiryDate.isEmpty()) {
+            notice.setExpiryDate(LocalDate.parse(expiryDate));
+        }
+        
+        noticeRepository.save(notice);
+        
+        System.out.println("Notice published: " + title + " by " + session.getAttribute("adminName"));
+        
+        response.put("success", true);
+        response.put("message", "Notice published successfully!");
+        return response;
+    }
+    
+    // Delete notice
+    @PostMapping("/notice/delete")
+    @ResponseBody
+    public Map<String, Object> deleteNotice(@RequestParam Integer noticeId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        Optional<Notice> noticeOpt = noticeRepository.findById(noticeId);
+        if (noticeOpt.isPresent()) {
+            noticeRepository.deleteById(noticeId);
+            response.put("success", true);
+            response.put("message", "Notice deleted successfully!");
+        } else {
+            response.put("success", false);
+            response.put("message", "Notice not found!");
+        }
+        
+        return response;
+    }
+    
+    // Toggle notice status (Active/Inactive)
+    @PostMapping("/notice/toggle-status")
+    @ResponseBody
+    public Map<String, Object> toggleNoticeStatus(@RequestParam Integer noticeId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        Optional<Notice> noticeOpt = noticeRepository.findById(noticeId);
+        if (noticeOpt.isPresent()) {
+            Notice notice = noticeOpt.get();
+            notice.setIsActive(!notice.getIsActive());
+            noticeRepository.save(notice);
+            response.put("success", true);
+            response.put("isActive", notice.getIsActive());
+            response.put("message", "Notice status updated!");
+        } else {
+            response.put("success", false);
+            response.put("message", "Notice not found!");
+        }
+        
+        return response;
     }
     
     // =============================================
@@ -408,30 +538,7 @@ public class AdminController {
     // FEEDBACK MANAGEMENT
     // =============================================
     
-    // Admin Feedback Dashboard - HTML Page
-    @GetMapping("/feedback-dashboard")
-    public String showFeedbackDashboard(HttpSession session, Model model) {
-        if (session.getAttribute("adminId") == null) {
-            return "redirect:/admin/login";
-        }
-        
-        System.out.println("===== ADMIN FEEDBACK DASHBOARD =====");
-        
-        List<Feedback> unreadFeedbacks = feedbackRepository.findByIsReadOrderByCreatedAtDesc(false);
-        List<Feedback> allFeedbacks = feedbackRepository.findAllByOrderByCreatedAtDesc();
-        Double avgRating = feedbackRepository.getAverageRating();
-        long unreadCount = feedbackRepository.countByIsRead(false);
-        
-        model.addAttribute("unreadFeedbacks", unreadFeedbacks);
-        model.addAttribute("allFeedbacks", allFeedbacks);
-        model.addAttribute("avgRating", avgRating != null ? Math.round(avgRating * 10) / 10.0 : 0);
-        model.addAttribute("totalFeedbacks", allFeedbacks.size());
-        model.addAttribute("unreadCount", unreadCount);
-        
-        return "admin/admin-feedback-dashboard";
-    }
-    
-    // Get Feedback Statistics (API)
+    // Get Feedback Statistics
     @GetMapping("/feedback/stats")
     @ResponseBody
     public Map<String, Object> getFeedbackStats() {
@@ -444,7 +551,7 @@ public class AdminController {
         return response;
     }
     
-    // Get All Feedbacks (API)
+    // Get All Feedbacks
     @GetMapping("/feedback/all")
     @ResponseBody
     public Map<String, Object> getAllFeedbacks() {
@@ -469,7 +576,7 @@ public class AdminController {
         return response;
     }
     
-    // Get Unread Feedbacks (API)
+    // Get Unread Feedbacks
     @GetMapping("/feedback/unread")
     @ResponseBody
     public Map<String, Object> getUnreadFeedbacks() {
@@ -494,7 +601,7 @@ public class AdminController {
     // Mark feedback as read
     @PostMapping("/feedback/mark-read")
     @ResponseBody
-    public Map<String, Object> markFeedbackAsRead(@RequestParam Integer feedbackId, HttpSession session) {
+    public Map<String, Object> markFeedbackAsRead(@RequestParam Integer feedbackId) {
         Map<String, Object> response = new HashMap<>();
         
         Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
@@ -515,7 +622,7 @@ public class AdminController {
     // Delete feedback
     @PostMapping("/feedback/delete")
     @ResponseBody
-    public Map<String, Object> deleteFeedback(@RequestParam Integer feedbackId, HttpSession session) {
+    public Map<String, Object> deleteFeedback(@RequestParam Integer feedbackId) {
         Map<String, Object> response = new HashMap<>();
         
         Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
@@ -540,7 +647,6 @@ public class AdminController {
         Map<String, Object> response = new HashMap<>();
         
         Integer adminId = (Integer) session.getAttribute("adminId");
-        String adminName = (String) session.getAttribute("adminName");
         
         Optional<Feedback> feedbackOpt = feedbackRepository.findById(feedbackId);
         if (feedbackOpt.isPresent()) {

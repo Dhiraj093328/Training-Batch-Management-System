@@ -303,6 +303,9 @@
         .status-read { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
         .status-unread { background: #ffc107; color: #856404; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
         .stars { color: #ffc107; }
+        .urgent-badge { background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 5px; }
+        .status-active { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .status-inactive { background: #6c757d; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
 
         .progress-bar {
             width: 100%;
@@ -385,13 +388,17 @@
             max-width: 90%;
         }
 
-        .modal-content textarea {
+        .modal-content textarea, .modal-content input, .modal-content select {
             width: 100%;
             padding: 10px;
-            margin: 15px 0;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 8px;
-            resize: vertical;
+        }
+        
+        .modal-content input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
         }
 
         .modal-buttons {
@@ -708,7 +715,7 @@
             </div>
         </div>
 
-        <!-- Notice Section -->
+        <!-- Notice Section (UPDATED with enhanced form and table) -->
         <div id="notice-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-bullhorn"></i> E-Notice Management</div>
@@ -717,7 +724,51 @@
                     <h4>Publish Notice</h4>
                     <input type="text" placeholder="Notice Title" id="noticeTitle" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
                     <textarea placeholder="Notice Content" id="noticeContent" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="4"></textarea>
+                    
+                    <div style="margin:10px 0;">
+                        <label>Category: </label>
+                        <select id="noticeCategory" style="padding:8px; border-radius:8px; border:1px solid #ddd; margin-left:10px;">
+                            <option value="General">General</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Exam">Exam</option>
+                            <option value="Placement">Placement</option>
+                            <option value="Event">Event</option>
+                            <option value="Holiday">Holiday</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin:10px 0;">
+                        <label>Expiry Date: </label>
+                        <input type="date" id="noticeExpiryDate" style="padding:8px; border-radius:8px; border:1px solid #ddd; margin-left:10px;">
+                    </div>
+                    
+                    <div style="margin:10px 0;">
+                        <input type="checkbox" id="noticeUrgent"> 
+                        <label>Mark as URGENT</label>
+                    </div>
+                    
                     <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
+                </div>
+                
+                <!-- Notices List Table -->
+                <div style="margin-top: 30px;">
+                    <h4>Published Notices</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Publish Date</th>
+                                <th>Status</th>
+                                <th>Created By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="noticesTableBody">
+                            <tr><td colspan="7" style="text-align:center;">Loading notices...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -781,6 +832,7 @@
             sections.forEach(section => section.classList.remove('active-section'));
             document.getElementById(sectionId + '-section').classList.add('active-section');
             if (sectionId === 'feedback') { loadAllFeedbacks(); loadFeedbackStats(); }
+            if (sectionId === 'notice') { loadNotices(); }
         });
     });
 
@@ -999,8 +1051,109 @@
     function generateReceipt() { showToast('PDF Receipt Generated!', 'success'); }
     function showPlacementForm() { const f = $('#placementForm'); if(f.length) f.toggle(); }
     function addPlacement() { showToast('New placement added!', 'success'); }
-    function showNoticeForm() { const f = $('#noticeForm'); if(f.length) f.toggle(); }
-    function publishNotice() { showToast('Notice published!', 'success'); }
+    
+    // ========== NOTICE FUNCTIONS (ADDED) ==========
+    function showNoticeForm() { 
+        const form = $('#noticeForm'); 
+        if(form.length) form.toggle(); 
+        if(form.is(':visible')) loadNotices();
+    }
+
+    function publishNotice() {
+        const title = $('#noticeTitle').val();
+        const content = $('#noticeContent').val();
+        const category = $('#noticeCategory').val();
+        const isUrgent = $('#noticeUrgent').is(':checked');
+        const expiryDate = $('#noticeExpiryDate').val();
+        
+        if(!title || !content) {
+            showToast('Please enter title and content!', 'error');
+            return;
+        }
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/notice/admin/add',
+            type: 'POST',
+            data: { 
+                title: title, 
+                content: content, 
+                category: category, 
+                isUrgent: isUrgent, 
+                expiryDate: expiryDate 
+            },
+            success: function(response) {
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    $('#noticeTitle').val('');
+                    $('#noticeContent').val('');
+                    $('#noticeCategory').val('General');
+                    $('#noticeUrgent').prop('checked', false);
+                    $('#noticeExpiryDate').val('');
+                    loadNotices();
+                } else {
+                    showToast(response.message, 'error');
+                }
+            },
+            error: function() { showToast('Error publishing notice!', 'error'); }
+        });
+    }
+
+    function loadNotices() {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/notice/admin/list',
+            type: 'GET',
+            success: function(response) {
+                if(response.success && response.notices) {
+                    let html = '';
+                    response.notices.forEach(function(notice) {
+                        const status = notice.isActive ? 'Active' : 'Inactive';
+                        const statusClass = notice.isActive ? 'status-active' : 'status-inactive';
+                        const urgentBadge = notice.isUrgent ? '<span class="urgent-badge">URGENT</span>' : '';
+                        html += '<tr id="notice-row-' + notice.id + '">' +
+                            '<td>' + notice.id + '</td>' +
+                            '<td>' + notice.title + ' ' + urgentBadge + '</td>' +
+                            '<td>' + notice.category + '</td>' +
+                            '<td>' + new Date(notice.createdAt).toLocaleDateString() + '</td>' +
+                            '<td><span class="' + statusClass + '">' + status + '</span></td>' +
+                            '<td>' + notice.createdByName + '</td>' +
+                            '<td><button class="btn-delete-feedback" onclick="deleteNotice(' + notice.id + ')">Delete</button></td>' +
+                            '</tr>';
+                    });
+                    $('#noticesTableBody').html(html);
+                    if(response.notices.length === 0) {
+                        $('#noticesTableBody').html('<tr><td colspan="7" style="text-align:center;">No notices found</td></tr>');
+                    }
+                } else {
+                    $('#noticesTableBody').html('<tr><td colspan="7" style="text-align:center;">No notices found</td></tr>');
+                }
+            },
+            error: function() { 
+                showToast('Error loading notices!', 'error');
+                $('#noticesTableBody').html('<tr><td colspan="7" style="text-align:center;">Error loading notices</td></tr>');
+            }
+        });
+    }
+
+    function deleteNotice(noticeId) {
+        if(!confirm('Are you sure you want to delete this notice?')) return;
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/notice/admin/delete',
+            type: 'POST',
+            data: { id: noticeId },
+            success: function(response) {
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    $('#notice-row-' + noticeId).remove();
+                    loadNotices();
+                } else {
+                    showToast(response.message, 'error');
+                }
+            },
+            error: function() { showToast('Error deleting notice!', 'error'); }
+        });
+    }
+
     function showEventForm() { const f = $('#eventForm'); if(f.length) f.toggle(); }
     function createEvent() { showToast('Event created!', 'success'); }
 
