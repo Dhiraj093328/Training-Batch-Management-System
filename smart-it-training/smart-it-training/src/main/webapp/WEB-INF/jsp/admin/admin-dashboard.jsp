@@ -286,6 +286,21 @@
             font-weight: 500;
         }
 
+        .btn-edit {
+            background: #ffc107;
+            color: #856404;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+        
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+
         .btn-view, .btn-reply-feedback, .btn-delete-feedback {
             background: #667eea;
             color: white;
@@ -306,6 +321,7 @@
         .urgent-badge { background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 5px; }
         .status-active { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
         .status-inactive { background: #6c757d; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .featured-badge { background: #ffc107; color: #856404; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 5px; }
 
         .progress-bar {
             width: 100%;
@@ -384,8 +400,10 @@
             background: white;
             padding: 25px;
             border-radius: 15px;
-            width: 450px;
+            width: 550px;
             max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-content textarea, .modal-content input, .modal-content select {
@@ -405,6 +423,24 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #333;
         }
 
         .tabs {
@@ -447,6 +483,9 @@
             }
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -562,7 +601,10 @@
                 <c:choose>
                     <c:when test="${not empty pendingFaculty}">
                         <table class="data-table">
-                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Qualification</th><th>Action</th></tr></thead>
+                            <thead>
+                                <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Qualification</th><th>Action</th>
+                            </tr>
+                            </thead>
                             <tbody>
                                 <c:forEach items="${pendingFaculty}" var="faculty">
                                     <tr id="faculty-row-${faculty.id}">
@@ -597,7 +639,10 @@
                 <c:choose>
                     <c:when test="${not empty pendingStudents}">
                         <table class="data-table">
-                            <thead><tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Enrollment No</th><th>Action</th></tr></thead>
+                            <thead>
+                                <tr><th>Name</th><th>Contact</th><th>Batch</th><th>Username</th><th>Admin Office</th><th>Enrollment No</th><th>Action</th>
+                            </tr>
+                            </thead>
                             <tbody>
                                 <c:forEach items="${pendingStudents}" var="student">
                                     <tr id="student-row-${student.id}">
@@ -636,7 +681,7 @@
                         <option value="Cloud">Cloud Batch</option>
                     </select>
                 </div>
-                <table class="data-table"><thead><tr><th>Student Name</th><th>Attendance %</th><th>Progress</th></tr></thead><tbody id="attendanceList"></tbody></table>
+                <table class="data-table"><thead>运转<th>Student Name</th><th>Attendance %</th><th>Progress</th> </tr></thead><tbody id="attendanceList"></tbody></table>
             </div>
         </div>
 
@@ -658,13 +703,13 @@
                 
                 <div id="all-feedback-tab" class="feedback-tab-content active">
                     <table class="data-table">
-                        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead>运转<th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Status</th><th>Action</th> </tr></thead>
                         <tbody id="allFeedbackBody"></tbody>
                     </table>
                 </div>
                 <div id="unread-feedback-tab" class="feedback-tab-content">
                     <table class="data-table">
-                        <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Action</th></tr></thead>
+                        <thead>运转<th>Date</th><th>Name</th><th>Email</th><th>Rating</th><th>Message</th><th>Action</th> </tr></thead>
                         <tbody id="unreadFeedbackBody"></tbody>
                     </table>
                 </div>
@@ -715,7 +760,7 @@
             </div>
         </div>
 
-        <!-- Notice Section (UPDATED with enhanced form and table) -->
+        <!-- Notice Section -->
         <div id="notice-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-bullhorn"></i> E-Notice Management</div>
@@ -750,7 +795,6 @@
                     <button type="button" class="btn-add" onclick="publishNotice()">Publish Notice</button>
                 </div>
                 
-                <!-- Notices List Table -->
                 <div style="margin-top: 30px;">
                     <h4>Published Notices</h4>
                     <table class="data-table">
@@ -766,26 +810,116 @@
                             </tr>
                         </thead>
                         <tbody id="noticesTableBody">
-                            <tr><td colspan="7" style="text-align:center;">Loading notices...</td></tr>
+                            <tr><td colspan="7" style="text-align:center;">Loading notices...<\/td><\/tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Event Section -->
+        <!-- Event Section - CORRECTED FULL VERSION -->
         <div id="event-section" class="content-section">
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-calendar-alt"></i> Event Management</div>
-                <button class="btn-add" onclick="showEventForm()"><i class="fas fa-plus"></i> Create New Event</button>
+                <button class="btn-add" onclick="toggleEventForm()"><i class="fas fa-plus"></i> Create New Event</button>
+                
+                <!-- Event Form -->
                 <div id="eventForm" style="display:none; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;">
-                    <h4>Create Event</h4>
-                    <input type="text" placeholder="Event Title" id="eventTitle" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
-                    <textarea placeholder="Event Description" id="eventDesc" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;" rows="3"></textarea>
-                    <input type="date" placeholder="Event Date" id="eventDate" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
-                    <input type="time" placeholder="Event Time" id="eventTime" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
-                    <input type="text" placeholder="Location" id="eventLocation" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px;">
-                    <button type="button" class="btn-add" onclick="createEvent()">Create Event</button>
+                    <h4><i class="fas fa-calendar-plus"></i> Create New Event</h4>
+                    <form id="createEventForm" onsubmit="return false;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Event Title *</label>
+                                <input type="text" id="eventTitle" name="title" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select id="eventCategory" name="category" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                                    <option value="Workshop">Workshop</option>
+                                    <option value="Seminar">Seminar</option>
+                                    <option value="Training">Training</option>
+                                    <option value="Webinar">Webinar</option>
+                                    <option value="Conference">Conference</option>
+                                    <option value="Competition">Competition</option>
+                                    <option value="Cultural">Cultural</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Event Description *</label>
+                            <textarea id="eventDesc" name="description" rows="3" placeholder="Describe the event details..." class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Event Date *</label>
+                                <input type="date" id="eventDate" name="eventDate" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Event Time</label>
+                                <input type="time" id="eventTime" name="eventTime" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="eventLocation" name="location" placeholder="Venue / Online link" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Max Participants</label>
+                                <input type="number" id="maxParticipants" name="maxParticipants" placeholder="Optional" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Registration Deadline</label>
+                                <input type="date" id="registrationDeadline" name="registrationDeadline" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+                                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                    <input type="checkbox" id="isFeatured" name="isFeatured" value="true"> 
+                                    <span>⭐ Mark as Featured Event</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-buttons" style="margin-top: 20px;">
+                            <button type="button" class="btn-add" onclick="createNewEvent()">Create Event</button>
+                            <button type="button" class="btn-reject" onclick="$('#eventForm').slideUp();">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Events List Table -->
+                <div style="margin-top: 30px;">
+                    <h4>All Events 
+                        <a href="${pageContext.request.contextPath}/events" target="_blank" style="font-size: 0.8rem; margin-left: 10px;">
+                            <i class="fas fa-external-link-alt"></i> View Public Events Page
+                        </a>
+                    </h4>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Event Date</th>
+                                    <th>Location</th>
+                                    <th>Featured</th>
+                                    <th>Status</th>
+                                    <th>Created By</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <tr><td colspan="9" style="text-align:center;">Loading events... <i class="fas fa-spinner fa-spin"></i><\/td><\/tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -809,7 +943,72 @@
     <div class="modal-content"><h3>Feedback Details</h3><div id="viewFeedbackContent"></div><button class="btn-approve" onclick="closeViewFeedbackModal()" style="margin-top:15px;">Close</button></div>
 </div>
 
+<!-- Edit Event Modal -->
+<div id="editEventModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-edit"></i> Edit Event</h3>
+        <input type="hidden" id="editEventId">
+        <div class="form-group">
+            <label>Event Title *</label>
+            <input type="text" id="editEventTitle" placeholder="Enter event title" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+        </div>
+        <div class="form-group">
+            <label>Category *</label>
+            <select id="editEventCategory" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                <option value="Workshop">Workshop</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Training">Training</option>
+                <option value="Webinar">Webinar</option>
+                <option value="Conference">Conference</option>
+                <option value="Competition">Competition</option>
+                <option value="Cultural">Cultural</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Event Description *</label>
+            <textarea id="editEventDesc" rows="3" placeholder="Describe the event details..." class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Event Date *</label>
+                <input type="date" id="editEventDate" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+            <div class="form-group">
+                <label>Event Time</label>
+                <input type="time" id="editEventTime" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="editEventLocation" placeholder="Venue / Online link" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+            <div class="form-group">
+                <label>Max Participants</label>
+                <input type="number" id="editMaxParticipants" placeholder="Optional" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Registration Deadline</label>
+                <input type="date" id="editRegistrationDeadline" class="form-control" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="editIsFeatured"> 
+                    <span>⭐ Mark as Featured Event</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-approve" onclick="updateEvent()">Update Event</button>
+            <button class="btn-reject" onclick="closeEditModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    const contextPath = '${pageContext.request.contextPath}';
     let currentRejectFacultyId = null;
     let currentRejectStudentId = null;
 
@@ -833,6 +1032,7 @@
             document.getElementById(sectionId + '-section').classList.add('active-section');
             if (sectionId === 'feedback') { loadAllFeedbacks(); loadFeedbackStats(); }
             if (sectionId === 'notice') { loadNotices(); }
+            if (sectionId === 'event') { loadEvents(); }
         });
     });
 
@@ -851,17 +1051,17 @@
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         if (tab === 'all') {
             document.getElementById('all-feedback-tab').classList.add('active');
-            event.target.classList.add('active');
+            document.querySelector('.tabs .tab:first-child').classList.add('active');
             loadAllFeedbacks();
         } else {
             document.getElementById('unread-feedback-tab').classList.add('active');
-            event.target.classList.add('active');
+            document.querySelector('.tabs .tab:last-child').classList.add('active');
             loadUnreadFeedbacks();
         }
     }
 
     function loadFeedbackStats() {
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/stats', type: 'GET', success: function(data) {
+        $.ajax({ url: contextPath + '/admin/feedback/stats', type: 'GET', success: function(data) {
             if (data.success) {
                 $('#totalFeedbacks').text(data.total); $('#unreadFeedbacks').text(data.unread); 
                 $('#avgRating').text(data.avgRating); $('#unreadCountBadge').text(data.unread);
@@ -870,7 +1070,7 @@
     }
 
     function loadAllFeedbacks() {
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/all', type: 'GET', success: function(response) {
+        $.ajax({ url: contextPath + '/admin/feedback/all', type: 'GET', success: function(response) {
             if (response.success) {
                 let html = ''; let stars = '';
                 response.feedbacks.forEach(f => {
@@ -895,7 +1095,7 @@
     }
 
     function loadUnreadFeedbacks() {
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/unread', type: 'GET', success: function(response) {
+        $.ajax({ url: contextPath + '/admin/feedback/unread', type: 'GET', success: function(response) {
             if (response.success) {
                 let html = ''; let stars = '';
                 response.feedbacks.forEach(f => {
@@ -922,7 +1122,7 @@
         let stars = '★'.repeat(rating) + '☆'.repeat(5-rating);
         $('#viewFeedbackContent').html('<p><strong>Name:</strong> ' + name + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Rating:</strong> <span class="stars">' + stars + '</span> (' + rating + ')</p><p><strong>Date:</strong> ' + new Date(date).toLocaleString() + '</p><p><strong>Message:</strong> ' + message + '</p>');
         $('#viewFeedbackModal').css('display', 'flex');
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/mark-read', type: 'POST', data: { feedbackId: id }, success: function() { loadAllFeedbacks(); loadFeedbackStats(); } });
+        $.ajax({ url: contextPath + '/admin/feedback/mark-read', type: 'POST', data: { feedbackId: id }, success: function() { loadAllFeedbacks(); loadFeedbackStats(); } });
     }
 
     function showReplyModal(id, name) {
@@ -936,7 +1136,7 @@
         const id = $('#replyFeedbackId').val(); 
         const message = $('#replyMessage').val();
         if (!message) { showToast('Please enter a reply message!', 'error'); return; }
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/reply', type: 'POST', data: { feedbackId: id, replyMessage: message }, success: function(response) {
+        $.ajax({ url: contextPath + '/admin/feedback/reply', type: 'POST', data: { feedbackId: id, replyMessage: message }, success: function(response) {
             if (response.success) { showToast(response.message, 'success'); closeFeedbackReplyModal(); loadAllFeedbacks(); loadFeedbackStats(); }
             else showToast(response.message, 'error');
         }, error: function() { showToast('Error sending reply!', 'error'); } });
@@ -944,7 +1144,7 @@
 
     function deleteFeedback(id) {
         if (!confirm('Are you sure you want to delete this feedback?')) return;
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/feedback/delete', type: 'POST', data: { feedbackId: id }, success: function(response) {
+        $.ajax({ url: contextPath + '/admin/feedback/delete', type: 'POST', data: { feedbackId: id }, success: function(response) {
             if (response.success) { showToast(response.message, 'success'); $('#feedback-row-' + id).remove(); loadFeedbackStats(); }
             else showToast(response.message, 'error');
         }, error: function() { showToast('Error deleting feedback!', 'error'); } });
@@ -960,7 +1160,7 @@
         const btn = row.find('.btn-approve');
         const orig = btn.html();
         btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/approve-faculty', type: 'POST', data: { facultyId: facultyId }, success: function(r) { 
+        $.ajax({ url: contextPath + '/admin/approve-faculty', type: 'POST', data: { facultyId: facultyId }, success: function(r) { 
             if(r.success){ showToast(r.message,'success'); row.fadeOut(); } 
             else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
         }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
@@ -981,7 +1181,7 @@
         const btn = row.find('.btn-reject'); 
         const orig = btn.html(); 
         btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/reject-faculty', type: 'POST', data: { facultyId: id, reason: reason }, success: function(r) { 
+        $.ajax({ url: contextPath + '/admin/reject-faculty', type: 'POST', data: { facultyId: id, reason: reason }, success: function(r) { 
             if(r.success){ showToast(r.message,'error'); row.fadeOut(); closeFacultyModal(); } 
             else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
         }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
@@ -996,7 +1196,7 @@
         const btn = row.find('.btn-approve');
         const orig = btn.html();
         btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/approve-student', type: 'POST', data: { studentId: studentId }, success: function(r) { 
+        $.ajax({ url: contextPath + '/admin/approve-student', type: 'POST', data: { studentId: studentId }, success: function(r) { 
             if(r.success){ showToast(r.message,'success'); row.fadeOut(); } 
             else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
         }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
@@ -1017,7 +1217,7 @@
         const btn = row.find('.btn-reject'); 
         const orig = btn.html(); 
         btn.html('<i class="fas fa-spinner fa-spin"></i>'); btn.prop('disabled',true);
-        $.ajax({ url: '${pageContext.request.contextPath}/admin/reject-student', type: 'POST', data: { studentId: id, reason: reason }, success: function(r) { 
+        $.ajax({ url: contextPath + '/admin/reject-student', type: 'POST', data: { studentId: id, reason: reason }, success: function(r) { 
             if(r.success){ showToast(r.message,'error'); row.fadeOut(); closeStudentModal(); } 
             else { showToast(r.message,'error'); btn.html(orig); btn.prop('disabled',false); } 
         }, error: function() { showToast('Error!','error'); btn.html(orig); btn.prop('disabled',false); } });
@@ -1052,7 +1252,7 @@
     function showPlacementForm() { const f = $('#placementForm'); if(f.length) f.toggle(); }
     function addPlacement() { showToast('New placement added!', 'success'); }
     
-    // ========== NOTICE FUNCTIONS (ADDED) ==========
+    // ========== NOTICE FUNCTIONS ==========
     function showNoticeForm() { 
         const form = $('#noticeForm'); 
         if(form.length) form.toggle(); 
@@ -1072,7 +1272,7 @@
         }
         
         $.ajax({
-            url: '${pageContext.request.contextPath}/notice/admin/add',
+            url: contextPath + '/admin/notice/publish',
             type: 'POST',
             data: { 
                 title: title, 
@@ -1100,7 +1300,7 @@
 
     function loadNotices() {
         $.ajax({
-            url: '${pageContext.request.contextPath}/notice/admin/list',
+            url: contextPath + '/admin/notices',
             type: 'GET',
             success: function(response) {
                 if(response.success && response.notices) {
@@ -1138,9 +1338,9 @@
         if(!confirm('Are you sure you want to delete this notice?')) return;
         
         $.ajax({
-            url: '${pageContext.request.contextPath}/notice/admin/delete',
+            url: contextPath + '/admin/notice/delete',
             type: 'POST',
-            data: { id: noticeId },
+            data: { noticeId: noticeId },
             success: function(response) {
                 if(response.success) {
                     showToast(response.message, 'success');
@@ -1154,8 +1354,244 @@
         });
     }
 
-    function showEventForm() { const f = $('#eventForm'); if(f.length) f.toggle(); }
-    function createEvent() { showToast('Event created!', 'success'); }
+    // ========== EVENT FUNCTIONS - CORRECTED ==========
+    function toggleEventForm() { 
+        const form = $('#eventForm'); 
+        if(form.length) form.slideToggle(); 
+    }
+
+    function createNewEvent() {
+        console.log("Create Event button clicked");
+        
+        const title = $('#eventTitle').val().trim();
+        const description = $('#eventDesc').val().trim();
+        const eventDate = $('#eventDate').val();
+        const eventTime = $('#eventTime').val();
+        const location = $('#eventLocation').val().trim();
+        const category = $('#eventCategory').val();
+        const isFeatured = $('#isFeatured').is(':checked');
+        const maxParticipants = $('#maxParticipants').val();
+        const registrationDeadline = $('#registrationDeadline').val();
+        
+        if(!title) {
+            showToast('Please enter event title!', 'error');
+            return;
+        }
+        if(!description) {
+            showToast('Please enter event description!', 'error');
+            return;
+        }
+        if(!eventDate) {
+            showToast('Please select event date!', 'error');
+            return;
+        }
+        
+        const createBtn = $('.btn-add:contains("Create Event")').first();
+        const originalText = createBtn.html();
+        createBtn.html('<i class="fas fa-spinner fa-spin"></i> Creating...').prop('disabled', true);
+        
+        $.ajax({
+            url: contextPath + '/admin/event/create',
+            type: 'POST',
+            data: {
+                title: title,
+                description: description,
+                eventDate: eventDate,
+                eventTime: eventTime,
+                location: location,
+                category: category,
+                isFeatured: isFeatured,
+                maxParticipants: maxParticipants,
+                registrationDeadline: registrationDeadline
+            },
+            success: function(response) {
+                console.log("Response:", response);
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    $('#eventTitle').val('');
+                    $('#eventDesc').val('');
+                    $('#eventDate').val('');
+                    $('#eventTime').val('');
+                    $('#eventLocation').val('');
+                    $('#maxParticipants').val('');
+                    $('#registrationDeadline').val('');
+                    $('#isFeatured').prop('checked', false);
+                    $('#eventCategory').val('Workshop');
+                    $('#eventForm').slideUp();
+                    loadEvents();
+                } else {
+                    showToast(response.message || 'Error creating event!', 'error');
+                }
+                createBtn.html(originalText).prop('disabled', false);
+            },
+            error: function(xhr) {
+                console.error("Error:", xhr);
+                let errorMsg = 'Error creating event!';
+                if(xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                showToast(errorMsg, 'error');
+                createBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    }
+
+    function loadEvents() {
+        $.ajax({
+            url: contextPath + '/admin/events',
+            type: 'GET',
+            success: function(response) {
+                console.log("Events response:", response);
+                if(response.success && response.events) {
+                    let html = '';
+                    response.events.forEach(function(event) {
+                        const statusClass = event.isActive ? 'status-active' : 'status-inactive';
+                        const statusText = event.isActive ? 'Active' : 'Inactive';
+                        const featuredStar = event.isFeatured ? '<span style="color: #ffc107;">★</span>' : '☆';
+                        const featuredBadge = event.isFeatured ? '<span class="featured-badge">Featured</span>' : '';
+                        
+                        html += '<tr id="event-row-' + event.id + '">' +
+                            '<td>' + event.id + '</td>' +
+                            '<td>' + event.title + ' ' + featuredBadge + '</td>' +
+                            '<td>' + (event.category || 'General') + '</td>' +
+                            '<td>' + (event.formattedEventDate || event.eventDate) + '</td>' +
+                            '<td>' + (event.location || 'Online') + '</td>' +
+                            '<td style="text-align: center;">' + featuredStar + '</td>' +
+                            '<td><span class="' + statusClass + '">' + statusText + '</span></td>' +
+                            '<td>' + (event.createdByName || 'Admin') + '</td>' +
+                            '<td>' +
+                            '<button class="btn-edit" onclick="editEvent(' + event.id + ')"><i class="fas fa-edit"></i> Edit</button> ' +
+                            '<button class="btn-approve" onclick="toggleEventStatus(' + event.id + ')"><i class="fas fa-toggle-on"></i> Toggle</button> ' +
+                            '<button class="btn-delete-feedback" onclick="deleteEvent(' + event.id + ')"><i class="fas fa-trash"></i> Delete</button>' +
+                            '</td>' +
+                            '</tr>';
+                    });
+                    $('#eventsTableBody').html(html);
+                    if(response.events.length === 0) {
+                        $('#eventsTableBody').html('<tr><td colspan="9" style="text-align:center;">No events found</td></tr>');
+                    }
+                } else {
+                    $('#eventsTableBody').html('<tr><td colspan="9" style="text-align:center;">No events found</td></tr>');
+                }
+            },
+            error: function(xhr) { 
+                console.error("Error loading events:", xhr);
+                showToast('Error loading events!', 'error');
+                $('#eventsTableBody').html('<tr><td colspan="9" style="text-align:center;">Error loading events</td></tr>');
+            }
+        });
+    }
+
+    function editEvent(eventId) {
+        $.ajax({
+            url: contextPath + '/admin/event/get/' + eventId,
+            type: 'GET',
+            success: function(response) {
+                if(response.success && response.event) {
+                    const event = response.event;
+                    $('#editEventId').val(event.id);
+                    $('#editEventTitle').val(event.title);
+                    $('#editEventDesc').val(event.description);
+                    $('#editEventCategory').val(event.category);
+                    $('#editEventDate').val(event.eventDate);
+                    $('#editEventTime').val(event.eventTime);
+                    $('#editEventLocation').val(event.location);
+                    $('#editMaxParticipants').val(event.maxParticipants);
+                    $('#editRegistrationDeadline').val(event.registrationDeadline);
+                    $('#editIsFeatured').prop('checked', event.isFeatured);
+                    $('#editEventModal').css('display', 'flex');
+                } else {
+                    showToast('Error loading event details!', 'error');
+                }
+            },
+            error: function() { showToast('Error loading event details!', 'error'); }
+        });
+    }
+
+    function updateEvent() {
+        const eventData = {
+            id: $('#editEventId').val(),
+            title: $('#editEventTitle').val(),
+            description: $('#editEventDesc').val(),
+            eventDate: $('#editEventDate').val(),
+            eventTime: $('#editEventTime').val(),
+            location: $('#editEventLocation').val(),
+            category: $('#editEventCategory').val(),
+            isFeatured: $('#editIsFeatured').is(':checked'),
+            maxParticipants: $('#editMaxParticipants').val(),
+            registrationDeadline: $('#editRegistrationDeadline').val()
+        };
+        
+        if(!eventData.title || !eventData.description || !eventData.eventDate) {
+            showToast('Please fill required fields!', 'error');
+            return;
+        }
+        
+        const updateBtn = $('.modal-buttons .btn-approve').first();
+        const originalText = updateBtn.html();
+        updateBtn.html('<i class="fas fa-spinner fa-spin"></i> Updating...').prop('disabled', true);
+        
+        $.ajax({
+            url: contextPath + '/admin/event/update',
+            type: 'POST',
+            data: eventData,
+            success: function(response) {
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    closeEditModal();
+                    loadEvents();
+                } else {
+                    showToast(response.message || 'Error updating event!', 'error');
+                }
+                updateBtn.html(originalText).prop('disabled', false);
+            },
+            error: function() { 
+                showToast('Error updating event!', 'error');
+                updateBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    }
+
+    function toggleEventStatus(eventId) {
+        $.ajax({
+            url: contextPath + '/admin/event/toggle-status',
+            type: 'POST',
+            data: { id: eventId },
+            success: function(response) {
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    loadEvents();
+                } else {
+                    showToast(response.message || 'Error updating status!', 'error');
+                }
+            },
+            error: function() { showToast('Error updating status!', 'error'); }
+        });
+    }
+
+    function deleteEvent(eventId) {
+        if(!confirm('Are you sure you want to delete this event?')) return;
+        
+        $.ajax({
+            url: contextPath + '/admin/event/delete',
+            type: 'POST',
+            data: { id: eventId },
+            success: function(response) {
+                if(response.success) {
+                    showToast(response.message, 'success');
+                    loadEvents();
+                } else {
+                    showToast(response.message || 'Error deleting event!', 'error');
+                }
+            },
+            error: function() { showToast('Error deleting event!', 'error'); }
+        });
+    }
+
+    function closeEditModal() {
+        $('#editEventModal').css('display', 'none');
+        $('#editEventId').val('');
+    }
 
     // Close modals when clicking outside
     $(window).click(function(e) {
@@ -1163,10 +1599,12 @@
         if ($(e.target).is('#studentRejectModal')) closeStudentModal();
         if ($(e.target).is('#feedbackReplyModal')) closeFeedbackReplyModal();
         if ($(e.target).is('#viewFeedbackModal')) closeViewFeedbackModal();
+        if ($(e.target).is('#editEventModal')) closeEditModal();
     });
     
-    // Load initial feedback stats
+    // Load initial data
     loadFeedbackStats();
+    loadEvents();
 </script>
 </body>
 </html>

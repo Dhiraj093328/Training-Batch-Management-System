@@ -5,11 +5,13 @@ import com.smartit.training.model.Student;
 import com.smartit.training.model.Faculty;
 import com.smartit.training.model.Feedback;
 import com.smartit.training.model.Notice;
+import com.smartit.training.model.Event;
 import com.smartit.training.repository.AdminRepository;
 import com.smartit.training.repository.StudentRepository;
 import com.smartit.training.repository.FacultyRepository;
 import com.smartit.training.repository.FeedbackRepository;
 import com.smartit.training.repository.NoticeRepository;
+import com.smartit.training.repository.EventRepository;
 import com.smartit.training.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +47,9 @@ public class AdminController {
     
     @Autowired
     private NoticeRepository noticeRepository;
+    
+    @Autowired
+    private EventRepository eventRepository;
     
     @Autowired
     private EmailService emailService;
@@ -204,10 +210,9 @@ public class AdminController {
     }
     
     // =============================================
-    // NOTICE MANAGEMENT (NEW)
+    // NOTICE MANAGEMENT
     // =============================================
     
-    // Get all notices (for admin dashboard)
     @GetMapping("/notices")
     @ResponseBody
     public Map<String, Object> getAllNotices() {
@@ -234,7 +239,6 @@ public class AdminController {
         return response;
     }
     
-    // Publish new notice
     @PostMapping("/notice/publish")
     @ResponseBody
     public Map<String, Object> publishNotice(@RequestParam String title,
@@ -274,7 +278,6 @@ public class AdminController {
         return response;
     }
     
-    // Delete notice
     @PostMapping("/notice/delete")
     @ResponseBody
     public Map<String, Object> deleteNotice(@RequestParam Integer noticeId, HttpSession session) {
@@ -299,7 +302,6 @@ public class AdminController {
         return response;
     }
     
-    // Toggle notice status (Active/Inactive)
     @PostMapping("/notice/toggle-status")
     @ResponseBody
     public Map<String, Object> toggleNoticeStatus(@RequestParam Integer noticeId, HttpSession session) {
@@ -324,6 +326,318 @@ public class AdminController {
             response.put("message", "Notice not found!");
         }
         
+        return response;
+    }
+    
+    // =============================================
+    // EVENT MANAGEMENT - COMPLETE
+    // =============================================
+    
+    @GetMapping("/events")
+    @ResponseBody
+    public Map<String, Object> getAllEvents() {
+        Map<String, Object> response = new HashMap<>();
+        List<Event> events = eventRepository.findAllByOrderByCreatedAtDesc();
+        List<Map<String, Object>> eventList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        
+        for (Event event : events) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", event.getId());
+            map.put("title", event.getTitle());
+            map.put("description", event.getDescription());
+            map.put("location", event.getLocation());
+            map.put("category", event.getCategory());
+            map.put("isFeatured", event.getIsFeatured());
+            map.put("isActive", event.getIsActive());
+            map.put("eventTime", event.getEventTime());
+            map.put("maxParticipants", event.getMaxParticipants());
+            map.put("createdByName", event.getCreatedByName());
+            map.put("formattedEventDate", event.getEventDate() != null ? event.getEventDate().format(formatter) : "");
+            map.put("eventDate", event.getEventDate() != null ? event.getEventDate().toString() : "");
+            map.put("createdAt", event.getCreatedAt() != null ? event.getCreatedAt().toString() : "");
+            
+            if (event.getRegistrationDeadline() != null) {
+                map.put("formattedDeadline", event.getRegistrationDeadline().format(formatter));
+                map.put("registrationDeadline", event.getRegistrationDeadline().toString());
+            }
+            
+            eventList.add(map);
+        }
+        
+        response.put("success", true);
+        response.put("events", eventList);
+        response.put("count", eventList.size());
+        return response;
+    }
+    
+    @PostMapping("/event/create")
+    @ResponseBody
+    public Map<String, Object> createEvent(@RequestParam String title,
+                                            @RequestParam String description,
+                                            @RequestParam String eventDate,
+                                            @RequestParam(required = false) String eventTime,
+                                            @RequestParam(required = false) String location,
+                                            @RequestParam(required = false, defaultValue = "Workshop") String category,
+                                            @RequestParam(required = false, defaultValue = "false") boolean isFeatured,
+                                            @RequestParam(required = false) Integer maxParticipants,
+                                            @RequestParam(required = false) String registrationDeadline,
+                                            HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        System.out.println("===== CREATE EVENT =====");
+        System.out.println("Title: " + title);
+        System.out.println("Description: " + description);
+        System.out.println("Event Date: " + eventDate);
+        
+        // Check if admin is logged in
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized! Please login as admin.");
+            return response;
+        }
+        
+        // Validate input
+        if (title == null || title.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Event title is required!");
+            return response;
+        }
+        
+        if (description == null || description.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Event description is required!");
+            return response;
+        }
+        
+        if (eventDate == null || eventDate.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Event date is required!");
+            return response;
+        }
+        
+        try {
+            Event event = new Event();
+            event.setTitle(title.trim());
+            event.setDescription(description.trim());
+            event.setLocation(location != null && !location.trim().isEmpty() ? location.trim() : "Online");
+            event.setCategory(category);
+            event.setIsFeatured(isFeatured);
+            event.setIsActive(true);
+            event.setMaxParticipants(maxParticipants);
+            event.setCreatedBy((Integer) session.getAttribute("adminId"));
+            event.setCreatedByName((String) session.getAttribute("adminName"));
+            event.setCreatedAt(LocalDateTime.now());
+            
+            // Parse event date
+            event.setEventDate(LocalDate.parse(eventDate));
+            
+            // Set event time
+            event.setEventTime(eventTime != null && !eventTime.isEmpty() ? eventTime : "TBD");
+            
+            // Set registration deadline
+            if (registrationDeadline != null && !registrationDeadline.isEmpty()) {
+                event.setRegistrationDeadline(LocalDate.parse(registrationDeadline));
+            }
+            
+            Event savedEvent = eventRepository.save(event);
+            
+            System.out.println("Event created successfully with ID: " + savedEvent.getId());
+            System.out.println("Created by: " + session.getAttribute("adminName"));
+            
+            response.put("success", true);
+            response.put("message", "Event created successfully!");
+            response.put("eventId", savedEvent.getId());
+            
+        } catch (Exception e) {
+            System.err.println("Error creating event: " + e.getMessage());
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Error creating event: " + e.getMessage());
+        }
+        
+        return response;
+    }
+    
+    @GetMapping("/event/get/{id}")
+    @ResponseBody
+    public Map<String, Object> getEventById(@PathVariable Integer id, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        try {
+            Optional<Event> eventOpt = eventRepository.findById(id);
+            if (eventOpt.isPresent()) {
+                Event event = eventOpt.get();
+                Map<String, Object> eventData = new HashMap<>();
+                eventData.put("id", event.getId());
+                eventData.put("title", event.getTitle());
+                eventData.put("description", event.getDescription());
+                eventData.put("category", event.getCategory());
+                eventData.put("location", event.getLocation());
+                eventData.put("eventDate", event.getEventDate() != null ? event.getEventDate().toString() : "");
+                eventData.put("eventTime", event.getEventTime());
+                eventData.put("isFeatured", event.getIsFeatured());
+                eventData.put("maxParticipants", event.getMaxParticipants());
+                eventData.put("registrationDeadline", event.getRegistrationDeadline() != null ? event.getRegistrationDeadline().toString() : "");
+                eventData.put("isActive", event.getIsActive());
+                
+                response.put("success", true);
+                response.put("event", eventData);
+            } else {
+                response.put("success", false);
+                response.put("message", "Event not found!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error fetching event: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return response;
+    }
+    
+    @PostMapping("/event/update")
+    @ResponseBody
+    public Map<String, Object> updateEvent(@RequestParam Integer id,
+                                            @RequestParam String title,
+                                            @RequestParam String description,
+                                            @RequestParam String eventDate,
+                                            @RequestParam(required = false) String eventTime,
+                                            @RequestParam(required = false) String location,
+                                            @RequestParam(required = false, defaultValue = "Workshop") String category,
+                                            @RequestParam(required = false, defaultValue = "false") boolean isFeatured,
+                                            @RequestParam(required = false) Integer maxParticipants,
+                                            @RequestParam(required = false) String registrationDeadline,
+                                            HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        try {
+            Optional<Event> eventOpt = eventRepository.findById(id);
+            if (eventOpt.isPresent()) {
+                Event event = eventOpt.get();
+                event.setTitle(title.trim());
+                event.setDescription(description.trim());
+                event.setLocation(location != null && !location.trim().isEmpty() ? location.trim() : "Online");
+                event.setCategory(category);
+                event.setIsFeatured(isFeatured);
+                event.setMaxParticipants(maxParticipants);
+                event.setEventDate(LocalDate.parse(eventDate));
+                event.setEventTime(eventTime != null && !eventTime.isEmpty() ? eventTime : "TBD");
+                
+                if (registrationDeadline != null && !registrationDeadline.isEmpty()) {
+                    event.setRegistrationDeadline(LocalDate.parse(registrationDeadline));
+                } else {
+                    event.setRegistrationDeadline(null);
+                }
+                
+                eventRepository.save(event);
+                
+                response.put("success", true);
+                response.put("message", "Event updated successfully!");
+            } else {
+                response.put("success", false);
+                response.put("message", "Event not found!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error updating event: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return response;
+    }
+    
+    @PostMapping("/event/delete")
+    @ResponseBody
+    public Map<String, Object> deleteEvent(@RequestParam Integer id, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        try {
+            if (eventRepository.existsById(id)) {
+                eventRepository.deleteById(id);
+                System.out.println("Event deleted with ID: " + id + " by " + session.getAttribute("adminName"));
+                response.put("success", true);
+                response.put("message", "Event deleted successfully!");
+            } else {
+                response.put("success", false);
+                response.put("message", "Event not found!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error deleting event: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return response;
+    }
+    
+    @PostMapping("/event/toggle-status")
+    @ResponseBody
+    public Map<String, Object> toggleEventStatus(@RequestParam Integer id, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (session.getAttribute("adminId") == null) {
+            response.put("success", false);
+            response.put("message", "Unauthorized!");
+            return response;
+        }
+        
+        try {
+            Optional<Event> eventOpt = eventRepository.findById(id);
+            if (eventOpt.isPresent()) {
+                Event event = eventOpt.get();
+                event.setIsActive(!event.getIsActive());
+                eventRepository.save(event);
+                response.put("success", true);
+                response.put("message", "Event status updated successfully!");
+                response.put("isActive", event.getIsActive());
+            } else {
+                response.put("success", false);
+                response.put("message", "Event not found!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error updating status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return response;
+    }
+    
+    // Test endpoint to check if event endpoints are working
+    @GetMapping("/event/test")
+    @ResponseBody
+    public Map<String, Object> testEventEndpoint(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Event endpoint is working!");
+        response.put("adminLoggedIn", session.getAttribute("adminId") != null);
+        response.put("adminName", session.getAttribute("adminName"));
+        response.put("eventRepositoryExists", eventRepository != null);
+        try {
+            long count = eventRepository.count();
+            response.put("eventCount", count);
+        } catch(Exception e) {
+            response.put("eventCountError", e.getMessage());
+        }
         return response;
     }
     
@@ -538,7 +852,6 @@ public class AdminController {
     // FEEDBACK MANAGEMENT
     // =============================================
     
-    // Get Feedback Statistics
     @GetMapping("/feedback/stats")
     @ResponseBody
     public Map<String, Object> getFeedbackStats() {
@@ -551,7 +864,6 @@ public class AdminController {
         return response;
     }
     
-    // Get All Feedbacks
     @GetMapping("/feedback/all")
     @ResponseBody
     public Map<String, Object> getAllFeedbacks() {
@@ -576,7 +888,6 @@ public class AdminController {
         return response;
     }
     
-    // Get Unread Feedbacks
     @GetMapping("/feedback/unread")
     @ResponseBody
     public Map<String, Object> getUnreadFeedbacks() {
@@ -598,7 +909,6 @@ public class AdminController {
         return response;
     }
     
-    // Mark feedback as read
     @PostMapping("/feedback/mark-read")
     @ResponseBody
     public Map<String, Object> markFeedbackAsRead(@RequestParam Integer feedbackId) {
@@ -619,7 +929,6 @@ public class AdminController {
         return response;
     }
     
-    // Delete feedback
     @PostMapping("/feedback/delete")
     @ResponseBody
     public Map<String, Object> deleteFeedback(@RequestParam Integer feedbackId) {
@@ -638,7 +947,6 @@ public class AdminController {
         return response;
     }
     
-    // Reply to feedback
     @PostMapping("/feedback/reply")
     @ResponseBody
     public Map<String, Object> replyToFeedback(@RequestParam Integer feedbackId,
